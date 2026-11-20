@@ -195,10 +195,9 @@ class TrafficRegistry:
         if action not in {"publish", "rollback", "kill"}:
             raise ValueError("Unknown traffic change")
         with self.lock, self.store.connect() as conn:
-            pointer = conn.execute("""
-                SELECT p.config_id, p.revision, c.payload FROM traffic_pointer p
-                JOIN traffic_configs c USING (config_id) FOR UPDATE OF p
-                """).fetchone()
+            pointer = conn.execute("SELECT config_id, revision FROM traffic_pointer FOR UPDATE").fetchone()
+            if pointer is None:
+                raise ValueError("Traffic pointer is uninitialized")
             prior = conn.execute("SELECT * FROM traffic_audit WHERE operation_id = %s",
                                  (operation_id,)).fetchone()
             if prior:
@@ -209,7 +208,9 @@ class TrafficRegistry:
                 return prior["revision"]
             if pointer["revision"] != expected_revision:
                 raise ValueError("Traffic revision conflict")
-            old = TrafficConfigSnapshot(**pointer["payload"])
+            current = conn.execute("SELECT payload FROM traffic_configs WHERE config_id = %s",
+                                   (pointer["config_id"],)).fetchone()
+            old = TrafficConfigSnapshot(**current["payload"])
             if action == "rollback":
                 row = conn.execute("SELECT payload FROM traffic_configs WHERE config_id = %s",
                                    (target,)).fetchone()

@@ -1,5 +1,6 @@
-﻿"""Operator-only W2-gate evaluation and signed release records."""
+"""Operator-only W2-gate evaluation and signed release records."""
 import argparse
+from datetime import datetime, timezone
 import getpass
 import hashlib
 import hmac
@@ -87,7 +88,8 @@ def release(directory, candidate, registry, operator, signing_key):
     lineage = read_json(candidate / "run.json")["lineage"]
     identity = hashlib.sha256(canonical([policy["epoch_id"], lineage["artifact_sha256"]])).hexdigest()
     record = {"decision_id": identity, "operator": operator, "policy": policy,
-              "lineage": lineage, "sampling_limitation": SAMPLING}
+              "lineage": lineage, "sampling_limitation": SAMPLING,
+              "recorded_at": datetime.now(timezone.utc).isoformat()}
     if lineage["source"] != "otto_offline":
         record.update(decision="rejected", reason="Candidate provenance is ineligible for the OTTO gate")
         return append_signed(registry / f"{identity}-provenance.json", record, signing_key)
@@ -111,7 +113,27 @@ def release(directory, candidate, registry, operator, signing_key):
     decision, reason, deltas, regressions = disposition(evaluation, model.strategy_id, policy)
     record.update(decision=decision, reason=reason, primary_deltas=deltas,
                   slice_regressions=regressions, evaluation=evaluation)
+    record["completed_at"] = datetime.now(timezone.utc).isoformat()
     return append_signed(registry / f"{identity}.json", record, signing_key)
+
+
+def decision_summary(envelope):
+    record = envelope["record"]
+    outcome = record["decision"]
+    stable = "rule-v1 remains stable." if outcome == "rejected" else "Any traffic change requires a separate release operation."
+    return "\n".join([
+        "# Stage 2 release decision", "",
+        f"**{outcome}** ? lgbm-v1 against rule-v1 on the pinned W2-gate population.", "",
+        record["reason"] + ". " + stable, "",
+        f"- Decision ID `{record['decision_id']}`",
+        f"- Registered training run `{record['lineage']['run_id']}`",
+        f"- Protocol `{record['policy']['evaluation_protocol_version']}`",
+        f"- Completed `{record['completed_at']}`",
+        f"- Operator `{record['operator']}`",
+        f"- Registry record signature `{envelope['signature']}` (HMAC-SHA256)", "",
+        "The signed registry entry and underlying aggregates are available in the authenticated Operator Console.", "",
+        SAMPLING, "",
+    ])
 
 
 def main():
@@ -120,9 +142,15 @@ def main():
     parser.add_argument("candidate", type=Path)
     parser.add_argument("registry", type=Path)
     parser.add_argument("--operator", required=True)
+    parser.add_argument("--summary", type=Path)
+    parser.add_argument("--bearer-stdin", action="store_true")
     args = parser.parse_args()
     expected = os.environ["RANKFLOW_ADMIN_BEARER"]
-    presented = getpass.getpass("Operator bearer: ")
+    if args.bearer_stdin:
+        import sys
+        presented = sys.stdin.readline().rstrip("\r\n")
+    else:
+        presented = getpass.getpass("Operator bearer: ")
     if not expected or not hmac.compare_digest(presented.encode(), expected.encode()):
         parser.error("Operator authentication failed")
     key = os.environ["RANKFLOW_RELEASE_SIGNING_KEY"].encode()
@@ -130,6 +158,9 @@ def main():
         parser.error("Release signing key must contain at least 32 bytes")
     envelope = release(args.directory, args.candidate, args.registry, args.operator, key)
     record = envelope["record"]
+    if args.summary:
+        with args.summary.open("x", encoding="utf-8") as summary:
+            summary.write(decision_summary(envelope))
     print(record["decision_id"], record["decision"])
 
 
