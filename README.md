@@ -1,0 +1,38 @@
+# RankFlow
+
+RankFlow is a production-like, session-based e-commerce recommendation and ranking project. Its next-click task uses the observed prefix of a shopping session to rank product IDs. The product design pairs a Ranking Playground with an Operator Console.
+
+Stage 0 establishes the data semantics and the [draft product contract](docs/product_contract.md). Current evidence comes from a deterministic synthetic fixture. OTTO provides historical interactions with anonymized IDs. Offline retrieval coverage describes recovery of the next click in those logs. Exposure, conversion lift, production traffic, user impact, and business revenue require separate evidence.
+
+## Run Stage 0
+
+Use Python 3.11 or later and uv. Run these commands from the repository root.
+
+```text
+uv sync --locked
+uv run --locked python -m unittest discover -s tests -v
+uv run --locked python scripts/generate_fixture.py
+uv run --locked python scripts/stage0.py build --output artifacts/fixture --report-dir docs
+uv run --locked python scripts/stage0.py replay --run artifacts/fixture --output artifacts/replayed.jsonl
+```
+
+Use a fresh run directory and replay output path for each invocation. Build validates the epoch, checks byte-identical replay, and writes Markdown and JSON reports. Omitting `--report-dir` keeps the reports inside the run directory. See the committed [fixture report](docs/data_validation_report.md).
+
+The Stage 0 portion of the spec's `training/` layout lives in `rankflow/data/`. The CLI scripts run ingestion, exact retrieval aggregation, epoch validation, and report generation. All frozen Stage 0 settings live in `configs/stage0.yaml`. Window ranges are half-open and consecutive. W2-dev and W2-gate share W2's time range and have disjoint hashed session memberships. Sampling keeps the lowest seeded SHA-256 keys up to the configured cap. Cutoff selection takes the first eligible event positions up to its cap and preserves no-label rows for accounting.
+
+Each run writes the indexed sampled sessions, W0 history, query rows, and pruned co-visitation table. The retrieval manifest records the snapshot identity, provenance, pruning, disk budget, and measured build resources. The data manifest hashes the data artifacts and records configuration and memberships. The epoch record then pins the data manifest and query file by hash. Snapshot identity depends on W0 content, retrieval configuration, and the table so the same history remains pinned when future events change. Build timing and process memory are observational fields and may vary across runs.
+
+The report measures positive coverage from the co-visitation snapshot alone. Stage 1 owns full three-source retrieval and feature generation. SQLite caps build pages and enforces a combined staging and export budget. A budget abort publishes an error report in the requested run directory.
+
+## OTTO data
+
+The dataset is the **OTTO Recommender Systems Dataset** by OTTO, distributed under **CC BY 4.0**. Dataset citation: Philipp Normann, Sophie Baumeister, and Timo Wilm (2023), Kaggle, DOI 10.34740/KAGGLE/DSV/4991874. See the [official source and citation](https://github.com/otto-de/recsys-dataset) and [CC BY 4.0 license](https://creativecommons.org/licenses/by/4.0/).
+
+Install and configure the Kaggle CLI as described by the official source. Run the following to fetch the official distribution and hash its compressed archive and extracted JSONL files. Keep the download and generated OTTO artifacts in the ignored directories.
+
+```text
+uv run --locked python scripts/fetch_data --output data/otto
+uv run --locked python scripts/stage0.py build --profile otto --input data/otto/train.jsonl --download-manifest data/otto/download_manifest.json --output artifacts/otto
+```
+
+The OTTO profile uses the full-session training file as its source for its own chronological W0–W3 split. The file hashes identify the exact downloaded release. The committed fixture and reports carry `source=synthetic_fixture`. Actual OTTO runs carry `source=otto_offline`. Future Playground feedback carries `source=demo` and stays in the demo training namespace.
