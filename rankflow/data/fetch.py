@@ -67,3 +67,7 @@ def main():
     parser.add_argument("--output", type=Path, default=Path("data/otto"))
     args = parser.parse_args()
     fetch(args.output)
+
+
+if __name__ == "__main__":
+    main()
