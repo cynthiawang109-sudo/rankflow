@@ -1,0 +1,16 @@
+/data/
+/artifacts/
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+*.log
+*.jsonl
+!tests/fixtures/synthetic_otto.jsonl
+*.sqlite*
+*.zip
