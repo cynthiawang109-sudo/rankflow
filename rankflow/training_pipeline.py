@@ -65,7 +65,7 @@ def query_slices(query, session_events, snapshot):
             f"target_popularity/{popularity}")
 
 
-def paired_evaluation(population, snapshot, config, model):
+def paired_evaluation(population, snapshot, config, model, reference=RULE):
     clusters = defaultdict(lambda: defaultdict(lambda: [0, 0, 0., 0., 0., 0., 0., 0.]))
     no_label = 0
     for query, session_events in population:
@@ -79,7 +79,7 @@ def paired_evaluation(population, snapshot, config, model):
         values = [1, int(covered)]
         if covered:
             rows = build_features(snapshot, events, candidates)
-            for strategy in (RULE, model):
+            for strategy in (reference, model):
                 values.extend(credits([candidate.aid for candidate, _ in strategy.rank(candidates, rows)], target))
         else:
             values.extend([0] * 6)
@@ -98,7 +98,7 @@ def paired_evaluation(population, snapshot, config, model):
             "candidate_coverage": totals[1] / count,
             "metrics": {
                 strategy.strategy_id: dict(zip(METRICS, (value / count for value in totals[start:start + 3])))
-                for strategy, start in ((RULE, 2), (model, 5))
+                for strategy, start in ((reference, 2), (model, 5))
             },
         }
     return {"no_label": no_label, "slices": summaries}, clusters

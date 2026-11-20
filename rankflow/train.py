@@ -66,18 +66,13 @@ def compare(population, snapshot, config, model):
     }
 
 
-def run(directory, output, config, command):
+def fit_model(population, snapshot, config, training_config):
     import lightgbm
     import numpy as np
 
-    snapshot = Snapshot.load(directory)
-    manifest = json.loads((directory / "data_manifest.json").read_text())
-    if file_hash(directory / "sessions.jsonl") != manifest["artifacts"]["sessions.jsonl"]:
-        raise ValueError("Session checksum mismatch")
-    output.mkdir(parents=True, exist_ok=True)
     matrix, labels, groups = array("f"), array("b"), []
     counts = None
-    for rows, target, counts in training_groups(queries(directory, snapshot, "W1"), snapshot, config):
+    for rows, target, counts in training_groups(population, snapshot, config):
         for row in rows:
             matrix.extend(row)
         labels.extend(target)
@@ -86,12 +81,28 @@ def run(directory, output, config, command):
         raise ValueError("No eligible training groups")
     assert sum(groups) == len(labels) and len(matrix) == len(labels) * len(FEATURE_NAMES)
     started = perf_counter()
-    model = lightgbm.LGBMRanker(**LIGHTGBM_CONFIG)
-    model.fit(np.frombuffer(matrix, dtype=np.float32).reshape(-1, len(FEATURE_NAMES)),
-              np.frombuffer(labels, dtype=np.int8), group=groups, feature_name=list(FEATURE_NAMES))
+    parameters = dict(training_config)
+    if parameters["objective"] == "lambdarank":
+        model = lightgbm.LGBMRanker(**parameters)
+        model.fit(np.frombuffer(matrix, dtype=np.float32).reshape(-1, len(FEATURE_NAMES)),
+                  np.frombuffer(labels, dtype=np.int8), group=groups, feature_name=list(FEATURE_NAMES))
+    else:
+        model = lightgbm.LGBMClassifier(**parameters)
+        model.fit(np.frombuffer(matrix, dtype=np.float32).reshape(-1, len(FEATURE_NAMES)),
+                  np.frombuffer(labels, dtype=np.int8), feature_name=list(FEATURE_NAMES))
+    return model, counts, perf_counter() - started
+
+
+def run(directory, output, config, command):
+    import lightgbm
+
+    snapshot = Snapshot.load(directory)
+    manifest = json.loads((directory / "data_manifest.json").read_text())
+    if file_hash(directory / "sessions.jsonl") != manifest["artifacts"]["sessions.jsonl"]:
+        raise ValueError("Session checksum mismatch")
+    output.mkdir(parents=True, exist_ok=True)
+    model, counts, fit_seconds = fit_model(queries(directory, snapshot, "W1"), snapshot, config, LIGHTGBM_CONFIG)
     model.booster_.save_model(str(output / "lgbm-v1.txt"))
-    fit_seconds = perf_counter() - started
-    del matrix, labels, groups
     strategy = load_model(output / "lgbm-v1.txt")
     comparison = compare(queries(directory, snapshot), snapshot, config, strategy)
     tolerance = .01
