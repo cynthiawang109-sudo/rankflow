@@ -1,6 +1,7 @@
 """RankFlow Product Alpha API."""
 import asyncio
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
 from datetime import datetime
 import hashlib
@@ -10,7 +11,7 @@ import math
 import os
 from pathlib import Path
 import secrets
-from threading import Lock
+from threading import BoundedSemaphore, Lock
 from time import perf_counter
 from typing import Annotated, Literal
 
@@ -199,6 +200,8 @@ async def consume_outbox(store, stop):
 def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic=None,
                admin_bearer=None, release_registry=None, signing_key=None):
     session_key = session_key or secrets.token_bytes(32)
+    shadow_executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="rankflow-shadow") if traffic else None
+    shadow_capacity = BoundedSemaphore(2)
     guardrails = None
     if store and traffic:
         from .guardrails import Guardrails
@@ -237,6 +240,8 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
                 await worker
             if traffic_worker:
                 await traffic_worker
+            if shadow_executor:
+                await run_in_threadpool(shadow_executor.shutdown)
 
     app = FastAPI(title="RankFlow", lifespan=lifespan)
     app.state.counters = Counter()
@@ -297,26 +302,48 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
             decision.update(assigned_generation_id=selected.generation_id,
                             served_generation_id=selected.generation_id, traffic_degraded=pin.degraded)
             if pin.shadow:
-                def shadow():
-                    try:
-                        comparison, _ = rank_request(pin.shadow, events, data.top_k, deadline_ms)
-                        actual = {item["aid"] for item in result["items"]}
-                        alternative = {item["aid"] for item in comparison["items"]}
-                        if store and result["impression_id"]:
-                            store.record_shadow(result["impression_id"], {
-                                "source": "demo", "mode": "live",
-                                "validation": "synthetic operational validation",
-                                "config_id": pin.config.config_id,
-                                "served_generation": selected.generation_id,
-                                "shadow_generation": pin.shadow.generation_id,
-                                "top_k_overlap": len(actual & alternative),
-                                "shadow_fallback_used": comparison["fallback_used"],
-                            })
-                        count("synthetic_shadow_completed")
-                    except Exception:
-                        LOGGER.exception("Synthetic live shadow failed")
-                        count("synthetic_shadow_failed")
-                request.state.shadow_task = shadow
+                count("synthetic_shadow_attempted")
+                if shadow_capacity.acquire(blocking=False):
+                    def evaluate_shadow():
+                        try:
+                            comparison, reasons = rank_request(pin.shadow, events, data.top_k, deadline_ms)
+                            actual = {item["aid"]: item["rank"] for item in result["items"]}
+                            alternative = {item["aid"]: item["rank"] for item in comparison["items"]}
+                            common = actual.keys() & alternative.keys()
+                            overlap = len(common)
+                            same_rank = sum(actual[aid] == alternative[aid] for aid in common)
+                            if store and result["impression_id"]:
+                                store.record_shadow(result["impression_id"], {
+                                    "source": "demo", "mode": "live", "comparison": "full-generation",
+                                    "validation": "synthetic operational validation",
+                                    "config_id": pin.config.config_id,
+                                    "served_generation": selected.generation_id,
+                                    "shadow_generation": pin.shadow.generation_id,
+                                    "top_k": data.top_k, "top_k_overlap": overlap,
+                                    "intersection_size": overlap, "rank_agreement": same_rank / overlap if overlap >= 2 else None,
+                                    "comparison_status": "compared" if overlap >= 2 else "insufficient_overlap",
+                                    "shadow_fallback_used": comparison["fallback_used"],
+                                    "shadow_fallback_reason": reasons["fallback_reason"],
+                                })
+                            if reasons["fallback_reason"] == "logical_deadline":
+                                count("synthetic_shadow_timed_out")
+                            elif comparison["fallback_used"]:
+                                count("synthetic_shadow_failed")
+                            else:
+                                count("synthetic_shadow_completed")
+                        except Exception:
+                            LOGGER.exception("Synthetic live shadow failed")
+                            count("synthetic_shadow_failed")
+
+                    async def shadow():
+                        try:
+                            await asyncio.get_running_loop().run_in_executor(shadow_executor, evaluate_shadow)
+                        finally:
+                            shadow_capacity.release()
+
+                    request.state.shadow_task = shadow
+                else:
+                    count("synthetic_shadow_shed")
         result.update(request_id=data.request_id, impression_id=None, logging_status="degraded")
         if store:
             decision.update(result)

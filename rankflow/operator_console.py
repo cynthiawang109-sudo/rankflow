@@ -98,7 +98,9 @@ def install_console(app, store, traffic, bearer, release_registry=None, signing_
                 "config_id": pin.config.config_id if pin else None,
                 "revision": pin.revision if pin else None, "traffic_history": history,
                 "instances": fleet, "convergence": convergence,
-                "guardrail_health": guardrails.status if guardrails else None}
+                "guardrail_health": guardrails.status if guardrails else None,
+                "live_shadow_counters": {name: value for name, value in app.state.counters.copy().items()
+                                         if name.startswith("synthetic_shadow_")}}
 
     @app.get("/operator/releases", dependencies=operator_only)
     def releases():
@@ -119,9 +121,10 @@ def install_console(app, store, traffic, bearer, release_registry=None, signing_
                     FROM feedback_events GROUP BY 1
                     """).fetchall(),
                 "live_shadow": conn.execute("""
-                    SELECT payload->>'config_id' AS config_id, count(*) AS observations,
+                    SELECT payload->>'config_id' AS config_id, payload->>'shadow_generation' AS shadow_generation,
+                           count(*) AS observations,
                            avg((payload->>'top_k_overlap')::integer) AS mean_top_k_overlap
-                    FROM shadow_observations GROUP BY 1
+                    FROM shadow_observations GROUP BY 1, 2
                     """).fetchall(),
                 "outbox": conn.execute("""
                     SELECT count(*) FILTER (WHERE delivered_at IS NULL) AS pending,
