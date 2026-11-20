@@ -302,10 +302,9 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
     @app.get("/health/ready")
     def ready():
 
-        pin = traffic.pin() if traffic else None
-        return {"serving_ready": True, "release_ready": bool(store and store.ready() and
-                (pin is None or not pin.degraded)),
-                **({"config_id": pin.config.config_id, "config_revision": pin.revision} if pin else {})}
+        state = traffic.readiness() if traffic else {"serving_ready": True, "release_ready": True}
+        state["release_ready"] = bool(state["release_ready"] and store and store.ready())
+        return state
 
     @app.get("/playground", response_class=HTMLResponse)
     def playground():
@@ -330,7 +329,10 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
         emit("recommendation_request", request_id=data.request_id)
         events = [event.model_dump() for event in data.events]
         session_hash = hmac.new(session_key, data.session_id.encode(), hashlib.sha256).hexdigest()
-        pin = traffic.pin() if traffic else None
+        pin = traffic.serving_pin() if traffic else None
+        if traffic and pin is None:
+            emit("recommendation_rejected", request_id=data.request_id, reason="traffic_bundle_unavailable")
+            raise HTTPException(503, "traffic_bundle_unavailable")
         selected, cohort = pin.select(session_hash) if pin else (generation, "stable")
         if events and events[-1]["ts"] <= selected.snapshot.watermark:
             emit("recommendation_rejected", request_id=data.request_id, reason="cutoff_must_follow_snapshot")
@@ -485,10 +487,14 @@ def from_environment():
                                                            for value in configured_salts.values()):
                 raise ValueError("Routing salts file must map version IDs to nonempty strings")
             salts.update({version: value.encode() for version, value in configured_salts.items()})
-        traffic = TrafficRegistry(control, path.parent, rescue, salts)
+        traffic = TrafficRegistry(control, path.parent, rescue, salts,
+                                  poll_seconds=float(os.getenv("RANKFLOW_CONFIG_POLL_SECONDS", "1")),
+                                  convergence_seconds=float(os.getenv("RANKFLOW_CONVERGENCE_SECONDS", "10")),
+                                  minimum_capacity=int(os.getenv("RANKFLOW_MINIMUM_CAPACITY", "1")))
     admin = os.environ.get("RANKFLOW_ADMIN_BEARER")
     signing_key = os.environ.get("RANKFLOW_RELEASE_SIGNING_KEY")
-    return create_app(Generation.load(path), store, key.encode() if key else None, traffic=traffic,
+    generation = traffic.generation(path.name) if traffic else Generation.load(path)
+    return create_app(generation, store, key.encode() if key else None, traffic=traffic,
                       admin_bearer=admin.encode() if admin else None,
                       release_registry=os.environ.get("RANKFLOW_RELEASE_REGISTRY"),
                       signing_key=signing_key.encode() if signing_key else None)

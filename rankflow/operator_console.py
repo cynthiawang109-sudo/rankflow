@@ -87,14 +87,10 @@ def install_console(app, store, traffic, bearer, release_registry=None, signing_
             fleet = traffic.fleet()
         else:
             fleet = []
-        leased = [instance for instance in fleet if instance["leased"]]
-        convergence = None
-        if history:
-            revision = history[0]["revision"]
-            convergence = "converged" if leased and all(
-                instance["revision"] == revision for instance in leased) else "partially_converged"
-        return {"live": True, "serving_ready": True, "release_ready": bool(store and store.ready() and
-                (pin is None or not pin.degraded)), "generations": generations,
+        readiness = traffic.readiness() if traffic else {"serving_ready": True, "release_ready": True}
+        readiness["release_ready"] = bool(readiness["release_ready"] and store and store.ready())
+        convergence = history[0]["convergence"] if history else None
+        return {"live": True, **readiness, "generations": generations,
                 "configuration": asdict(pin.config) if pin else None,
                 "config_id": pin.config.config_id if pin else None,
                 "revision": pin.revision if pin else None, "traffic_history": history,

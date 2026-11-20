@@ -4,6 +4,7 @@ import logging
 from uuid import uuid4
 
 import psycopg
+from psycopg.conninfo import conninfo_to_dict
 from psycopg.rows import dict_row
 from psycopg.types.json import Jsonb
 
@@ -51,12 +52,14 @@ CREATE TABLE IF NOT EXISTS feedback_events (
 class PostgresStore:
     def __init__(self, dsn, ack_window=ACK_WINDOW, attribution_window=ATTRIBUTION_WINDOW):
         self.dsn = dsn
+        options = conninfo_to_dict(dsn).get("options", "")
+        self.options = f"{options} -c statement_timeout=2000 -c lock_timeout=1500"
         self.ack_window = ack_window
         self.attribution_window = attribution_window
 
     def connect(self):
         return psycopg.connect(self.dsn, connect_timeout=2, row_factory=dict_row,
-                               options="-c statement_timeout=2000 -c lock_timeout=1500")
+                               options=self.options)
 
     def initialize(self):
         with self.connect() as conn:

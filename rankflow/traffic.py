@@ -10,6 +10,7 @@ import logging
 
 from .operations import emit
 
+import psycopg
 from psycopg.types.json import Jsonb
 
 from .generation import Generation, encoded
@@ -134,8 +135,7 @@ class TrafficRegistry:
         self.lock = Lock()
         self.generations = {}
         self.rescue = self.load(rescue, -1, degraded=True)
-        self.current = self.rescue
-        self.refresh_at = 0
+        self.active = (self.rescue, 0.0, True)
 
     def generation(self, identifier):
         if len(identifier) != 68 or not identifier.startswith("gen-") or any(
@@ -168,11 +168,35 @@ class TrafficRegistry:
                          (rescue.config_id,))
 
     def pin(self):
-        pin = self.current
-        return pin if monotonic() < self.refresh_at else self.rescue
+        pin, expires_at, _ = self.active
+        return pin if monotonic() < expires_at else self.rescue
+
+    def serving_pin(self):
+        pin, expires_at, compatible = self.active
+        if not compatible:
+            return None
+        return pin if monotonic() < expires_at else self.rescue
+
+    def readiness(self):
+        pin = self.serving_pin()
+        try:
+            with self.store.connect() as conn:
+                target = conn.execute("SELECT config_id, revision FROM traffic_pointer").fetchone()
+        except psycopg.Error:
+            target = None
+        current = bool(pin and target and pin.revision == target["revision"]
+                       and pin.config.config_id == target["config_id"])
+        return {"instance_id": self.instance_id,
+                "serving_ready": bool(pin and (current or target is None)),
+                "release_ready": bool(current and not pin.degraded),
+                "config_id": pin.config.config_id if pin else None,
+                "config_revision": pin.revision if pin else None,
+                "target_config_id": target["config_id"] if target else None,
+                "target_revision": target["revision"] if target else None}
 
     def refresh(self):
         with self.lock:
+            compatible = True
             try:
                 with self.store.connect() as conn:
                     row = conn.execute("""
@@ -203,11 +227,13 @@ class TrafficRegistry:
                             config_id = excluded.config_id, prepared = excluded.prepared,
                             last_seen = clock_timestamp()
                         """, (self.instance_id, pin.revision, config.config_id, Jsonb(prepared)))
-            except Exception:
-                LOGGER.exception("Traffic control refresh failed")
+            except psycopg.Error:
+                LOGGER.exception("Traffic control refresh failed, using designated rescue")
                 pin = self.rescue
-            self.refresh_at = monotonic() + 3 * self.poll_seconds
-            self.current = pin
+            except Exception:
+                LOGGER.exception("Active traffic configuration unavailable")
+                pin, compatible = self.rescue, False
+            self.active = (pin, monotonic() + 3 * self.poll_seconds, compatible)
 
     def observe_convergence(self):
         with self.store.connect() as conn:

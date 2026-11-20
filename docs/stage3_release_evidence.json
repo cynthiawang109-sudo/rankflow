@@ -1,0 +1,339 @@
+{
+  "poll_seconds": 0.25,
+  "probe_interval_seconds": 0.05,
+  "routing": "direct probing with fresh serving_ready checks",
+  "phases": [
+    {
+      "scenario": "stable startup",
+      "revision": 0,
+      "observed_upper_bound_seconds": 16.203,
+      "samples": [
+        [
+          {
+            "node": 0,
+            "elapsed_seconds": 2.047,
+            "revision": null,
+            "serving_ready": null
+          },
+          {
+            "node": 1,
+            "elapsed_seconds": 4.11,
+            "revision": null,
+            "serving_ready": null
+          }
+        ],
+        [
+          {
+            "node": 0,
+            "elapsed_seconds": 14.438,
+            "revision": null,
+            "serving_ready": null
+          },
+          {
+            "node": 1,
+            "elapsed_seconds": 16.094,
+            "revision": 0,
+            "serving_ready": true
+          }
+        ],
+        [
+          {
+            "node": 0,
+            "elapsed_seconds": 16.203,
+            "revision": 0,
+            "serving_ready": true
+          },
+          {
+            "node": 1,
+            "elapsed_seconds": 16.266,
+            "revision": 0,
+            "serving_ready": true
+          }
+        ]
+      ]
+    },
+    {
+      "scenario": "shadowing transition",
+      "revision": 1,
+      "observed_upper_bound_seconds": 0.312,
+      "samples": [
+        [
+          {
+            "node": 0,
+            "elapsed_seconds": 0.047,
+            "revision": 0,
+            "serving_ready": false
+          },
+          {
+            "node": 1,
+            "elapsed_seconds": 0.062,
+            "revision": 0,
+            "serving_ready": false
+          }
+        ],
+        [
+          {
+            "node": 0,
+            "elapsed_seconds": 0.14,
+            "revision": 0,
+            "serving_ready": false
+          },
+          {
+            "node": 1,
+            "elapsed_seconds": 0.203,
+            "revision": 1,
+            "serving_ready": true
+          }
+        ],
+        [
+          {
+            "node": 0,
+            "elapsed_seconds": 0.312,
+            "revision": 1,
+            "serving_ready": true
+          },
+          {
+            "node": 1,
+            "elapsed_seconds": 0.39,
+            "revision": 1,
+            "serving_ready": true
+          }
+        ]
+      ]
+    },
+    {
+      "scenario": "canary activation",
+      "revision": 2,
+      "observed_upper_bound_seconds": 0.422,
+      "samples": [
+        [
+          {
+            "node": 0,
+            "elapsed_seconds": 0.078,
+            "revision": 1,
+            "serving_ready": false
+          },
+          {
+            "node": 1,
+            "elapsed_seconds": 0.109,
+            "revision": 1,
+            "serving_ready": false
+          }
+        ],
+        [
+          {
+            "node": 0,
+            "elapsed_seconds": 0.359,
+            "revision": 2,
+            "serving_ready": true
+          },
+          {
+            "node": 1,
+            "elapsed_seconds": 0.422,
+            "revision": 2,
+            "serving_ready": true
+          }
+        ]
+      ]
+    },
+    {
+      "scenario": "late node catches up",
+      "revision": 2,
+      "observed_upper_bound_seconds": 25.734,
+      "samples": [
+        [
+          {
+            "node": 0,
+            "elapsed_seconds": 0.421,
+            "revision": 2,
+            "serving_ready": true
+          },
+          {
+            "node": 1,
+            "elapsed_seconds": 0.64,
+            "revision": 2,
+            "serving_ready": true
+          },
+          {
+            "node": 2,
+            "elapsed_seconds": 0.718,
+            "revision": null,
+            "serving_ready": false
+          }
+        ],
+        [
+          {
+            "node": 0,
+            "elapsed_seconds": 25.625,
+            "revision": 2,
+            "serving_ready": true
+          },
+          {
+            "node": 1,
+            "elapsed_seconds": 25.671,
+            "revision": 2,
+            "serving_ready": true
+          },
+          {
+            "node": 2,
+            "elapsed_seconds": 25.734,
+            "revision": 2,
+            "serving_ready": true
+          }
+        ]
+      ]
+    },
+    {
+      "scenario": "named rollback",
+      "revision": 3,
+      "observed_upper_bound_seconds": 0.39,
+      "samples": [
+        [
+          {
+            "node": 0,
+            "elapsed_seconds": 0.093,
+            "revision": 2,
+            "serving_ready": false
+          },
+          {
+            "node": 1,
+            "elapsed_seconds": 0.109,
+            "revision": 2,
+            "serving_ready": false
+          },
+          {
+            "node": 2,
+            "elapsed_seconds": 0.14,
+            "revision": 2,
+            "serving_ready": false
+          }
+        ],
+        [
+          {
+            "node": 0,
+            "elapsed_seconds": 0.265,
+            "revision": 3,
+            "serving_ready": true
+          },
+          {
+            "node": 1,
+            "elapsed_seconds": 0.343,
+            "revision": 3,
+            "serving_ready": true
+          },
+          {
+            "node": 2,
+            "elapsed_seconds": 0.39,
+            "revision": 3,
+            "serving_ready": true
+          }
+        ]
+      ]
+    },
+    {
+      "scenario": "kill switch",
+      "revision": 4,
+      "observed_upper_bound_seconds": 0.531,
+      "samples": [
+        [
+          {
+            "node": 0,
+            "elapsed_seconds": 0.063,
+            "revision": 3,
+            "serving_ready": false
+          },
+          {
+            "node": 1,
+            "elapsed_seconds": 0.094,
+            "revision": 3,
+            "serving_ready": false
+          },
+          {
+            "node": 2,
+            "elapsed_seconds": 0.156,
+            "revision": 3,
+            "serving_ready": false
+          }
+        ],
+        [
+          {
+            "node": 0,
+            "elapsed_seconds": 0.25,
+            "revision": 3,
+            "serving_ready": false
+          },
+          {
+            "node": 1,
+            "elapsed_seconds": 0.328,
+            "revision": 4,
+            "serving_ready": true
+          },
+          {
+            "node": 2,
+            "elapsed_seconds": 0.406,
+            "revision": 4,
+            "serving_ready": true
+          }
+        ],
+        [
+          {
+            "node": 0,
+            "elapsed_seconds": 0.531,
+            "revision": 4,
+            "serving_ready": true
+          },
+          {
+            "node": 1,
+            "elapsed_seconds": 0.61,
+            "revision": 4,
+            "serving_ready": true
+          },
+          {
+            "node": 2,
+            "elapsed_seconds": 0.688,
+            "revision": 4,
+            "serving_ready": true
+          }
+        ]
+      ]
+    }
+  ],
+  "unprepared": {
+    "expected": "live but unroutable",
+    "observed": {
+      "instance_id": "d4dd556e3bae41f7a3a3deebba217974",
+      "serving_ready": false,
+      "release_ready": false,
+      "config_id": null,
+      "config_revision": null,
+      "target_config_id": "cfg-a86c753f68cf1822aabf966fcbd6709b806437f3e6168de074a3794b493d9a95",
+      "target_revision": 2
+    },
+    "canary_requests_routed": [
+      0,
+      1
+    ]
+  },
+  "audit": [
+    {
+      "action": "publish",
+      "config_id": "cfg-f53fa7707fdec4ed836cb7414ff93a2b07203b0c9ac32e4e0fbf67f72d5073c4",
+      "revision": 1
+    },
+    {
+      "action": "publish",
+      "config_id": "cfg-a86c753f68cf1822aabf966fcbd6709b806437f3e6168de074a3794b493d9a95",
+      "revision": 2
+    },
+    {
+      "action": "rollback",
+      "config_id": "cfg-d48c54e3a82cb72dfab3cfa7b36e98f9f6500ebf9785bc4d4947f2f75900bed7",
+      "revision": 3
+    },
+    {
+      "action": "kill",
+      "config_id": "cfg-6fc97b53a69b5a10a7aba0972dfc8ea0fff8e43baf60663552c47b54fd5d6ba1",
+      "revision": 4
+    }
+  ]
+}
