@@ -3,7 +3,7 @@ name = "rankflow"
 version = "0.1.0"
 description = "Point-in-time data foundations for RankFlow"
 requires-python = ">=3.11"
-dependencies = ["PyYAML>=6.0.2,<7"]
+dependencies = ["PyYAML>=6.0.2,<7", "psutil>=7,<8; sys_platform == 'win32'"]
 
 [build-system]
 requires = ["setuptools>=77"]
