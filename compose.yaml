@@ -1,0 +1,34 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: rankflow
+      POSTGRES_PASSWORD: rankflow-local
+      POSTGRES_DB: rankflow
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rankflow -d rankflow"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+  api:
+    build: .
+    environment:
+      RANKFLOW_DATABASE_URL: postgresql://rankflow:rankflow-local@postgres:5432/rankflow
+      RANKFLOW_GENERATION_REGISTRY: /generations
+      RANKFLOW_SESSION_KEY: ${RANKFLOW_SESSION_KEY:-rankflow-compose-local-session-key}
+    ports:
+      - "127.0.0.1:${RANKFLOW_PORT:-8000}:8000"
+    volumes:
+      - ${RANKFLOW_GENERATIONS_DIR:-./artifacts/stage1/generations}:/generations:ro
+    healthcheck:
+      test: ["CMD", "/app/.venv/bin/python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/live', timeout=2)"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    depends_on:
+      postgres:
+        condition: service_healthy
+volumes:
+  postgres-data:

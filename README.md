@@ -36,3 +36,55 @@ uv run --locked python scripts/stage0.py build --profile otto --input data/otto/
 ```
 
 The OTTO profile uses the full-session training file as its source for its own chronological W0–W3 split. The file hashes identify the exact downloaded release. The committed fixture and reports carry `source=synthetic_fixture`. Actual OTTO runs carry `source=otto_offline`. Future Playground feedback carries `source=demo` and stays in the demo training namespace.
+
+## Stage 1 Product Alpha
+
+Use the signed-off OTTO artifacts in `artifacts/stage0-otto`. The Alpha workflow
+uses W0 for statistics, W1 for fitting, and W2-dev for development evaluation.
+
+```sh
+uv sync --locked
+uv run python -m rankflow.evaluate_retrieval artifacts/stage0-otto artifacts/stage1/retrieval
+uv run python -m rankflow.study artifacts/stage0-otto artifacts/stage1/retrieval_ablation --rule
+uv run python -m rankflow.train artifacts/stage0-otto artifacts/stage1/training configs/stage1_retrieval.json
+uv run python -m rankflow.generation artifacts/stage0-otto artifacts/stage1/training artifacts/stage1/generations
+docker compose up --build
+```
+
+Open [Ranking Playground](http://localhost:8000/playground). Choose a W2-dev
+prefix, rank it, and submit a demo action for a returned item. The feedback panel
+shows the event ID, action, attribution result, and demo provenance. Copy the API
+replay payload from the disclosure below the ranking and POST it as JSON to
+`/v1/recommend`. The same generation and payload reproduce ranked items, scores,
+and candidate provenance. Each request has its own impression and timing.
+
+The generation command verifies the model and feature lineage and stores a
+content-addressed bundle. The API reads the Alpha generation at startup. The
+public prefix catalog includes only manifest-verified W1 and W2-dev records and
+contains cutoff data and observed events. Docker Compose mounts the generation
+registry read-only.
+
+The rule and model share `session-features-v1`. Missing age, event type,
+co-visitation and popularity values use zero with a corresponding mask or
+presence flag. A known item without a neighbour row has a separate indicator.
+Source ranks are one-based, with zero reserved for absence in the numeric
+matrix. Recency uses the last observed event timestamp as the replay clock.
+
+Review the [retrieval ablation](docs/stage1_retrieval_ablation.md) and the
+[strategy comparison](docs/stage1_strategy_report.md). Use the test PostgreSQL
+DSN for the durability and acknowledgement cases. The gate tests create and
+remove an isolated schema in that database. Use a PostgreSQL instance you
+can reach locally and adjust the credentials and port for that instance.
+
+```powershell
+$env:RANKFLOW_TEST_DATABASE_URL = 'postgresql://rankflow@127.0.0.1:55431/postgres'
+uv run python -m unittest discover -v
+```
+
+Local demo attribution uses a 24-hour ingest window. Acknowledgements can confirm
+rendering for five minutes. Later confirmations are preserved separately. The
+Alpha inference deadline is logical and checked after synchronous model scoring
+returns. The rule fallback remains scoped to the current request.
+
+The [Stage 1 exit evidence](docs/stage1_exit_evidence.md) records the test and
+browser runs against PostgreSQL.
