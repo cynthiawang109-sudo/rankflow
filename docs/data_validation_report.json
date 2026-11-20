@@ -1,0 +1,145 @@
+{
+  "artifact_hashes": {
+    "covisitation.jsonl": "ae8654d0c04a878e97f54caa0430004864400579e70d58f595f28f10c60724a5",
+    "history.jsonl": "86d09142b9b8b526da1b3797f8a2795ee207202d25e11538c75e51260dd6ffa3",
+    "queries.jsonl": "25eae4d2b43e7fce0a0a6f0448c1a05635f04fe3272a3a6ddf8a44a1c77654ea",
+    "retrieval_manifest.json": "0e001b2632449d625fb637bc29875be307ed135a5054629c3651c37ec5908d75",
+    "sessions.jsonl": "85bd0eef72160fb07db2549951701608241936a5d8485f5cb5de35ea0d03e3a3"
+  },
+  "coverage_scope": "Stage 0 co-visitation candidates from the recorded prefix",
+  "crossing_exclusions_by_length": {
+    "long": {
+      "events": 22,
+      "sessions": 1
+    },
+    "short": {
+      "events": 5,
+      "sessions": 2
+    }
+  },
+  "crossing_sessions_by_boundary": {
+    "200": 1,
+    "300": 1,
+    "400": 1
+  },
+  "fixture_tests": {
+    "test_determinism_and_replay": "PASS",
+    "test_disk_budget_aborts_without_partial_table": "PASS",
+    "test_failed_download_does_not_publish": "PASS",
+    "test_fetch_command_and_hashes": "PASS",
+    "test_fixture_cannot_be_used_as_otto": "PASS",
+    "test_future_mutation": "PASS",
+    "test_leakage_and_crossing_accounting": "PASS",
+    "test_sampler_and_ingestion_order": "PASS",
+    "test_t09_tied_cutoffs_and_order": "PASS",
+    "test_t17_rejects_invalid_registration": "PASS",
+    "test_t18_exact_pairs": "PASS",
+    "test_top_n_and_minimum_count": "PASS"
+  },
+  "invariant_tests_source": "synthetic_fixture",
+  "manifest_version": "stage0-v1",
+  "otto_download_status": "Full OTTO download deferred. No OTTO run was performed.",
+  "outside_windows": {
+    "events": 0,
+    "sessions": 0
+  },
+  "query_coverage": {
+    "W1": {
+      "no_label": 1,
+      "queries": 4,
+      "retrieved_positive": 2,
+      "unretrieved_positive": 1
+    },
+    "W2-dev": {
+      "no_label": 9,
+      "queries": 36,
+      "retrieved_positive": 13,
+      "unretrieved_positive": 14
+    },
+    "W2-gate": {
+      "no_label": 7,
+      "queries": 28,
+      "retrieved_positive": 13,
+      "unretrieved_positive": 8
+    },
+    "W3": {
+      "no_label": 2,
+      "queries": 2,
+      "retrieved_positive": 0,
+      "unretrieved_positive": 0
+    }
+  },
+  "replayed_queries_sha256": "25eae4d2b43e7fce0a0a6f0448c1a05635f04fe3272a3a6ddf8a44a1c77654ea",
+  "retrieval": {
+    "build_seconds": 0.029987,
+    "configuration": {
+      "H": 20,
+      "candidate_cap": 100,
+      "disk_budget_bytes": 1073741824,
+      "min_count": 1,
+      "pair_definition_version": "canonical-position-v1",
+      "session_event_cap": 500,
+      "sqlite_cache_kib": 8192,
+      "top_n_per_item": 100
+    },
+    "distinct_items": 9,
+    "exact_pair_count": 8,
+    "history_statistics_watermark": 161,
+    "on_disk_bytes": 1072,
+    "peak_process_rss_bytes": 33845248,
+    "platform": "Windows-10-10.0.26300-SP0",
+    "retrieval_snapshot_id": "d5da006323ec4f69a8ea37d80c1cd917db6fb92a9a768aa9b8056adde45b361c",
+    "row_count": 16,
+    "source": "synthetic_fixture",
+    "source_sha256": "0ddfce929a6ea3ccb8284013e311e06f7c3c410f47a901a3f8a31c75170c063e",
+    "staging_disk_bytes": 16384,
+    "store": "SQLite",
+    "table_sha256": "ae8654d0c04a878e97f54caa0430004864400579e70d58f595f28f10c60724a5"
+  },
+  "run_checks": {
+    "byte-identical query replay from manifest and configuration": "PASS",
+    "epoch registration, including strict snapshot and label predicates": "PASS"
+  },
+  "source": "synthetic_fixture",
+  "source_sha256": "0ddfce929a6ea3ccb8284013e311e06f7c3c410f47a901a3f8a31c75170c063e",
+  "window_counts": {
+    "W0": {
+      "events": 530,
+      "sessions": 4
+    },
+    "W1": {
+      "events": 4,
+      "sessions": 1
+    },
+    "W2-dev": {
+      "events": 36,
+      "sessions": 9
+    },
+    "W2-gate": {
+      "events": 28,
+      "sessions": 7
+    },
+    "W3": {
+      "events": 2,
+      "sessions": 1
+    }
+  },
+  "windows": {
+    "W0": [
+      100,
+      200
+    ],
+    "W1": [
+      200,
+      300
+    ],
+    "W2": [
+      300,
+      400
+    ],
+    "W3": [
+      400,
+      500
+    ]
+  }
+}
