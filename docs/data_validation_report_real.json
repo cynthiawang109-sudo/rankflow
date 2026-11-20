@@ -1,0 +1,182 @@
+{
+  "artifact_hashes": {
+    "covisitation.jsonl": "2505618567cf2d8d5c9c73c1b44343efa25e005f529655145e6d15dc6ca088a0",
+    "history.jsonl": "277ce29ac2cd8d93d3408237506ee6d42ee9b7f6b2ef19440e999f4fba69557b",
+    "queries.jsonl": "0101abfbc038bf4c36a1dc7e59a7307c77cc79311d75a15209537cff445fb670",
+    "retrieval_manifest.json": "a546300791a4b13bd95ac30f4d0dd71b0d5fde4d650df44818220d9ef7fbd4bf",
+    "sessions.jsonl": "9fb2d0a3249720c94e2228b3453ad24c919669f016f55cc606ce0fb650607200"
+  },
+  "configuration_sha256": "a9c52bbb79083bde5d8221617c41db202e6419fa5ef4c412402df1cf01999822",
+  "coverage_scope": "Stage 0 co-visitation candidates from the recorded prefix",
+  "crossing_exclusions_by_length": {
+    "long": {
+      "events": 2040479,
+      "sessions": 30493
+    },
+    "short": {
+      "events": 475678,
+      "sessions": 61293
+    }
+  },
+  "crossing_sessions_by_boundary": {
+    "1659304800000": 0,
+    "1659909600000": 55049,
+    "1660514400000": 68343,
+    "1661119200000": 54817,
+    "1661724000000": 0
+  },
+  "disk_bytes": {
+    "artifacts_directory_bytes": 648360260,
+    "data_otto_bytes": 14185811936,
+    "data_plus_artifacts_bytes": 14834172196,
+    "stage0_otto_artifacts_bytes": 647990378
+  },
+  "download_manifest": {
+    "archive": "recsys-dataset.zip",
+    "archive_sha256": "d2ff7ce4b709ab6bff96adda843e42c4d094ae17d510e84822e4a9d31bbca888",
+    "dataset": "otto/recsys-dataset",
+    "files": {
+      "test.jsonl": "ff413623d47ba0d0cfb9703accb9148ed32664a81c3930ffae8bd118b5741848",
+      "train.jsonl": "06716132f1ab1d500f1515ba2c16187d7b0e98066ca66d33b95f022f8c3a340d"
+    },
+    "official_repository": "https://github.com/otto-de/recsys-dataset",
+    "source": "otto_offline"
+  },
+  "fixture_tests": {
+    "test_determinism_and_replay": "PASS",
+    "test_disk_budget_aborts_without_partial_table": "PASS",
+    "test_extracts_kaggle_filenames": "PASS",
+    "test_failed_download_does_not_publish": "PASS",
+    "test_fetch_command_and_hashes": "PASS",
+    "test_fixture_cannot_be_used_as_otto": "PASS",
+    "test_future_mutation": "PASS",
+    "test_leakage_and_crossing_accounting": "PASS",
+    "test_rejects_multiple_matches": "PASS",
+    "test_sampler_and_ingestion_order": "PASS",
+    "test_t09_tied_cutoffs_and_order": "PASS",
+    "test_t17_rejects_invalid_registration": "PASS",
+    "test_t18_exact_pairs": "PASS",
+    "test_top_n_and_minimum_count": "PASS"
+  },
+  "history_partition": "W0",
+  "invariant_tests_source": "synthetic_fixture",
+  "manifest_version": "stage0-v1",
+  "otto_download_status": "OTTO download verified against the fetch manifest.",
+  "outside_windows": {
+    "events": 0,
+    "sessions": 0
+  },
+  "query_coverage": {
+    "W1": {
+      "no_label": 23977,
+      "queries": 130626,
+      "retrieved_positive": 11947,
+      "unretrieved_positive": 94702
+    },
+    "W2-dev": {
+      "no_label": 12205,
+      "queries": 66981,
+      "retrieved_positive": 5591,
+      "unretrieved_positive": 49185
+    },
+    "W2-gate": {
+      "no_label": 12048,
+      "queries": 65765,
+      "retrieved_positive": 5485,
+      "unretrieved_positive": 48232
+    },
+    "W3": {
+      "no_label": 25008,
+      "queries": 146467,
+      "retrieved_positive": 11048,
+      "unretrieved_positive": 110411
+    }
+  },
+  "replayed_queries_sha256": "0101abfbc038bf4c36a1dc7e59a7307c77cc79311d75a15209537cff445fb670",
+  "retrieval": {
+    "build_seconds": 17.374049,
+    "configuration": {
+      "H": 20,
+      "candidate_cap": 100,
+      "disk_budget_bytes": 1073741824,
+      "min_count": 1,
+      "pair_definition_version": "canonical-position-v1",
+      "session_event_cap": 500,
+      "sqlite_cache_kib": 8192,
+      "top_n_per_item": 100
+    },
+    "distinct_items": 90126,
+    "exact_pair_count": 680785,
+    "history_statistics_watermark": 1659909572414,
+    "on_disk_bytes": 97005269,
+    "peak_process_rss_bytes": 100184064,
+    "platform": "Windows-10-10.0.26300-SP0",
+    "retrieval_snapshot_id": "cd5b998f1172df6d53ce28560fe1d9a79ca4086759c8830b3a0246187ba357a9",
+    "row_count": 1332494,
+    "source": "otto_offline",
+    "source_sha256": "06716132f1ab1d500f1515ba2c16187d7b0e98066ca66d33b95f022f8c3a340d",
+    "staging_disk_bytes": 19968000,
+    "store": "SQLite",
+    "table_sha256": "2505618567cf2d8d5c9c73c1b44343efa25e005f529655145e6d15dc6ca088a0"
+  },
+  "run_checks": {
+    "byte-identical query replay from manifest and configuration": "PASS",
+    "epoch registration, including strict snapshot and label predicates": "PASS"
+  },
+  "sample_accounting": {
+    "assigned_sessions": 108214,
+    "crossing_sessions": 91786,
+    "outside_sessions": 0
+  },
+  "sampled_session_count": 200000,
+  "sampler": {
+    "cap": 200000,
+    "seed": "rankflow-stage0-sample-v1"
+  },
+  "source": "otto_offline",
+  "source_sha256": "06716132f1ab1d500f1515ba2c16187d7b0e98066ca66d33b95f022f8c3a340d",
+  "wall_clock_seconds": {
+    "download": 269.7900164,
+    "pipeline": 1611.1827115
+  },
+  "window_counts": {
+    "W0": {
+      "events": 212773,
+      "sessions": 28054
+    },
+    "W1": {
+      "events": 193729,
+      "sessions": 26042
+    },
+    "W2-dev": {
+      "events": 98961,
+      "sessions": 13226
+    },
+    "W2-gate": {
+      "events": 96615,
+      "sessions": 12967
+    },
+    "W3": {
+      "events": 234470,
+      "sessions": 27925
+    }
+  },
+  "windows": {
+    "W0": [
+      1659304800000,
+      1659909600000
+    ],
+    "W1": [
+      1659909600000,
+      1660514400000
+    ],
+    "W2": [
+      1660514400000,
+      1661119200000
+    ],
+    "W3": [
+      1661119200000,
+      1661724000000
+    ]
+  }
+}
