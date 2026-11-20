@@ -54,6 +54,11 @@ def build(directory, training, registry, assigned_strategy=RULE.strategy_id):
         for name in FILES[:-1]:
             source = training if name in {"strategy_report.json", "lgbm-v1.txt"} else directory
             shutil.copyfile(source / name, target / name)
+        files = FILES
+        run = training / "run.json"
+        if run.is_file():
+            shutil.copyfile(run, target / "run.json")
+            files = (*FILES, "run.json")
         (target / "public_prefixes.json").write_bytes(encoded(public_prefixes(directory)))
         manifest = {
             "version": "serving-generation-v1", "assigned_strategy": assigned_strategy,
@@ -61,7 +66,7 @@ def build(directory, training, registry, assigned_strategy=RULE.strategy_id):
             "compatibility": {"mode": "ranker-only", "feature_schema": FEATURE_VERSION,
                               "feature_names": FEATURE_NAMES, "feature_code_sha256": feature_code_hash()},
             "rule_configuration": RULE_CONFIG, "rule_configuration_sha256": RULE.artifact_hash,
-            "checksums": {name: file_hash(target / name) for name in FILES},
+            "checksums": {name: file_hash(target / name) for name in files},
         }
         generation_id = identity(manifest)
         (target / "manifest.json").write_bytes(encoded(manifest))
@@ -90,7 +95,9 @@ class Generation:
         if generation_id != (expected_id or directory.name) or manifest["version"] != "serving-generation-v1":
             raise ValueError("Serving generation identity mismatch")
         checksums = manifest["checksums"]
-        if set(checksums) != set(FILES) or any(file_hash(directory / name) != checksums[name] for name in FILES):
+        valid_files = (set(FILES), {*FILES, "run.json"})
+        if set(checksums) not in valid_files or any(file_hash(directory / name) != digest
+                                                   for name, digest in checksums.items()):
             raise ValueError("Serving generation checksum mismatch")
         compatibility = manifest["compatibility"]
         if (compatibility["feature_schema"] != FEATURE_VERSION
@@ -110,6 +117,16 @@ class Generation:
                 or manifest["rule_configuration"] != RULE_CONFIG
                 or manifest["rule_configuration_sha256"] != RULE.artifact_hash):
             raise ValueError("Serving lineage mismatch")
+        if "run.json" in checksums:
+            record = json.loads((directory / "run.json").read_bytes())
+            lineage = dict(record["lineage"])
+            run_id = lineage.pop("run_id")
+            if (hashlib.sha256(encoded(lineage)).hexdigest() != run_id
+                    or lineage["source"] != "otto_offline"
+                    or lineage["artifact_sha256"] != model.artifact_hash
+                    or lineage["retrieval_snapshot_id"] != snapshot.snapshot_id
+                    or lineage["feature_code_sha256"] != feature_code_hash()):
+                raise ValueError("Training run is incompatible with the serving bundle")
         strategies = {strategy.strategy_id: strategy for strategy in (RULE, model)}
         assigned = strategies[manifest["assigned_strategy"]]
         examples = json.loads((directory / "public_prefixes.json").read_bytes())

@@ -18,6 +18,10 @@ SCHEMA = """
 CREATE TABLE IF NOT EXISTS traffic_configs (
     config_id TEXT PRIMARY KEY, payload JSONB NOT NULL
 );
+CREATE TABLE IF NOT EXISTS traffic_rescue (
+    singleton BOOLEAN PRIMARY KEY CHECK (singleton),
+    config_id TEXT NOT NULL REFERENCES traffic_configs(config_id)
+);
 CREATE TABLE IF NOT EXISTS traffic_pointer (
     singleton BOOLEAN PRIMARY KEY CHECK (singleton),
     config_id TEXT NOT NULL REFERENCES traffic_configs(config_id), revision BIGINT NOT NULL
@@ -147,10 +151,16 @@ class TrafficRegistry:
 
     def initialize(self):
         with self.store.connect() as conn:
+            conn.execute("SELECT pg_advisory_xact_lock(621025)")
             conn.execute(SCHEMA)
             rescue = self.rescue.config
             conn.execute("INSERT INTO traffic_configs VALUES (%s, %s) ON CONFLICT DO NOTHING",
                          (rescue.config_id, Jsonb(asdict(rescue))))
+            conn.execute("INSERT INTO traffic_rescue VALUES (true, %s) ON CONFLICT DO NOTHING",
+                         (rescue.config_id,))
+            designated = conn.execute("SELECT config_id FROM traffic_rescue").fetchone()
+            if designated["config_id"] != rescue.config_id:
+                raise ValueError("Configured rescue differs from the globally provisioned config")
             conn.execute("INSERT INTO traffic_pointer VALUES (true, %s, 0) ON CONFLICT DO NOTHING",
                          (rescue.config_id,))
 
