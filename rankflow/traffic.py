@@ -197,7 +197,7 @@ class TrafficRegistry:
                 """, (3 * self.poll_seconds,)).fetchall()
 
     def publish(self, target, expected_revision, operation_id, actor, action="publish"):
-        if action not in {"publish", "rollback", "kill"}:
+        if action not in {"publish", "rollback", "kill", "auto_pause"}:
             raise ValueError("Unknown traffic change")
         with self.lock, self.store.connect() as conn:
             pointer = conn.execute("SELECT config_id, revision FROM traffic_pointer FOR UPDATE").fetchone()
@@ -224,7 +224,7 @@ class TrafficRegistry:
                 target = TrafficConfigSnapshot(**row["payload"])
                 if target.canary_percent:
                     raise ValueError("Rollback target must be a stable configuration")
-            elif action == "kill":
+            elif action in {"kill", "auto_pause"}:
                 if target.state != "killed" or target.stable_generation_id != old.stable_generation_id:
                     raise ValueError("Kill requires the current stable generation")
             elif target.experiment_id == old.experiment_id:

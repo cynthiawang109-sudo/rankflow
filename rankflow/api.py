@@ -199,6 +199,11 @@ async def consume_outbox(store, stop):
 def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic=None,
                admin_bearer=None, release_registry=None, signing_key=None):
     session_key = session_key or secrets.token_bytes(32)
+    guardrails = None
+    if store and traffic:
+        from .guardrails import Guardrails
+
+        guardrails = Guardrails(store, traffic)
 
     @asynccontextmanager
     async def lifespan(app):
@@ -216,6 +221,8 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
                         await asyncio.wait_for(stop.wait(), timeout=traffic.poll_seconds)
                     except TimeoutError:
                         await run_in_threadpool(traffic.refresh)
+                        if guardrails:
+                            await run_in_threadpool(guardrails.sample, traffic.pin())
             traffic_worker = asyncio.create_task(refresh_traffic())
         try:
             yield
@@ -358,7 +365,7 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
     if admin_bearer:
         from .operator_console import install_console
 
-        install_console(app, store, traffic, admin_bearer, release_registry, signing_key)
+        install_console(app, store, traffic, admin_bearer, release_registry, signing_key, guardrails)
     return app
 
 

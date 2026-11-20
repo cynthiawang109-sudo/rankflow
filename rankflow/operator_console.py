@@ -30,7 +30,7 @@ def verified_records(registry, key):
                 yield document
 
 
-def install_console(app, store, traffic, bearer, release_registry=None, signing_key=None):
+def install_console(app, store, traffic, bearer, release_registry=None, signing_key=None, guardrails=None):
     def authenticate(request: Request):
         actual = request.headers.get("authorization", "")
         if not bearer or not hmac.compare_digest(actual.encode(), b"Bearer " + bearer):
@@ -90,7 +90,8 @@ def install_console(app, store, traffic, bearer, release_registry=None, signing_
                 "configuration": asdict(pin.config) if pin else None,
                 "config_id": pin.config.config_id if pin else None,
                 "revision": pin.revision if pin else None, "traffic_history": history,
-                "instances": fleet, "convergence": convergence}
+                "instances": fleet, "convergence": convergence,
+                "guardrail_health": guardrails.status if guardrails else None}
 
     @app.get("/operator/releases", dependencies=operator_only)
     def releases():
