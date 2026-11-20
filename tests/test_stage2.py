@@ -1,7 +1,7 @@
 """Stage 2 governance and PostgreSQL release drills."""
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 import os
 from pathlib import Path
@@ -14,6 +14,7 @@ from fastapi.testclient import TestClient
 from rankflow.api import create_app
 from rankflow.demo_learning import collect, dataset, rehearse
 from rankflow.epoch_registry import register_epoch
+from rankflow.guardrails import Guardrails
 from rankflow.release_gate import POLICY, disposition, release
 from rankflow.store import PostgresStore
 from rankflow.traffic import TrafficConfigSnapshot, TrafficRegistry
@@ -208,6 +209,46 @@ class PlatformTests(unittest.TestCase):
                 rows = conn.execute("SELECT kind FROM acknowledgements WHERE impression_id = %s",
                                     (impression,)).fetchall()
         self.assertCountEqual([row["kind"] for row in rows], ["confirmed", "late_confirmation"])
+
+    def test_failed_rollback_convergence_activates_rescue_and_freezes_release(self):
+        first, second = self.registry(), self.registry()
+        shadow = replace(self.rescue, state="shadowing", shadow_generation_id="candidate", shadow_mode="live")
+        first.publish(shadow, 0, "shadow", "test")
+        first.publish(self.rescue.config_id, 1, "rollback", "test", "rollback")
+        first.refresh()
+        with self.store.connect() as conn:
+            conn.execute("UPDATE traffic_audit SET recorded_at = recorded_at - interval '1 minute' WHERE revision=2")
+        first.observe_convergence()
+        first.refresh()
+        second.refresh()
+        self.assertTrue(first.pin().degraded)
+        self.assertTrue(second.pin().degraded)
+        self.assertEqual(first.pin().config.config_id, second.pin().config.config_id)
+        with self.assertRaisesRegex(ValueError, "frozen"):
+            first.publish(shadow, 3, "blocked", "test")
+        first.publish(self.rescue, 3, "resolve", "test", "resolve")
+        first.refresh()
+        self.assertFalse(first.pin().degraded)
+
+    def test_unknown_canary_telemetry_auto_pauses(self):
+        traffic = self.registry()
+        shadow = replace(self.rescue, state="shadowing", shadow_generation_id="candidate", shadow_mode="live")
+        traffic.publish(shadow, 0, "shadow", "test")
+        canary = replace(shadow, state="canary", canary_generation_id="candidate", canary_percent=50)
+        traffic.prepare(canary)
+        traffic.refresh()
+        traffic.publish(canary, 1, "canary", "test")
+        traffic.refresh()
+        guardrails = Guardrails(self.store, traffic)
+        now = datetime.now(timezone.utc)
+        self.assertEqual(guardrails.sample(traffic.pin(), now)["state"], "unknown")
+        with self.assertLogs("rankflow.guardrails", "WARNING"):
+            self.assertEqual(guardrails.sample(traffic.pin(), now + timedelta(minutes=3))["state"], "auto_pause")
+        traffic.refresh()
+        self.assertEqual(traffic.pin().config.state, "killed")
+        with self.store.connect() as conn:
+            self.assertEqual(conn.execute("SELECT action FROM traffic_audit WHERE revision=3").fetchone()["action"],
+                             "auto_pause")
 
     def test_epoch_overlap_and_preserved_replay(self):
         epoch = {"epoch_id": "one", "source": "otto_offline", "history_statistics_watermark": 10,

@@ -221,6 +221,11 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
                         await asyncio.wait_for(stop.wait(), timeout=traffic.poll_seconds)
                     except TimeoutError:
                         await run_in_threadpool(traffic.refresh)
+                        if not traffic.pin().degraded:
+                            try:
+                                await run_in_threadpool(traffic.observe_convergence)
+                            except Exception:
+                                LOGGER.exception("Traffic convergence observation failed")
                         if guardrails:
                             await run_in_threadpool(guardrails.sample, traffic.pin())
             traffic_worker = asyncio.create_task(refresh_traffic())

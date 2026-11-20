@@ -19,6 +19,8 @@ class PublishRequest(BaseModel):
     operation_id: str = Field(min_length=1, max_length=128)
     configuration: dict | None = None
     rollback_config_id: str | None = None
+    reason: str | None = Field(default=None, min_length=1, max_length=500)
+    override_seconds: int | None = Field(default=None, ge=1, le=600)
 
 
 def verified_records(registry, key):
@@ -75,7 +77,12 @@ def install_console(app, store, traffic, bearer, release_registry=None, signing_
                                         "strategy": generation.assigned.strategy_id,
                                         "snapshot_id": generation.snapshot.snapshot_id})
             with traffic.store.connect() as conn:
-                history = conn.execute("SELECT * FROM traffic_audit ORDER BY revision DESC LIMIT 100").fetchall()
+                history = conn.execute("""
+                    SELECT a.*, t.state AS convergence, t.expected_instances, o.reason, o.expires_at
+                    FROM traffic_audit a LEFT JOIN traffic_tracking t USING (revision)
+                    LEFT JOIN traffic_overrides o USING (revision)
+                    ORDER BY revision DESC LIMIT 100
+                    """).fetchall()
             fleet = traffic.fleet()
         else:
             fleet = []
@@ -157,11 +164,12 @@ def install_console(app, store, traffic, bearer, release_registry=None, signing_
         try:
             if action == "rollback" and operation.rollback_config_id and operation.configuration is None:
                 target = operation.rollback_config_id
-            elif action in {"publish", "kill"} and operation.configuration and operation.rollback_config_id is None:
+            elif action in {"publish", "kill", "resolve", "override"} and operation.configuration and operation.rollback_config_id is None:
                 target = TrafficConfigSnapshot(**operation.configuration)
             else:
                 raise ValueError("Invalid traffic operation")
-            revision = traffic.publish(target, operation.expected_revision, operation.operation_id, "admin", action)
+            revision = traffic.publish(target, operation.expected_revision, operation.operation_id, "admin", action,
+                                       reason=operation.reason, override_seconds=operation.override_seconds)
         except (TypeError, ValueError) as error:
             raise HTTPException(409, str(error)) from error
         return {"state": "pointer_committed", "revision": revision}

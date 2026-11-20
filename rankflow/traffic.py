@@ -1,5 +1,6 @@
 """Immutable traffic configuration snapshots and audited compare-and-swap."""
 from dataclasses import asdict, dataclass
+from datetime import datetime, timedelta, timezone
 import hashlib
 import hmac
 from threading import Lock
@@ -31,6 +32,18 @@ CREATE TABLE IF NOT EXISTS traffic_preloads (
 CREATE TABLE IF NOT EXISTS traffic_audit (
     operation_id TEXT PRIMARY KEY, action TEXT NOT NULL, config_id TEXT NOT NULL,
     revision BIGINT NOT NULL, actor TEXT NOT NULL, recorded_at TIMESTAMPTZ DEFAULT clock_timestamp()
+);
+CREATE TABLE IF NOT EXISTS traffic_tracking (
+    revision BIGINT PRIMARY KEY, expected_instances JSONB NOT NULL, recovery_config_id TEXT,
+    state TEXT NOT NULL DEFAULT 'pointer_committed'
+);
+CREATE TABLE IF NOT EXISTS traffic_overrides (
+    revision BIGINT PRIMARY KEY, reason TEXT NOT NULL,
+    expires_at TIMESTAMPTZ NOT NULL
+);
+CREATE TABLE IF NOT EXISTS traffic_incident (
+    singleton BOOLEAN PRIMARY KEY CHECK (singleton),
+    reason TEXT NOT NULL, opened_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp()
 );
 """
 
@@ -100,7 +113,7 @@ class TrafficPin:
 
 class TrafficRegistry:
     def __init__(self, store, generation_root, rescue, salts, poll_seconds=1,
-                 promotion_allowed=None):
+                 promotion_allowed=None, convergence_seconds=10, minimum_capacity=1):
         if rescue.canary_generation_id or rescue.shadow_generation_id:
             raise ValueError("Rescue configuration must be stable-only")
         self.store = store
@@ -108,6 +121,8 @@ class TrafficRegistry:
         self.salts = salts
         self.poll_seconds = poll_seconds
         self.promotion_allowed = promotion_allowed
+        self.convergence_seconds = convergence_seconds
+        self.minimum_capacity = minimum_capacity
         self.instance_id = uuid4().hex
         self.lock = Lock()
         self.generations = {}
@@ -154,7 +169,8 @@ class TrafficRegistry:
                     config = TrafficConfigSnapshot(**row["payload"])
                     if row["config_id"] != config.config_id:
                         raise ValueError("Traffic configuration checksum mismatch")
-                    pin = self.load(config, row["revision"])
+                    frozen = conn.execute("SELECT 1 FROM traffic_incident").fetchone()
+                    pin = self.load(config, row["revision"], degraded=bool(frozen))
                     prepared = []
                     for item in conn.execute("""
                         SELECT config_id, payload FROM traffic_preloads JOIN traffic_configs USING (config_id)
@@ -180,6 +196,45 @@ class TrafficRegistry:
             self.refresh_at = monotonic() + 3 * self.poll_seconds
             self.current = pin
 
+    def observe_convergence(self):
+        with self.store.connect() as conn:
+            active = conn.execute("""
+                SELECT p.revision, p.config_id, a.action, a.recorded_at, t.expected_instances,
+                       t.recovery_config_id, t.state, clock_timestamp() AS now
+                FROM traffic_pointer p JOIN traffic_tracking t USING (revision)
+                JOIN traffic_audit a USING (revision)
+                """).fetchone()
+            if active is None or active["state"] == "converged":
+                return
+            revision = active["revision"]
+            eligible = conn.execute("""
+                SELECT instance_id, revision
+                FROM traffic_instances
+                WHERE last_seen > clock_timestamp() - %s * interval '1 second'
+                """, (3 * self.poll_seconds,)).fetchall()
+            acknowledged = {row["instance_id"] for row in eligible if row["revision"] == revision}
+            required = set(active["expected_instances"]) | {row["instance_id"] for row in eligible}
+            if required and required <= acknowledged:
+                conn.execute("UPDATE traffic_tracking SET state='converged' WHERE revision=%s", (revision,))
+                return
+            if active["now"] < active["recorded_at"] + timedelta(seconds=self.convergence_seconds):
+                return
+            result = conn.execute("""
+                UPDATE traffic_tracking SET state='partially_converged'
+                WHERE revision=%s AND state<>'partially_converged'
+                """, (revision,))
+            if result.rowcount:
+                LOGGER.warning("Traffic revision %s did not converge, missing instances %s",
+                               revision, sorted(required - acknowledged))
+        action = active["action"]
+        try:
+            if action == "rollback":
+                self.publish(self.rescue.config, revision, f"rescue-{revision}", "convergence", "rescue")
+            elif action == "publish" and len(acknowledged) < self.minimum_capacity and active["recovery_config_id"]:
+                self.publish(active["recovery_config_id"], revision, f"capacity-{revision}", "convergence", "rollback")
+        except ValueError:
+            LOGGER.info("Traffic recovery operation lost its expected revision")
+
     def prepare(self, target):
         with self.lock, self.store.connect() as conn:
             self.load(target, -1)
@@ -196,8 +251,9 @@ class TrafficRegistry:
                 FROM traffic_instances ORDER BY instance_id
                 """, (3 * self.poll_seconds,)).fetchall()
 
-    def publish(self, target, expected_revision, operation_id, actor, action="publish"):
-        if action not in {"publish", "rollback", "kill", "auto_pause"}:
+    def publish(self, target, expected_revision, operation_id, actor, action="publish", *,
+                reason=None, override_seconds=None):
+        if action not in {"publish", "rollback", "kill", "auto_pause", "rescue", "resolve", "override", "override_expired"}:
             raise ValueError("Unknown traffic change")
         with self.lock, self.store.connect() as conn:
             pointer = conn.execute("SELECT config_id, revision FROM traffic_pointer FOR UPDATE").fetchone()
@@ -213,6 +269,9 @@ class TrafficRegistry:
                 return prior["revision"]
             if pointer["revision"] != expected_revision:
                 raise ValueError("Traffic revision conflict")
+            frozen = conn.execute("SELECT 1 FROM traffic_incident").fetchone()
+            if frozen and action not in {"kill", "rescue", "resolve"}:
+                raise ValueError("Traffic releases are frozen during the rescue incident")
             current = conn.execute("SELECT payload FROM traffic_configs WHERE config_id = %s",
                                    (pointer["config_id"],)).fetchone()
             old = TrafficConfigSnapshot(**current["payload"])
@@ -224,7 +283,25 @@ class TrafficRegistry:
                 target = TrafficConfigSnapshot(**row["payload"])
                 if target.canary_percent:
                     raise ValueError("Rollback target must be a stable configuration")
-            elif action in {"kill", "auto_pause"}:
+            elif action == "rescue":
+                if target.config_id != self.rescue.config.config_id:
+                    raise ValueError("Emergency rescue must use the provisioned config")
+                conn.execute("INSERT INTO traffic_incident VALUES (true, %s) ON CONFLICT DO NOTHING",
+                             ("Rollback convergence failed",))
+            elif action == "resolve":
+                if not frozen or target.config_id != self.rescue.config.config_id:
+                    raise ValueError("Resolve a rescue incident from the designated config")
+                conn.execute("DELETE FROM traffic_incident")
+            elif action == "override":
+                paused = conn.execute("SELECT action FROM traffic_audit WHERE revision = %s",
+                                      (expected_revision,)).fetchone()
+                former = conn.execute("SELECT config_id FROM traffic_audit WHERE revision = %s",
+                                      (expected_revision - 1,)).fetchone()
+                if (not paused or paused["action"] != "auto_pause" or not former
+                        or former["config_id"] != target.config_id or not reason or reason.isspace()
+                        or not isinstance(override_seconds, int) or not 1 <= override_seconds <= 600):
+                    raise ValueError("Override requires the auto-paused configuration, reason and bounded duration")
+            elif action in {"kill", "auto_pause", "override_expired"}:
                 if target.state != "killed" or target.stable_generation_id != old.stable_generation_id:
                     raise ValueError("Kill requires the current stable generation")
             elif target.experiment_id == old.experiment_id:
@@ -240,13 +317,12 @@ class TrafficRegistry:
                 if (not self.promotion_allowed or old.canary_generation_id != target.stable_generation_id
                         or not self.promotion_allowed(self.generation(target.stable_generation_id))):
                     raise ValueError("Promotion requires a signed approval for the current canary")
-            if target.canary_percent:
-                ready = conn.execute("""
-                    SELECT prepared FROM traffic_instances
+            ready = conn.execute("""
+                    SELECT instance_id, prepared FROM traffic_instances
                     WHERE last_seen > clock_timestamp() - %s * interval '1 second'
                     """, (3 * self.poll_seconds,)).fetchall()
-                if not ready or any(target.config_id not in row["prepared"] for row in ready):
-                    raise ValueError("Both generations must be preloaded by every leased instance")
+            if target.canary_percent and (not ready or any(target.config_id not in row["prepared"] for row in ready)):
+                raise ValueError("Both generations must be preloaded by every leased instance")
             revision = expected_revision + 1
             self.load(target, revision)
             conn.execute("INSERT INTO traffic_configs VALUES (%s, %s) ON CONFLICT DO NOTHING",
@@ -258,4 +334,11 @@ class TrafficRegistry:
             conn.execute("INSERT INTO traffic_audit(operation_id, action, config_id, revision, actor) "
                          "VALUES (%s, %s, %s, %s, %s)",
                          (operation_id, action, target.config_id, revision, actor))
+            if action == "override":
+                expires = datetime.now(timezone.utc) + timedelta(seconds=override_seconds)
+                conn.execute("INSERT INTO traffic_overrides VALUES (%s, %s, %s)", (revision, reason, expires))
+            recovery = old.config_id if not old.canary_percent else self.rescue.config.config_id
+            conn.execute("INSERT INTO traffic_tracking(revision, expected_instances, recovery_config_id) "
+                         "VALUES (%s, %s, %s)",
+                         (revision, Jsonb([row["instance_id"] for row in ready]), recovery))
         return revision

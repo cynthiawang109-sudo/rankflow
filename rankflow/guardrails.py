@@ -1,4 +1,4 @@
-﻿"""Synthetic operational canary guardrails based on finalized telemetry windows."""
+"""Synthetic operational canary guardrails based on finalized telemetry windows."""
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 import logging
@@ -29,18 +29,28 @@ class Guardrails:
                 self.status = {"mode": "synthetic_operational", "state": "inactive"}
                 return self.status
             token = (pin.revision, end)
-            if self.last_sample == token:
+            if self.last_sample == token and self.status["state"] != "override":
                 return self.status
             self.last_sample = token
-            state, windows = self.measure(pin, end)
+            try:
+                with self.traffic.store.connect() as conn:
+                    override = conn.execute("SELECT expires_at FROM traffic_overrides WHERE revision = %s",
+                                            (pin.revision,)).fetchone()
+            except psycopg.Error:
+                override = None
+            if override:
+                state = "override" if now < override["expires_at"] else "override_expired"
+                windows = []
+            else:
+                state, windows = self.measure(pin, end)
             self.status = {"mode": "synthetic_operational", "config_id": pin.config.config_id,
                            "revision": pin.revision, "state": state, "windows": windows}
-            if state == "auto_pause":
+            if state in {"auto_pause", "override_expired"}:
                 target = replace(pin.config, state="killed", canary_generation_id=None, canary_percent=0,
                                  shadow_generation_id=None, shadow_mode=None)
                 try:
                     self.traffic.publish(target, pin.revision, f"guardrail-{pin.revision}",
-                                         "guardrail", "auto_pause")
+                                         "guardrail", state)
                     LOG.warning("Synthetic operational canary paused at revision %s", pin.revision)
                 except (ValueError, psycopg.Error):
                     LOG.exception("Synthetic operational canary pause could not apply")
@@ -54,6 +64,9 @@ class Guardrails:
             with self.traffic.store.connect() as conn:
                 activated = conn.execute("SELECT recorded_at FROM traffic_audit WHERE revision = %s",
                                          (pin.revision,)).fetchone()["recorded_at"]
+        except (TypeError, psycopg.Error):
+            return "unknown", windows
+        try:
             with self.store.connect() as conn:
                 rows = conn.execute("""
                     SELECT date_trunc('minute', i.created_at) AS bucket, count(*) AS requests,
@@ -69,8 +82,8 @@ class Guardrails:
             for row in rows:
                 index = (row["bucket"] - start) // WINDOW
                 windows[index] = {"requests": row["requests"], "fallbacks": row["fallbacks"]}
-        except (TypeError, psycopg.Error):
-            return "unknown", windows
+        except psycopg.Error:
+            LOG.warning("Synthetic operational canary telemetry unavailable")
         states = []
         for index, bucket in enumerate(windows):
             requests = bucket["requests"]
