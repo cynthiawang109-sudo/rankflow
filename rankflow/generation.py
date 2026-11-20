@@ -45,7 +45,7 @@ def public_prefixes(directory):
     return examples
 
 
-def build(directory, training, registry):
+def build(directory, training, registry, assigned_strategy=RULE.strategy_id):
     report = json.loads((training / "strategy_report.json").read_text())
     registry.mkdir(parents=True, exist_ok=True)
     with TemporaryDirectory(dir=registry) as temporary:
@@ -56,7 +56,7 @@ def build(directory, training, registry):
             shutil.copyfile(source / name, target / name)
         (target / "public_prefixes.json").write_bytes(encoded(public_prefixes(directory)))
         manifest = {
-            "version": "serving-generation-v1", "assigned_strategy": RULE.strategy_id,
+            "version": "serving-generation-v1", "assigned_strategy": assigned_strategy,
             "retrieval": report["retrieval"], "retrieval_snapshot_id": report["protocol"]["snapshot_id"],
             "compatibility": {"mode": "ranker-only", "feature_schema": FEATURE_VERSION,
                               "feature_names": FEATURE_NAMES, "feature_code_sha256": feature_code_hash()},
@@ -123,8 +123,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("directory", "training", "registry"):
         parser.add_argument(name, type=Path)
+    parser.add_argument("--candidate", action="store_true")
     args = parser.parse_args()
-    destination = build(args.directory, args.training, args.registry)
+    destination = build(args.directory, args.training, args.registry,
+                        "lgbm-v1" if args.candidate else RULE.strategy_id)
+    if args.candidate:
+        print(destination)
+        return
     pointer = args.registry / "alpha.tmp"
     pointer.write_text(destination.name + "\n", encoding="ascii")
     pointer.replace(args.registry / "alpha.txt")

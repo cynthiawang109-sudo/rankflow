@@ -1,4 +1,4 @@
-﻿"""Immutable traffic configuration snapshots and audited compare-and-swap."""
+"""Immutable traffic configuration snapshots and audited compare-and-swap."""
 from dataclasses import asdict, dataclass
 import hashlib
 import hmac
@@ -121,22 +121,25 @@ class TrafficRegistry:
                          (rescue.config_id,))
 
     def pin(self):
+        pin = self.current
+        return pin if monotonic() < self.refresh_at else self.rescue
+
+    def refresh(self):
         with self.lock:
-            if monotonic() >= self.refresh_at:
-                try:
-                    with self.store.connect() as conn:
-                        row = conn.execute("""
-                            SELECT p.config_id, p.revision, c.payload FROM traffic_pointer p
-                            JOIN traffic_configs c USING (config_id)
-                            """).fetchone()
-                    config = TrafficConfigSnapshot(**row["payload"])
-                    if row["config_id"] != config.config_id:
-                        raise ValueError("Traffic configuration checksum mismatch")
-                    self.current = self.load(config, row["revision"])
-                except Exception:
-                    self.current = self.rescue
-                self.refresh_at = monotonic() + self.poll_seconds
-            return self.current
+            try:
+                with self.store.connect() as conn:
+                    row = conn.execute("""
+                        SELECT p.config_id, p.revision, c.payload FROM traffic_pointer p
+                        JOIN traffic_configs c USING (config_id)
+                        """).fetchone()
+                config = TrafficConfigSnapshot(**row["payload"])
+                if row["config_id"] != config.config_id:
+                    raise ValueError("Traffic configuration checksum mismatch")
+                pin = self.load(config, row["revision"])
+            except Exception:
+                pin = self.rescue
+            self.refresh_at = monotonic() + 3 * self.poll_seconds
+            self.current = pin
 
     def publish(self, target, expected_revision, operation_id, actor, action="publish"):
         if action not in {"publish", "rollback", "kill"}:
