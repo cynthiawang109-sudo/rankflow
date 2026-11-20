@@ -1,0 +1,366 @@
+{
+  "candidate_sha256": "f947c78812cdd7990839f429b9f12b70c4b7b039de89a2e8144d334ad61f65c4",
+  "code_version": "c1dcf6609f96d5b350027c07db8cf2a3b674f139",
+  "development_preference": "lgbm-v1",
+  "epoch": {
+    "candidate_family": [
+      "LightGBM-LambdaRank",
+      1,
+      "nextclick-v1"
+    ],
+    "dataset_manifest_hash": "b4ce68b9761b403f895acf3c77d7748a8634034abcf12fa701e5d44a05a86b00",
+    "epoch_id": "stage0-initial",
+    "final_test_window": [
+      1661119200000,
+      1661724000000
+    ],
+    "history_statistics_watermark": 1659909572414,
+    "query_manifest_hash": "0101abfbc038bf4c36a1dc7e59a7307c77cc79311d75a15209537cff445fb670",
+    "retrieval_snapshot_id": "cd5b998f1172df6d53ce28560fe1d9a79ca4086759c8830b3a0246187ba357a9",
+    "source": "otto_offline",
+    "training_data_watermark": 1660514395857,
+    "validation_window": [
+      1660514400000,
+      1661119200000
+    ]
+  },
+  "evaluation": {
+    "no_label": 12205,
+    "slices": {
+      "overall": {
+        "candidate_coverage": 0.2233459909449394,
+        "delta_confidence_intervals": {
+          "HitRate@20": [
+            -0.0008469711148899423,
+            0.0001627727065170398
+          ],
+          "MRR@20": [
+            -0.001982827486835202,
+            -0.0009212989188552025
+          ]
+        },
+        "labeled": 54776,
+        "metrics": {
+          "lgbm-v1": {
+            "HitRate@20": 0.19935738279538484,
+            "MRR@20": 0.14246080410483988,
+            "NDCG@20": 0.15567292001012817
+          },
+          "pointwise-v1": {
+            "HitRate@20": 0.19899225938367168,
+            "MRR@20": 0.14102441454811776,
+            "NDCG@20": 0.15449263784404052
+          }
+        },
+        "primary_deltas": {
+          "HitRate@20": -0.00036512341171315854,
+          "MRR@20": -0.001436389556722123
+        },
+        "retrieved": 12234,
+        "sessions": 13226
+      },
+      "prefix/cold": {
+        "candidate_coverage": 0.00535475234270415,
+        "delta_confidence_intervals": {
+          "HitRate@20": [
+            -0.0005397738440464346,
+            0.0007501922283924198
+          ],
+          "MRR@20": [
+            -0.0003576076965823726,
+            0.00013359981654316385
+          ]
+        },
+        "labeled": 16434,
+        "metrics": {
+          "lgbm-v1": {
+            "HitRate@20": 0.0016429353778751369,
+            "MRR@20": 0.0008920339281892447,
+            "NDCG@20": 0.001044011739655195
+          },
+          "pointwise-v1": {
+            "HitRate@20": 0.0017646342947547767,
+            "MRR@20": 0.0008011825346672756,
+            "NDCG@20": 0.0010146911912484432
+          }
+        },
+        "primary_deltas": {
+          "HitRate@20": 0.00012169891687963987,
+          "MRR@20": -9.085139352196911e-05
+        },
+        "retrieved": 88,
+        "sessions": 6466
+      },
+      "prefix/warm": {
+        "candidate_coverage": 0.316780553961713,
+        "delta_confidence_intervals": {
+          "HitRate@20": [
+            -0.0012711598618443591,
+            0.00010588415554299255
+          ],
+          "MRR@20": [
+            -0.0027414597523986875,
+            -0.001295173244737695
+          ]
+        },
+        "labeled": 38342,
+        "metrics": {
+          "lgbm-v1": {
+            "HitRate@20": 0.2841009858640655,
+            "MRR@20": 0.20313946377525555,
+            "NDCG@20": 0.22194936564460085
+          },
+          "pointwise-v1": {
+            "HitRate@20": 0.28352720254551145,
+            "MRR@20": 0.20112635484619937,
+            "NDCG@20": 0.22027576275385174
+          }
+        },
+        "primary_deltas": {
+          "HitRate@20": -0.0005737833185540664,
+          "MRR@20": -0.0020131089290561788
+        },
+        "retrieved": 12146,
+        "sessions": 8947
+      },
+      "session_length/21_to_100": {
+        "candidate_coverage": 0.20717488789237667,
+        "delta_confidence_intervals": {
+          "HitRate@20": [
+            -0.0017937219730941704,
+            0.0011210762331838565
+          ],
+          "MRR@20": [
+            -0.002029401196238185,
+            0.0007839976873948862
+          ]
+        },
+        "labeled": 8920,
+        "metrics": {
+          "lgbm-v1": {
+            "HitRate@20": 0.17443946188340806,
+            "MRR@20": 0.10843351835750728,
+            "NDCG@20": 0.12364226926486462
+          },
+          "pointwise-v1": {
+            "HitRate@20": 0.17410313901345292,
+            "MRR@20": 0.10783411887488462,
+            "NDCG@20": 0.12307069211284573
+          }
+        },
+        "primary_deltas": {
+          "HitRate@20": -0.0003363228699551357,
+          "MRR@20": -0.0005993994826226645
+        },
+        "retrieved": 1848,
+        "sessions": 892
+      },
+      "session_length/over_100": {
+        "candidate_coverage": 0.08,
+        "delta_confidence_intervals": {
+          "HitRate@20": [
+            0.0,
+            0.0
+          ],
+          "MRR@20": [
+            -0.005673280542986425,
+            0.006478269230769228
+          ]
+        },
+        "labeled": 250,
+        "metrics": {
+          "lgbm-v1": {
+            "HitRate@20": 0.064,
+            "MRR@20": 0.021067169431875313,
+            "NDCG@20": 0.030257150311666463
+          },
+          "pointwise-v1": {
+            "HitRate@20": 0.064,
+            "MRR@20": 0.021297083961789844,
+            "NDCG@20": 0.03040157539962915
+          }
+        },
+        "primary_deltas": {
+          "HitRate@20": 0.0,
+          "MRR@20": 0.00022991452991453012
+        },
+        "retrieved": 20,
+        "sessions": 25
+      },
+      "session_length/up_to_20": {
+        "candidate_coverage": 0.22729465421216508,
+        "delta_confidence_intervals": {
+          "HitRate@20": [
+            -0.0009193385155485519,
+            0.00023916003657651656
+          ],
+          "MRR@20": [
+            -0.0021447356771167455,
+            -0.0010601425783500575
+          ]
+        },
+        "labeled": 45606,
+        "metrics": {
+          "lgbm-v1": {
+            "HitRate@20": 0.2049730298644915,
+            "MRR@20": 0.14978159078936523,
+            "NDCG@20": 0.16262523652708502
+          },
+          "pointwise-v1": {
+            "HitRate@20": 0.20460027189404903,
+            "MRR@20": 0.14817236152991484,
+            "NDCG@20": 0.16131863708829208
+          }
+        },
+        "primary_deltas": {
+          "HitRate@20": -0.0003727579704424777,
+          "MRR@20": -0.0016092292594503954
+        },
+        "retrieved": 10366,
+        "sessions": 12309
+      },
+      "target_popularity/head": {
+        "candidate_coverage": 0.7718491260349586,
+        "delta_confidence_intervals": {
+          "HitRate@20": [
+            -0.013513513513513514,
+            0.010679036841701002
+          ],
+          "MRR@20": [
+            -0.017583915426688378,
+            -0.0042237762198177355
+          ]
+        },
+        "labeled": 1087,
+        "metrics": {
+          "lgbm-v1": {
+            "HitRate@20": 0.6292548298068077,
+            "MRR@20": 0.4001710974659638,
+            "NDCG@20": 0.4533219393793182
+          },
+          "pointwise-v1": {
+            "HitRate@20": 0.6283348666053358,
+            "MRR@20": 0.3895237777287384,
+            "NDCG@20": 0.44513041960956184
+          }
+        },
+        "primary_deltas": {
+          "HitRate@20": -0.0009199632014719183,
+          "MRR@20": -0.01064731973722538
+        },
+        "retrieved": 839,
+        "sessions": 635
+      },
+      "target_popularity/tail": {
+        "candidate_coverage": 0.46266596288927686,
+        "delta_confidence_intervals": {
+          "HitRate@20": [
+            -0.0018380429064760605,
+            0.00024335873547042463
+          ],
+          "MRR@20": [
+            -0.003743464409500846,
+            -0.001562985083630017
+          ]
+        },
+        "labeled": 24629,
+        "metrics": {
+          "lgbm-v1": {
+            "HitRate@20": 0.4156076170368265,
+            "MRR@20": 0.29917767764428993,
+            "NDCG@20": 0.3262162052202465
+          },
+          "pointwise-v1": {
+            "HitRate@20": 0.4148361687441634,
+            "MRR@20": 0.29645300194472235,
+            "NDCG@20": 0.3239527371971888
+          }
+        },
+        "primary_deltas": {
+          "HitRate@20": -0.0007714482926631239,
+          "MRR@20": -0.0027246756995675803
+        },
+        "retrieved": 11395,
+        "sessions": 8521
+      },
+      "target_popularity/unseen": {
+        "candidate_coverage": 0.0,
+        "delta_confidence_intervals": {
+          "HitRate@20": [
+            0.0,
+            0.0
+          ],
+          "MRR@20": [
+            0.0,
+            0.0
+          ]
+        },
+        "labeled": 29060,
+        "metrics": {
+          "lgbm-v1": {
+            "HitRate@20": 0.0,
+            "MRR@20": 0.0,
+            "NDCG@20": 0.0
+          },
+          "pointwise-v1": {
+            "HitRate@20": 0.0,
+            "MRR@20": 0.0,
+            "NDCG@20": 0.0
+          }
+        },
+        "primary_deltas": {
+          "HitRate@20": 0.0,
+          "MRR@20": 0.0
+        },
+        "retrieved": 0,
+        "sessions": 9377
+      }
+    }
+  },
+  "feature_code_sha256": "cc885ae447b4a1b9b066e082d990db7a070ebb3cee5f8b2674b3e6f514af071d",
+  "feature_schema": "session-features-v1",
+  "policy": {
+    "bootstrap_replicates": 2000,
+    "bootstrap_seed": 42,
+    "confidence_level": 0.95,
+    "primary_metrics": [
+      "HitRate@20",
+      "MRR@20"
+    ],
+    "protocol": "stage2-pointwise-development-v1",
+    "release_eligibility": "Development comparison only",
+    "tie_break": "Retain LambdaRank when the pointwise challenger is within tolerance",
+    "tolerance_absolute": 0.005
+  },
+  "reference_sha256": "8d06f0f97a3485540addeae9d6604b3fae3c948c2de2862d08d7de79e7cebd6d",
+  "release_decision": "no promotion",
+  "retrieval": {
+    "candidate_cap": 100,
+    "covisitation": 100,
+    "popularity": 20,
+    "recent": 10,
+    "recent_mode": "recency",
+    "snapshot_id": "cd5b998f1172df6d53ce28560fe1d9a79ca4086759c8830b3a0246187ba357a9",
+    "top_n_per_item": 100
+  },
+  "sampling_limitation": "Boundary exclusion retained 62.1% of sessions with at most 20 events, 23.1% with 21\u2013100 events, and 4.6% with more than 100 events. Headline metrics describe the retained OTTO population.",
+  "source": "otto_offline",
+  "training_configuration": {
+    "deterministic": true,
+    "force_col_wise": true,
+    "learning_rate": 0.1,
+    "n_estimators": 50,
+    "n_jobs": 2,
+    "num_leaves": 15,
+    "objective": "binary",
+    "random_state": 42,
+    "verbosity": -1
+  },
+  "training_counts": {
+    "all_negative": 81879,
+    "eligible": 24770,
+    "no_label": 23977,
+    "queries": 130626
+  },
+  "window": "W2-dev"
+}
