@@ -15,6 +15,7 @@ from threading import BoundedSemaphore, Lock
 from time import perf_counter
 from typing import Annotated, Literal
 
+import psycopg
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from starlette.background import BackgroundTask
@@ -218,7 +219,7 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
                 try:
                     await run_in_threadpool(initialize)
                     return True
-                except Exception:
+                except psycopg.Error:
                     LOGGER.exception("%s initialization failed", name)
                 try:
                     await asyncio.wait_for(stop.wait(), timeout=wait_seconds)
@@ -244,7 +245,7 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
                 await run_in_threadpool(traffic.initialize)
                 await run_in_threadpool(traffic.refresh)
                 initialized = True
-            except Exception:
+            except psycopg.Error:
                 LOGGER.exception("Traffic control unavailable at startup, using rescue")
 
             async def refresh_traffic():
