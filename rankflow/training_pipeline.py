@@ -1,4 +1,4 @@
-﻿"""Reproduce the frozen OTTO ranker and register its training lineage."""
+"""Reproduce the frozen OTTO ranker and register its training lineage."""
 import argparse
 from collections import defaultdict
 import hashlib
@@ -75,10 +75,14 @@ def paired_evaluation(population, snapshot, config, model):
             continue
         events = query["prefix_events"]
         candidates = retrieve(snapshot, events, config)
-        rows = build_features(snapshot, events, candidates)
-        values = [1, int(any(candidate.aid == target for candidate in candidates))]
-        for strategy in (RULE, model):
-            values.extend(credits([candidate.aid for candidate, _ in strategy.rank(candidates, rows)], target))
+        covered = any(candidate.aid == target for candidate in candidates)
+        values = [1, int(covered)]
+        if covered:
+            rows = build_features(snapshot, events, candidates)
+            for strategy in (RULE, model):
+                values.extend(credits([candidate.aid for candidate, _ in strategy.rank(candidates, rows)], target))
+        else:
+            values.extend([0] * 6)
         for segment in query_slices(query, session_events, snapshot):
             totals = clusters[segment][query["session_id_hash"]]
             for index, value in enumerate(values):
