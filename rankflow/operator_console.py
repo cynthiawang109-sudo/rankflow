@@ -101,6 +101,11 @@ def install_console(app, store, traffic, bearer, release_registry=None, signing_
                     SELECT coalesce(payload->>'source', 'demo') AS source, count(*) AS attributed
                     FROM feedback_events GROUP BY 1
                     """).fetchall(),
+                "live_shadow": conn.execute("""
+                    SELECT payload->>'config_id' AS config_id, count(*) AS observations,
+                           avg((payload->>'top_k_overlap')::integer) AS mean_top_k_overlap
+                    FROM shadow_observations GROUP BY 1
+                    """).fetchall(),
                 "outbox": conn.execute("""
                     SELECT count(*) FILTER (WHERE delivered_at IS NULL) AS pending,
                            count(*) FILTER (WHERE delivered_at IS NOT NULL) AS delivered FROM outbox

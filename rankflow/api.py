@@ -287,7 +287,19 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
             if pin.shadow:
                 def shadow():
                     try:
-                        rank_request(pin.shadow, events, data.top_k, deadline_ms)
+                        comparison, _ = rank_request(pin.shadow, events, data.top_k, deadline_ms)
+                        actual = {item["aid"] for item in result["items"]}
+                        alternative = {item["aid"] for item in comparison["items"]}
+                        if store and result["impression_id"]:
+                            store.record_shadow(result["impression_id"], {
+                                "source": "demo", "mode": "live",
+                                "validation": "synthetic operational validation",
+                                "config_id": pin.config.config_id,
+                                "served_generation": selected.generation_id,
+                                "shadow_generation": pin.shadow.generation_id,
+                                "top_k_overlap": len(actual & alternative),
+                                "shadow_fallback_used": comparison["fallback_used"],
+                            })
                         count("synthetic_shadow_completed")
                     except Exception:
                         LOGGER.exception("Synthetic live shadow failed")

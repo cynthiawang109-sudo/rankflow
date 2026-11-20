@@ -30,6 +30,10 @@ CREATE TABLE IF NOT EXISTS outbox (
 CREATE TABLE IF NOT EXISTS delivered_events (
     event_id TEXT PRIMARY KEY, payload JSONB NOT NULL
 );
+CREATE TABLE IF NOT EXISTS shadow_observations (
+    impression_id TEXT PRIMARY KEY REFERENCES impressions(id),
+    payload JSONB NOT NULL, observed_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp()
+);
 CREATE TABLE IF NOT EXISTS acknowledgements (
     impression_id TEXT NOT NULL REFERENCES impressions(id),
     kind TEXT NOT NULL, acknowledged_at TIMESTAMPTZ NOT NULL, PRIMARY KEY (impression_id, kind)
@@ -88,6 +92,12 @@ class PostgresStore:
             conn.execute("INSERT INTO outbox(event_id, impression_id, payload) VALUES (%s, %s, %s)",
                          (event_id, impression_id, Jsonb(event)))
         return impression_id
+
+    def record_shadow(self, impression_id, observation):
+        with self.connect() as conn:
+            conn.execute(
+                "INSERT INTO shadow_observations(impression_id, payload) VALUES (%s, %s) "
+                "ON CONFLICT DO NOTHING", (impression_id, Jsonb(observation)))
 
     def record_send(self, impression_id, state):
         with self.connect() as conn:
