@@ -1,0 +1,56 @@
+{
+  "candidate_generation": "gen-32f6b8cf3883c4e1611cb492b2ba8a1847d68ca733dd01324b8f375700916888",
+  "cohorts": {
+    "canary": 10,
+    "stable": 6
+  },
+  "demo_rehearsal": {
+    "decision": "rejected",
+    "input_event_count": 4,
+    "run_id": "958757783556bafd993e2d3b93b31830fd1c459694301840f525840e4200f8c7",
+    "signature": "2f46ba21f5c7a3b242e5b0ed9faed3e869b9d5c32d9024d3ba4225f660d845d3",
+    "dataset_sha256": "e12c6afedfa23394d0c8a5c1d5ced91c67eae14c59dacd603ad0b0d6180bff3c"
+  },
+  "final_config_revision": 3,
+  "instances": 2,
+  "live_shadow_completed": 36,
+  "offline_replay": {
+    "challenger_generation": "gen-32f6b8cf3883c4e1611cb492b2ba8a1847d68ca733dd01324b8f375700916888",
+    "identical_rankings": 234,
+    "mode": "candidate_offline_replay",
+    "population": "W2-dev",
+    "queries_compared": 1000,
+    "source": "otto_offline",
+    "stable_generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+    "validation": "synthetic operational validation"
+  },
+  "postgresql_schema": "stage2_drill_dcced0823ed947879d36ac092abd6816",
+  "stable_generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+  "traffic_history": [
+    {
+      "action": "kill",
+      "actor": "local-stage2-operator",
+      "config_id": "cfg-6fc97b53a69b5a10a7aba0972dfc8ea0fff8e43baf60663552c47b54fd5d6ba1",
+      "operation_id": "kill-synthetic-canary",
+      "recorded_at": "2026-11-20T14:46:54.802135+00:00",
+      "revision": 3
+    },
+    {
+      "action": "publish",
+      "actor": "local-stage2-operator",
+      "config_id": "cfg-6feaf3ca299c240b95180ee40903163e5ab3a91357c073be9119493b1fda36ad",
+      "operation_id": "begin-synthetic-canary",
+      "recorded_at": "2026-11-20T14:46:49.491515+00:00",
+      "revision": 2
+    },
+    {
+      "action": "publish",
+      "actor": "local-stage2-operator",
+      "config_id": "cfg-c1b50cbfce312c96aa0de5978d08e40fef9ca4763d4e06a800d4c4fba4c72b20",
+      "operation_id": "begin-shadow",
+      "recorded_at": "2026-11-20T14:46:17.000949+00:00",
+      "revision": 1
+    }
+  ],
+  "validation": "synthetic operational validation"
+}
