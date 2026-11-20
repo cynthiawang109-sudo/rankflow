@@ -9,6 +9,6 @@ Boundary exclusion retained 62.1% of sessions with at most 20 events, 23.1% with
 
 | Demo segment | Labeled | HitRate@20 | MRR@20 |
 |---|---:|---:|---:|
-| overall | 2 | 1.000000 | 0.093750 |
-| prefix/cold | 2 | 1.000000 | 0.093750 |
-| target_popularity/head | 2 | 1.000000 | 0.093750 |
+| overall | 2 | 1.000000 | 0.375000 |
+| prefix/cold | 2 | 1.000000 | 0.375000 |
+| target_popularity/head | 2 | 1.000000 | 0.375000 |

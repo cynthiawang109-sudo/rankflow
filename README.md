@@ -130,3 +130,9 @@ and demo click events attributed to at least two distinct sessions. The
 rehearsal retains event IDs, a versioned dataset, model, segment evaluation
 and a signed decision. The feedback policy distinguishes confirmed actions
 from actions attributed to generated lists with unconfirmed impressions.
+
+The [Stage 2 exit evidence](docs/stage2_exit_evidence.md) links the training
+replay, signed release decision, model cards, drills and PostgreSQL run.
+`RANKFLOW_CONTROL_DATABASE_URL` optionally isolates control-plane connectivity
+from event logging. `RANKFLOW_ROUTING_SALTS` optionally points to a protected
+JSON mapping from routing salt IDs to secret values.
