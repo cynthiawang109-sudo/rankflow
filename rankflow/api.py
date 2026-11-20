@@ -1,3 +1,4 @@
+from starlette.background import BackgroundTask
 """RankFlow Product Alpha API."""
 import asyncio
 from collections import Counter
@@ -195,7 +196,7 @@ async def consume_outbox(store, stop):
             pass
 
 
-def create_app(generation, store=None, session_key=None, deadline_ms=20):
+def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic=None):
     session_key = session_key or secrets.token_bytes(32)
 
     @asynccontextmanager
@@ -205,6 +206,8 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20):
         if store:
             await run_in_threadpool(store.initialize)
             worker = asyncio.create_task(consume_outbox(store, stop))
+        if traffic:
+            await run_in_threadpool(traffic.initialize)
         try:
             yield
         finally:
@@ -233,7 +236,11 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20):
 
     @app.get("/health/ready")
     def ready():
-        return {"serving_ready": True, "release_ready": bool(store and store.ready())}
+
+        pin = traffic.pin() if traffic else None
+        return {"serving_ready": True, "release_ready": bool(store and store.ready() and
+                (pin is None or not pin.degraded)),
+                **({"config_id": pin.config.config_id, "config_revision": pin.revision} if pin else {})}
 
     @app.get("/playground", response_class=HTMLResponse)
     def playground():
@@ -256,16 +263,32 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20):
         csrf(request)
         started = perf_counter()
         events = [event.model_dump() for event in data.events]
-        if events and events[-1]["ts"] <= generation.snapshot.watermark:
+        session_hash = hmac.new(session_key, data.session_id.encode(), hashlib.sha256).hexdigest()
+        pin = traffic.pin() if traffic else None
+        selected, cohort = pin.select(session_hash) if pin else (generation, "stable")
+        if events and events[-1]["ts"] <= selected.snapshot.watermark:
             raise HTTPException(422, "cutoff_must_follow_snapshot")
-        result, decision = rank_request(generation, events, data.top_k, deadline_ms, compare)
+        result, decision = rank_request(selected, events, data.top_k, deadline_ms, compare)
+        if pin:
+            result.update(config_id=pin.config.config_id, config_revision=pin.revision, assignment=cohort)
+            decision.update(assigned_generation_id=selected.generation_id,
+                            served_generation_id=selected.generation_id, traffic_degraded=pin.degraded)
+            if pin.shadow:
+                def shadow():
+                    try:
+                        rank_request(pin.shadow, events, data.top_k, deadline_ms)
+                        count("synthetic_shadow_completed")
+                    except Exception:
+                        LOGGER.exception("Synthetic live shadow failed")
+                        count("synthetic_shadow_failed")
+                request.state.shadow_task = shadow
         result.update(request_id=data.request_id, impression_id=None, logging_status="degraded")
         if store:
             decision.update(result)
             decision.update(cutoff_ts=events[-1]["ts"] if events else None,
                             decision_latency_ms=round((perf_counter() - started) * 1000, 3),
                             source="demo", surface="playground" if compare else "api")
-            decision["session_hash"] = hmac.new(session_key, data.session_id.encode(), hashlib.sha256).hexdigest()
+            decision["session_hash"] = session_hash
             decision["session_key_id"] = os.environ.get("RANKFLOW_SESSION_KEY_ID", "local-v1")
             try:
                 impression_id = store.persist(decision)
@@ -276,6 +299,8 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20):
                 LOGGER.exception("Recommendation decision persistence failed")
         count("impressions_served")
         result["latency_ms"] = round((perf_counter() - started) * 1000, 3)
+        if task := getattr(request.state, "shadow_task", None):
+            return JSONResponse(result, background=BackgroundTask(task))
         return result
 
     @app.post("/v1/recommend")
@@ -326,4 +351,12 @@ def from_environment():
         from .store import PostgresStore
         store = PostgresStore(dsn)
     key = os.environ.get("RANKFLOW_SESSION_KEY")
-    return create_app(Generation.load(path), store, key.encode() if key else None)
+    traffic = None
+    if rescue_path := os.environ.get("RANKFLOW_RESCUE_CONFIG"):
+        import json
+        from .traffic import TrafficConfigSnapshot, TrafficRegistry
+        if not store or not key:
+            raise ValueError("Traffic routing requires PostgreSQL and a shared session key")
+        rescue = TrafficConfigSnapshot(**json.loads(Path(rescue_path).read_text(encoding="utf-8-sig")))
+        traffic = TrafficRegistry(store, path.parent, rescue, {"v1": key.encode()})
+    return create_app(Generation.load(path), store, key.encode() if key else None, traffic=traffic)
