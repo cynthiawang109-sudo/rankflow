@@ -136,18 +136,22 @@ def coverage(directory, cap):
     return stats
 
 
-def build_run(source_path, output, config, profile="fixture", download_manifest=None):
+def build_run(source_path, output, config, profile="fixture", download_manifest=None, *,
+              later_otto=False):
     if output.exists():
         raise FileExistsError(output)
     source = {"fixture": "synthetic_fixture", "otto": "otto_offline"}[profile]
     source_hash = file_hash(source_path)
     download_status = "Full OTTO download deferred. No OTTO run was performed."
+    if later_otto and profile != "otto":
+        raise ValueError("Later-OTTO ingestion requires the OTTO profile")
     if profile == "otto":
+        source_filename = "test.jsonl" if later_otto else "train.jsonl"
         download = read_json(download_manifest) if download_manifest else {}
-        if (download.get("source") != source or source_path.name != "train.jsonl"
-                or download.get("files", {}).get("train.jsonl") != source_hash
+        if (download.get("source") != source or source_path.name != source_filename
+                or download.get("files", {}).get(source_filename) != source_hash
                 or (FIXTURE.exists() and file_hash(FIXTURE) == source_hash)):
-            raise ValueError("OTTO runs require the verified train.jsonl from scripts/fetch_data")
+            raise ValueError(f"OTTO runs require the verified {source_filename} from scripts/fetch_data")
         download_status = "OTTO download verified against the fetch manifest."
     windows = config["windows"][profile]
     check_windows(windows)
