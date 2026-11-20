@@ -1,0 +1,140 @@
+{
+  "protocol": {
+    "report_version": "retrieval-v1",
+    "window": "W2-dev",
+    "label_policy": "nextclick-v1",
+    "snapshot_id": "cd5b998f1172df6d53ce28560fe1d9a79ca4086759c8830b3a0246187ba357a9",
+    "watermark": 1659909572414,
+    "epoch": {
+      "candidate_family": [
+        "LightGBM-LambdaRank",
+        1,
+        "nextclick-v1"
+      ],
+      "dataset_manifest_hash": "b4ce68b9761b403f895acf3c77d7748a8634034abcf12fa701e5d44a05a86b00",
+      "epoch_id": "stage0-initial",
+      "final_test_window": [
+        1661119200000,
+        1661724000000
+      ],
+      "history_statistics_watermark": 1659909572414,
+      "query_manifest_hash": "0101abfbc038bf4c36a1dc7e59a7307c77cc79311d75a15209537cff445fb670",
+      "retrieval_snapshot_id": "cd5b998f1172df6d53ce28560fe1d9a79ca4086759c8830b3a0246187ba357a9",
+      "source": "otto_offline",
+      "training_data_watermark": 1660514395857,
+      "validation_window": [
+        1660514400000,
+        1661119200000
+      ]
+    },
+    "caps": [
+      50,
+      100,
+      200,
+      300
+    ],
+    "ordering": "same candidates for both strategies",
+    "denominator": "Labeled queries, including retrieval misses. No-label queries counted separately.",
+    "recall_definition": "Target membership anywhere in the capped candidate union.",
+    "pre_rank_definition": "Target membership within ordered candidate depth.",
+    "memory_definition": "Peak process resident memory through variant completion."
+  },
+  "retrieval": {
+    "candidate_cap": 100,
+    "recent": 10,
+    "covisitation": 100,
+    "popularity": 20,
+    "top_n_per_item": 100,
+    "recent_mode": "recency"
+  },
+  "feature_schema": "session-features-v1",
+  "feature_names": [
+    "prefix_frequency",
+    "last_seen_age_ms",
+    "last_seen_missing",
+    "last_clicks",
+    "last_carts",
+    "last_orders",
+    "covisitation_score",
+    "has_covisitation",
+    "candidate_known_without_neighbours",
+    "popularity_rank",
+    "popularity_missing",
+    "candidate_is_unknown_item",
+    "session_length",
+    "prior_clicks",
+    "prior_carts",
+    "prior_orders",
+    "source_recent",
+    "rank_recent",
+    "source_covisitation",
+    "rank_covisitation",
+    "source_popularity",
+    "rank_popularity"
+  ],
+  "feature_code_sha256": "cc885ae447b4a1b9b066e082d990db7a070ebb3cee5f8b2674b3e6f514af071d",
+  "artifact_sha256": "8d06f0f97a3485540addeae9d6604b3fae3c948c2de2862d08d7de79e7cebd6d",
+  "rule_configuration": {
+    "recency": 2,
+    "repeat": 1,
+    "event_type": 0.25,
+    "covisitation": 3,
+    "popularity": 1
+  },
+  "rule_configuration_sha256": "3fbab19012506ca329380fb98e1d55d37712b810fc8b09dd78c3857c7026433b",
+  "training_window": "W1",
+  "lgbm_params": {
+    "objective": "lambdarank",
+    "n_estimators": 50,
+    "learning_rate": 0.1,
+    "num_leaves": 15,
+    "random_state": 42,
+    "deterministic": true,
+    "force_col_wise": true,
+    "n_jobs": 2,
+    "verbosity": -1,
+    "label_gain": [
+      0,
+      1
+    ]
+  },
+  "lightgbm": "4.7.0",
+  "training": {
+    "queries": 130626,
+    "no_label": 23977,
+    "all_negative": 81879,
+    "eligible": 24770,
+    "training_query_exclusion_rate": 0.7677427823983347,
+    "single_positive_rate": 0.2322572176016653,
+    "fit_seconds": 13.580782
+  },
+  "comparison": {
+    "labeled": 54776,
+    "no_label": 12205,
+    "retrieved": 12234,
+    "metrics": {
+      "rule-v1": {
+        "HitRate@20": 0.19630860230757996,
+        "MRR@20": 0.13396252373193235,
+        "NDCG@20": 0.1484113796392181
+      },
+      "lgbm-v1": {
+        "HitRate@20": 0.19935738279538484,
+        "MRR@20": 0.14246080410483872,
+        "NDCG@20": 0.15567292001013067
+      }
+    },
+    "wall_seconds": 155.49759870000003
+  },
+  "R1_primary": [
+    "HitRate@20",
+    "MRR@20"
+  ],
+  "relative_tolerance": 0.01,
+  "decision": "passes W2-dev primary check; promotion reserved for Stage 2",
+  "command": "python -m rankflow.train artifacts/stage0-otto artifacts/stage1/training configs/stage1_retrieval.json",
+  "primary_absolute_delta": {
+    "HitRate@20": 0.0030487804878048808,
+    "MRR@20": 0.00849828037290637
+  }
+}
