@@ -212,13 +212,45 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
     async def lifespan(app):
         stop = asyncio.Event()
         worker = traffic_worker = None
+
+        async def initialize_until_available(initialize, name, wait_seconds):
+            while not stop.is_set():
+                try:
+                    await run_in_threadpool(initialize)
+                    return True
+                except Exception:
+                    LOGGER.exception("%s initialization failed", name)
+                try:
+                    await asyncio.wait_for(stop.wait(), timeout=wait_seconds)
+                except TimeoutError:
+                    pass
+            return False
+
         if store:
-            await run_in_threadpool(store.initialize)
-            worker = asyncio.create_task(consume_outbox(store, stop))
+            try:
+                await run_in_threadpool(store.initialize)
+            except Exception:
+                LOGGER.exception("Event store unavailable at startup")
+
+                async def deferred_outbox():
+                    if await initialize_until_available(store.initialize, "Event store", 1):
+                        await consume_outbox(store, stop)
+                worker = asyncio.create_task(deferred_outbox())
+            else:
+                worker = asyncio.create_task(consume_outbox(store, stop))
         if traffic:
-            await run_in_threadpool(traffic.initialize)
-            await run_in_threadpool(traffic.refresh)
+            initialized = False
+            try:
+                await run_in_threadpool(traffic.initialize)
+                await run_in_threadpool(traffic.refresh)
+                initialized = True
+            except Exception:
+                LOGGER.exception("Traffic control unavailable at startup, using rescue")
+
             async def refresh_traffic():
+                if not initialized and not await initialize_until_available(
+                        traffic.initialize, "Traffic control", traffic.poll_seconds):
+                    return
                 while not stop.is_set():
                     try:
                         await asyncio.wait_for(stop.wait(), timeout=traffic.poll_seconds)
