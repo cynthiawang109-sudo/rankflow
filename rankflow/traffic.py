@@ -4,10 +4,14 @@ import hashlib
 import hmac
 from threading import Lock
 from time import monotonic
+from uuid import uuid4
+import logging
 
 from psycopg.types.json import Jsonb
 
 from .generation import Generation, encoded
+
+LOGGER = logging.getLogger(__name__)
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS traffic_configs (
@@ -16,6 +20,13 @@ CREATE TABLE IF NOT EXISTS traffic_configs (
 CREATE TABLE IF NOT EXISTS traffic_pointer (
     singleton BOOLEAN PRIMARY KEY CHECK (singleton),
     config_id TEXT NOT NULL REFERENCES traffic_configs(config_id), revision BIGINT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS traffic_instances (
+    instance_id TEXT PRIMARY KEY, revision BIGINT NOT NULL, config_id TEXT NOT NULL,
+    prepared JSONB NOT NULL, last_seen TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp()
+);
+CREATE TABLE IF NOT EXISTS traffic_preloads (
+    config_id TEXT PRIMARY KEY REFERENCES traffic_configs(config_id)
 );
 CREATE TABLE IF NOT EXISTS traffic_audit (
     operation_id TEXT PRIMARY KEY, action TEXT NOT NULL, config_id TEXT NOT NULL,
@@ -83,13 +94,16 @@ class TrafficPin:
 
 
 class TrafficRegistry:
-    def __init__(self, store, generation_root, rescue, salts, poll_seconds=1):
+    def __init__(self, store, generation_root, rescue, salts, poll_seconds=1,
+                 promotion_allowed=None):
         if rescue.canary_generation_id or rescue.shadow_generation_id:
             raise ValueError("Rescue configuration must be stable-only")
         self.store = store
         self.generation_root = generation_root
         self.salts = salts
         self.poll_seconds = poll_seconds
+        self.promotion_allowed = promotion_allowed
+        self.instance_id = uuid4().hex
         self.lock = Lock()
         self.generations = {}
         self.rescue = self.load(rescue, -1, degraded=True)
@@ -132,14 +146,50 @@ class TrafficRegistry:
                         SELECT p.config_id, p.revision, c.payload FROM traffic_pointer p
                         JOIN traffic_configs c USING (config_id)
                         """).fetchone()
-                config = TrafficConfigSnapshot(**row["payload"])
-                if row["config_id"] != config.config_id:
-                    raise ValueError("Traffic configuration checksum mismatch")
-                pin = self.load(config, row["revision"])
+                    config = TrafficConfigSnapshot(**row["payload"])
+                    if row["config_id"] != config.config_id:
+                        raise ValueError("Traffic configuration checksum mismatch")
+                    pin = self.load(config, row["revision"])
+                    prepared = []
+                    for item in conn.execute("""
+                        SELECT config_id, payload FROM traffic_preloads JOIN traffic_configs USING (config_id)
+                        """).fetchall():
+                        try:
+                            target = TrafficConfigSnapshot(**item["payload"])
+                            if target.config_id != item["config_id"]:
+                                raise ValueError("Preload identity mismatch")
+                            self.load(target, -1)
+                            prepared.append(target.config_id)
+                        except (OSError, ValueError, KeyError):
+                            LOGGER.warning("Traffic preload failed for %s", item["config_id"])
+                    conn.execute("""
+                        INSERT INTO traffic_instances(instance_id, revision, config_id, prepared)
+                        VALUES (%s, %s, %s, %s)
+                        ON CONFLICT(instance_id) DO UPDATE SET revision = excluded.revision,
+                            config_id = excluded.config_id, prepared = excluded.prepared,
+                            last_seen = clock_timestamp()
+                        """, (self.instance_id, pin.revision, config.config_id, Jsonb(prepared)))
             except Exception:
+                LOGGER.exception("Traffic control refresh failed")
                 pin = self.rescue
             self.refresh_at = monotonic() + 3 * self.poll_seconds
             self.current = pin
+
+    def prepare(self, target):
+        with self.lock, self.store.connect() as conn:
+            self.load(target, -1)
+            conn.execute("INSERT INTO traffic_configs VALUES (%s, %s) ON CONFLICT DO NOTHING",
+                         (target.config_id, Jsonb(asdict(target))))
+            conn.execute("INSERT INTO traffic_preloads VALUES (%s) ON CONFLICT DO NOTHING",
+                         (target.config_id,))
+        return target.config_id
+
+    def fleet(self):
+        with self.store.connect() as conn:
+            return conn.execute("""
+                SELECT *, last_seen > clock_timestamp() - %s * interval '1 second' AS leased
+                FROM traffic_instances ORDER BY instance_id
+                """, (3 * self.poll_seconds,)).fetchall()
 
     def publish(self, target, expected_revision, operation_id, actor, action="publish"):
         if action not in {"publish", "rollback", "kill"}:
@@ -180,6 +230,17 @@ class TrafficRegistry:
                     raise ValueError("Stable generation can change only during promotion")
             elif target.state != "draft" or target.stable_generation_id != old.stable_generation_id:
                 raise ValueError("A new experiment must start with the current stable generation")
+            if action == "publish" and target.state == "promoted":
+                if (not self.promotion_allowed or old.canary_generation_id != target.stable_generation_id
+                        or not self.promotion_allowed(self.generation(target.stable_generation_id))):
+                    raise ValueError("Promotion requires a signed approval for the current canary")
+            if target.canary_percent:
+                ready = conn.execute("""
+                    SELECT prepared FROM traffic_instances
+                    WHERE last_seen > clock_timestamp() - %s * interval '1 second'
+                    """, (3 * self.poll_seconds,)).fetchall()
+                if not ready or any(target.config_id not in row["prepared"] for row in ready):
+                    raise ValueError("Both generations must be preloaded by every leased instance")
             revision = expected_revision + 1
             self.load(target, revision)
             conn.execute("INSERT INTO traffic_configs VALUES (%s, %s) ON CONFLICT DO NOTHING",

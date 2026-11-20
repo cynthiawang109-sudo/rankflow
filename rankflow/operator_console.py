@@ -1,4 +1,4 @@
-﻿"""Authenticated release, experiment and data-provenance views."""
+"""Authenticated release, experiment and data-provenance views."""
 from dataclasses import asdict
 import hashlib
 import hmac
@@ -21,6 +21,15 @@ class PublishRequest(BaseModel):
     rollback_config_id: str | None = None
 
 
+def verified_records(registry, key):
+    if registry and key:
+        for path in sorted(Path(registry).glob("*.json")):
+            document = read_json(path)
+            expected = hmac.new(key, canonical(document["record"]), hashlib.sha256).hexdigest()
+            if hmac.compare_digest(expected, document["signature"]):
+                yield document
+
+
 def install_console(app, store, traffic, bearer, release_registry=None, signing_key=None):
     def authenticate(request: Request):
         actual = request.headers.get("authorization", "")
@@ -28,6 +37,19 @@ def install_console(app, store, traffic, bearer, release_registry=None, signing_
             raise HTTPException(401, "operator_authentication_required", headers={"WWW-Authenticate": "Bearer"})
 
     operator_only = [Depends(authenticate)]
+
+    if traffic:
+        def approved(generation):
+            for document in verified_records(release_registry, signing_key):
+                record = document["record"]
+                lineage = record["lineage"]
+                if (record["decision"] == "approved" and lineage["source"] == "otto_offline"
+                        and lineage["artifact_sha256"] == generation.assigned.artifact_hash
+                        and lineage["retrieval_snapshot_id"] == generation.snapshot.snapshot_id):
+                    return True
+            return False
+
+        traffic.promotion_allowed = approved
 
     @app.get("/operator", response_class=HTMLResponse, dependencies=operator_only)
     def console():
@@ -58,18 +80,12 @@ def install_console(app, store, traffic, bearer, release_registry=None, signing_
                 (pin is None or not pin.degraded)), "generations": generations,
                 "configuration": asdict(pin.config) if pin else None,
                 "config_id": pin.config.config_id if pin else None,
-                "revision": pin.revision if pin else None, "traffic_history": history}
+                "revision": pin.revision if pin else None, "traffic_history": history,
+                "instances": traffic.fleet() if traffic else []}
 
     @app.get("/operator/releases", dependencies=operator_only)
     def releases():
-        records = []
-        if release_registry and signing_key:
-            for path in sorted(Path(release_registry).glob("*.json")):
-                document = read_json(path)
-                expected = hmac.new(signing_key, canonical(document["record"]), hashlib.sha256).hexdigest()
-                if hmac.compare_digest(expected, document["signature"]):
-                    records.append(document)
-        return records
+        return list(verified_records(release_registry, signing_key))
 
     @app.get("/operator/events", dependencies=operator_only)
     def events():
@@ -108,6 +124,15 @@ def install_console(app, store, traffic, bearer, release_registry=None, signing_
         try:
             return {"registered": register_epoch(store, manifest)}
         except (TypeError, ValueError) as error:
+            raise HTTPException(409, str(error)) from error
+
+    @app.post("/operator/prepare", dependencies=operator_only)
+    def prepare(configuration: dict):
+        if traffic is None:
+            raise HTTPException(503, "traffic_control_unavailable")
+        try:
+            return {"config_id": traffic.prepare(TrafficConfigSnapshot(**configuration))}
+        except (OSError, TypeError, ValueError) as error:
             raise HTTPException(409, str(error)) from error
 
     @app.post("/operator/traffic/{action}", dependencies=operator_only)
