@@ -101,8 +101,10 @@ def run(directory, output, config, command):
                  for name in primary)
     eligible = counts["eligible"]
     labeled = eligible + counts["all_negative"]
+    evaluation_header = protocol(snapshot, directory, "same candidates for both strategies")
+    evaluation_header["caps"] = [config.candidate_cap]
     metadata = {
-        "protocol": protocol(snapshot, directory, "same candidates for both strategies"),
+        "protocol": evaluation_header,
         "retrieval": asdict(config), "feature_schema": FEATURE_VERSION, "feature_names": FEATURE_NAMES,
         "feature_code_sha256": feature_code_hash(), "artifact_sha256": strategy.artifact_hash,
         "rule_configuration": RULE_CONFIG, "rule_configuration_sha256": RULE.artifact_hash,
@@ -113,8 +115,8 @@ def run(directory, output, config, command):
         "comparison": comparison, "R1_primary": primary, "relative_tolerance": tolerance,
         "primary_absolute_delta": {name: metrics[strategy.strategy_id][name] - metrics[RULE.strategy_id][name]
                                    for name in primary},
-        "decision": "passes W2-dev primary check; promotion reserved for Stage 2" if passes
-        else "blocked by W2-dev primary regression; retain rule-v1",
+        "decision": "lgbm-v1 passes the W2-dev primary check. Promotion is reserved for Stage 2" if passes
+        else "W2-dev primary regression blocks lgbm-v1. Retain rule-v1",
     }
     (output / "strategy_report.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
     write_markdown(output / "strategy_report.md", metadata)
@@ -153,7 +155,7 @@ def write_markdown(path, report):
         f"allows a {report['relative_tolerance']:.0%} relative regression on each. NDCG@20 is secondary.",
         "", f"**Decision** ? {report['decision']}.",
         "", "The Alpha serves the registered rule strategy and exposes the fitted model in the Playground "
-        "as a ranker-only comparison. Governed promotion is a Stage 2 decision.",
+        "as a ranker-only comparison.",
         "", "[Run configuration, lineage, and unrounded metrics](stage1_strategy_report.json)",
     ])
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")

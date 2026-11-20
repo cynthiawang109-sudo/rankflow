@@ -23,8 +23,8 @@ LambdaRank was fit on labeled W1 queries whose target was retrieved. Both strate
 
 The primary metrics are end-to-end HitRate@20 and MRR@20. The W2-dev development check allows a 1% relative regression on each. NDCG@20 is secondary.
 
-**Decision** ? passes W2-dev primary check; promotion reserved for Stage 2.
+**Decision** ? lgbm-v1 passes the W2-dev primary check. Promotion is reserved for Stage 2.
 
-The Alpha serves the registered rule strategy and exposes the fitted model in the Playground as a ranker-only comparison. Governed promotion is a Stage 2 decision.
+The Alpha serves the registered rule strategy and exposes the fitted model in the Playground as a ranker-only comparison.
 
 [Run configuration, lineage, and unrounded metrics](stage1_strategy_report.json)

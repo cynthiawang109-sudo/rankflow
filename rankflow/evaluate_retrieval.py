@@ -4,15 +4,20 @@ from collections import Counter
 from dataclasses import asdict
 import json
 from pathlib import Path
+from threading import Event, Thread
 from time import perf_counter
+
+import psutil
 
 from .data.epoch import generate_queries
 from .data.ingestion import file_hash
-from .data.retrieval import peak_rss_bytes
 from .retrieval import RetrievalConfig, Snapshot, SOURCES, retrieve
 
 CAPS = (50, 100, 200, 300)
 LABEL_POLICY = "nextclick-v1"
+SOURCE_COMBINATIONS = tuple("+".join(source for bit, source in enumerate(SOURCES) if mask & (1 << bit))
+                            for mask in range(1 << len(SOURCES)))
+RSS_INTERVAL_SECONDS = .01
 
 
 def governed_sessions(directory, window):
@@ -47,7 +52,28 @@ def queries(directory, snapshot, window="W2-dev"):
 
 
 def evaluate(population, snapshot, config, order=None):
+    process = psutil.Process()
+    stop = Event()
+    memory = [process.memory_info().rss]
+
+    def monitor():
+        while not stop.wait(RSS_INTERVAL_SECONDS):
+            memory[0] = max(memory[0], process.memory_info().rss)
+
+    sampler = Thread(target=monitor, daemon=True)
+    sampler.start()
+    try:
+        result = measure(population, snapshot, config, order)
+    finally:
+        stop.set()
+        sampler.join()
+    result["peak_process_rss_bytes"] = max(memory[0], process.memory_info().rss)
+    return result
+
+
+def measure(population, snapshot, config, order):
     started = perf_counter()
+    retrieval_seconds = 0.0
     counts, sizes, overlap, targets, cold = (Counter() for _ in range(5))
     for query, _ in population:
         events, target = query["prefix_events"], query["positive_aid"]
@@ -65,18 +91,28 @@ def evaluate(population, snapshot, config, order=None):
             cold["all_unknown"] += 1
         elif not any(snapshot.neighbours.get(event["aid"]) for event in known):
             cold["no_neighbours"] += 1
+        retrieval_started = perf_counter()
         candidates = retrieve(snapshot, events, config)
+        retrieval_seconds += perf_counter() - retrieval_started
         sizes[len(candidates)] += 1
+        target_retrieved = False
         for candidate in candidates:
-            sources = "+".join(source for source, rank in zip(SOURCES, candidate.ranks) if rank)
+            recent, covisitation, popularity = candidate.ranks
+            mask = bool(recent) | (bool(covisitation) << 1) | (bool(popularity) << 2)
+            sources = SOURCE_COMBINATIONS[mask]
             overlap[sources] += 1
             if candidate.aid == target:
                 targets[sources] += 1
                 counts["retrieved"] += 1
-        ordered = order(snapshot, events, candidates) if order else [c.aid for c in candidates]
-        for k in (20, 50):
-            counts[f"pre_rank_hits@{k}"] += target in ordered[:k]
+                target_retrieved = True
+        if target_retrieved:
+            ordered = order(snapshot, events, candidates) if order else [c.aid for c in candidates]
+            for k in (20, 50):
+                counts[f"pre_rank_hits@{k}"] += target in ordered[:k]
     denominator = counts["labeled"]
+    if not denominator:
+        raise ValueError("No labeled queries in the evaluation population")
+    elapsed = perf_counter() - started
     return {
         "configuration": asdict(config), "counts": dict(counts),
         f"candidate_recall@{config.candidate_cap}": counts["retrieved"] / denominator,
@@ -87,7 +123,8 @@ def evaluate(population, snapshot, config, order=None):
                                 for source in SOURCES},
         "cold_start_cases": dict(cold), "cold_start_query_rate": sum(cold.values()) / denominator,
         "unknown_item_rate": counts["unknown_item_events"] / max(1, counts["prefix_events"]),
-        "wall_seconds": perf_counter() - started, "peak_process_rss_bytes": peak_rss_bytes(),
+        "wall_seconds": elapsed, "retrieval_wall_seconds": retrieval_seconds,
+        "mean_retrieval_ms_per_labeled_query": retrieval_seconds * 1000 / denominator,
     }
 
 
@@ -99,8 +136,12 @@ def protocol(snapshot, directory, ordering):
         "caps": CAPS, "ordering": ordering,
         "denominator": "Labeled queries, including retrieval misses. No-label queries counted separately.",
         "recall_definition": "Target membership anywhere in the capped candidate union.",
-        "pre_rank_definition": "Target membership within ordered candidate depth.",
-        "memory_definition": "Peak process resident memory through variant completion.",
+        "pre_rank_definition": "Target membership within ordered candidate depth. Retrieval misses receive zero "
+                               "credit without invoking the scorer.",
+        "wall_definition": "Variant wall time includes retrieval, metric aggregation and scoring retrieved positives. "
+                           "Retrieval wall time sums the candidate-generation calls.",
+        "memory_definition": "Maximum process resident memory sampled within each variant, including shared data. "
+                             "Sampling interval is 10 ms plus scheduler delay.",
     }
 
 
@@ -108,14 +149,21 @@ def write_report(output, report):
     output.parent.mkdir(parents=True, exist_ok=True)
     output.with_suffix(".json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     sections = ["# Retrieval evaluation", "", "## Protocol", ""]
-    sections += [f"- **{key}** — {value}" for key, value in report["protocol"].items()]
-    sections += ["", "| Variant | Cap | Candidate recall | Pre-rank hit rate@20 | Pre-rank hit rate@50 | Seconds | Peak RSS bytes |",
-                 "|---|---:|---:|---:|---:|---:|---:|"]
+    for key, value in report["protocol"].items():
+        if key == "epoch":
+            value = value["epoch_id"]
+        sections.append(f"- **{key}** — {value}")
+    counts = next(iter(report["variants"].values()))["counts"]
+    sections += ["", f"Population includes {counts['labeled']:,} labeled queries and "
+                 f"{counts.get('no_label', 0):,} no-label queries."]
+    sections += ["", "| Variant | Cap | Candidate recall | Pre-rank hit rate@20 | Pre-rank hit rate@50 | Variant seconds | Mean retrieval ms | Peak RSS bytes |",
+                 "|---|---:|---:|---:|---:|---:|---:|---:|"]
     for name, result in report["variants"].items():
         cap = result["configuration"]["candidate_cap"]
         sections.append(f"| {name} | {cap} | {result[f'candidate_recall@{cap}']:.4%} | "
                         f"{result['pre-rank hit rate@20']:.4%} | {result['pre-rank hit rate@50']:.4%} | "
-                        f"{result['wall_seconds']:.3f} | {result['peak_process_rss_bytes']:,} |")
+                        f"{result['wall_seconds']:.3f} | {result['mean_retrieval_ms_per_labeled_query']:.4f} | "
+                        f"{result['peak_process_rss_bytes']:,} |")
     sections += ["", f"[Full metric breakdown]({output.with_suffix('.json').name})"]
     sections.extend(report.get("markdown", []))
     output.with_suffix(".md").write_text("\n".join(sections) + "\n", encoding="utf-8")
@@ -130,10 +178,15 @@ def main():
     manifest = json.loads((args.directory / "data_manifest.json").read_text())
     if file_hash(args.directory / "sessions.jsonl") != manifest["artifacts"]["sessions.jsonl"]:
         raise ValueError("Session checksum mismatch")
+    from .strategies import rule_order
+
+    population = list(queries(args.directory, snapshot))
+    header = protocol(snapshot, args.directory, "rule-v1")
+    header["command"] = f"python -m rankflow.evaluate_retrieval {args.directory} {args.output}"
     write_report(args.output, {
-        "protocol": protocol(snapshot, args.directory, "deterministic retrieval order"),
-        "variants": {str(cap): evaluate(queries(args.directory, snapshot), snapshot,
-                                        RetrievalConfig(candidate_cap=cap, covisitation=cap, popularity=cap))
+        "protocol": header,
+        "variants": {str(cap): evaluate(population, snapshot,
+                                        RetrievalConfig(candidate_cap=cap, covisitation=cap, popularity=cap), rule_order)
                      for cap in CAPS},
     })
 
