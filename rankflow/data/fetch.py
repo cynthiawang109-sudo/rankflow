@@ -19,8 +19,13 @@ def extract_jsonl(archive, directory):
     hashes = {}
     with ZipFile(archive) as package:
         for target in ("train.jsonl", "test.jsonl"):
-            members = [member for member in package.infolist() if not member.is_dir()
-                       and PurePosixPath(member.filename).name in {target, target + ".gz"}]
+            members = []
+            for member in package.infolist():
+                if member.is_dir():
+                    continue
+                basename = PurePosixPath(member.filename).name.removesuffix(".gz")
+                if basename == target or basename.endswith(f"-{target}"):
+                    members.append(member)
             if len(members) != 1:
                 raise ValueError(f"Expected exactly one {target} (plain or gzipped)")
             member = members[0]
