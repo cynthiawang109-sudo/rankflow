@@ -46,8 +46,11 @@ class Stage0Tests(unittest.TestCase):
         windows = self.manifest["windows"]
         members = self.manifest["memberships"]
 
-        def validate(epoch=self.epoch, ranges=windows, membership=members, queries=self.queries):
-            validate_epoch(epoch, ranges, membership, iter(self.sessions), iter(queries))
+        def validate(epoch=self.epoch, ranges=windows, membership=members, queries=self.queries,
+                     exclusions=self.manifest["crossing_exclusions_by_length"]):
+            validate_epoch(epoch, ranges, membership, self.sessions, queries,
+                           crossing_exclusions=exclusions,
+                           short_session_max_events=self.config["short_session_max_events"])
 
         validate()
         for label_ts in (windows["W2"][0], windows["W3"][0]):
@@ -56,16 +59,20 @@ class Stage0Tests(unittest.TestCase):
                 bad_queries[0]["label_event_ts"] = label_ts
                 with self.assertRaisesRegex(ValueError, "W1 label event time"):
                     validate(queries=bad_queries)
-        for watermark in (210, 310, 311):
-            with self.subTest(watermark=watermark):
+        held_out = [query for query in self.queries if query["window"] != "W1"]
+        for group in (self.queries, held_out, [q for q in held_out if q["window"] == "W3"]):
+            cutoff = min(query["cutoff_ts"] for query in group)
+            with self.subTest(cutoff=cutoff):
                 with self.assertRaisesRegex(ValueError, "snapshot watermark must be strictly before"):
-                    validate(epoch=replace(self.epoch, history_statistics_watermark=watermark))
+                    validate(epoch=replace(self.epoch, history_statistics_watermark=cutoff), queries=group)
         with self.assertRaisesRegex(ValueError, "disjoint, ordered"):
             validate(ranges={**windows, "W3": [399, 500]})
         with self.assertRaisesRegex(ValueError, "pairwise disjoint"):
             validate(membership={**members, "W2-gate": members["W2-dev"]})
         with self.assertRaisesRegex(ValueError, "window-crossing session"):
             validate(membership={**members, "W0": [*members["W0"], 6]})
+        with self.assertRaisesRegex(ValueError, "counted by length"):
+            validate(exclusions={})
         bad_queries = copy.deepcopy(self.queries)
         bad_queries[0].update(positive_aid=999, label_event_index=3, label_event_ts=211)
         with self.assertRaisesRegex(ValueError, "first click strictly after"):

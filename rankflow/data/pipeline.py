@@ -11,8 +11,8 @@ import yaml
 
 from .epoch import EvaluationEpoch, generate_queries, validate_epoch
 from .ingestion import (
-    assign_window, check_windows, file_hash, load_sessions, read_rows, sample_ids,
-    validation_partition, write_row,
+    assign_window, check_windows, count_crossing, crossing_counts, file_hash, load_sessions,
+    read_rows, sample_ids, validation_partition, write_row,
 )
 from .retrieval import DiskBudgetExceeded, build_snapshot, candidate_inputs
 
@@ -35,7 +35,7 @@ def config_hash(config):
 def partition(source_path, selected, config, windows, directory, source):
     memberships = {window: [] for window in PARTITIONS}
     counts = {window: Counter(sessions=0, events=0) for window in PARTITIONS}
-    lengths = {"short": Counter(sessions=0, events=0), "long": Counter(sessions=0, events=0)}
+    lengths = crossing_counts()
     boundaries = Counter()
     outside = Counter(sessions=0, events=0)
     seen = set()
@@ -64,8 +64,7 @@ def partition(source_path, selected, config, windows, directory, source):
             if window == "W0":
                 write_row(history, row)
             if crossed:
-                bucket = "short" if len(events) <= config["short_session_max_events"] else "long"
-                lengths[bucket].update(sessions=1, events=len(events))
+                count_crossing(lengths, len(events), config["short_session_max_events"])
                 boundaries.update(map(str, crossed))
             elif window is None:
                 outside.update(sessions=1, events=len(events))
@@ -162,8 +161,8 @@ def build_run(source_path, output, config, profile="fixture", download_manifest=
         )
         if file_hash(source_path) != source_hash:
             raise ValueError("Source changed during ingestion")
-        if any(not members[window] for window in PARTITIONS):
-            raise ValueError("Every governed partition must have at least one session")
+        if not members["W0"]:
+            raise ValueError("At least one W0 session is required for a statistics watermark")
         history = directory / "history.jsonl"
         try:
             retrieval = build_snapshot(session_events(history), directory, config["retrieval"], source)
@@ -200,12 +199,14 @@ def build_run(source_path, output, config, profile="fixture", download_manifest=
         manifest_path = directory / "data_manifest.json"
         save_json(manifest_path, manifest)
         epoch = EvaluationEpoch(
-            config["epoch_id"], marks["W0"], marks["W1"], tuple(windows["W2"]),
+            config["epoch_id"], marks["W0"], marks.get("W1", windows["W1"][0] - 1), tuple(windows["W2"]),
             tuple(windows["W3"]), snapshot_id, file_hash(manifest_path), file_hash(queries),
             tuple(config["candidate_family"]),
         )
-        validate_epoch(epoch, windows, members, session_events(directory / "sessions.jsonl"),
-                       read_rows(queries))
+        validate_epoch(
+            epoch, windows, members, session_events(directory / "sessions.jsonl"), read_rows(queries),
+            crossing_exclusions=lengths, short_session_max_events=config["short_session_max_events"],
+        )
         save_json(directory / "evaluation_epoch.json", {"source": source, **asdict(epoch)})
         # Publish atomically from the same volume once registration succeeds.
         directory.replace(output)

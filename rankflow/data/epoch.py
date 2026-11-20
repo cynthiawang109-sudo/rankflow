@@ -1,7 +1,7 @@
 """Next-click query generation and evaluation epoch registration predicates."""
 from dataclasses import dataclass
 
-from .ingestion import assign_window, check_windows, stable_hash
+from .ingestion import assign_window, check_windows, count_crossing, crossing_counts, stable_hash
 
 
 @dataclass(frozen=True)
@@ -48,7 +48,8 @@ def generate_queries(session_id, events, window, epoch_id, snapshot_id, source, 
         }
 
 
-def validate_epoch(epoch, windows, memberships, sessions, queries):
+def validate_epoch(epoch, windows, memberships, sessions, queries, *,
+                   crossing_exclusions, short_session_max_events):
     """Validate against full sampled sessions, including excluded sessions.
 
     Sessions and queries are streamed in the same session order.
@@ -65,12 +66,16 @@ def validate_epoch(epoch, windows, memberships, sessions, queries):
             if session_id in owners:
                 raise ValueError("F05: governed session memberships must be pairwise disjoint")
             owners[session_id] = window
+    observed_exclusions = crossing_counts()
+    queries = iter(queries)
     pending = next(queries, None)
     for session_id, events in sessions:
         owner = owners.pop(session_id, None)
         window, crossed = assign_window(events, windows)
-        if crossed and owner:
-            raise ValueError("F05: window-crossing session must be excluded")
+        if crossed:
+            if owner:
+                raise ValueError("F05: window-crossing session must be excluded")
+            count_crossing(observed_exclusions, len(events), short_session_max_events)
         base = owner.split("-")[0] if owner else None
         if window != base:
             raise ValueError("F05: session membership must match its chronological window")
@@ -104,3 +109,5 @@ def validate_epoch(epoch, windows, memberships, sessions, queries):
             pending = next(queries, None)
     if pending is not None or owners:
         raise ValueError("F05: query or window membership references an unregistered session")
+    if observed_exclusions != crossing_exclusions:
+        raise ValueError("F05: window-crossing sessions must be counted by length")

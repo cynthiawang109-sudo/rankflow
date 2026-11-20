@@ -2,6 +2,7 @@
 import hashlib
 import heapq
 import json
+from collections import Counter
 
 
 def file_hash(path):
@@ -81,3 +82,12 @@ def validation_partition(session_id, *, seed, gate_percent):
         raise ValueError("W2 gate percentage must be between 0 and 100")
     value = int(stable_hash(seed, session_id), 16)
     return "W2-gate" if value * 100 < (1 << 256) * gate_percent else "W2-dev"
+
+
+def crossing_counts():
+    return {bucket: Counter(sessions=0, events=0) for bucket in ("short", "long")}
+
+
+def count_crossing(counts, session_length, short_max):
+    bucket = "short" if session_length <= short_max else "long"
+    counts[bucket].update(sessions=1, events=session_length)
