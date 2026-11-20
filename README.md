@@ -88,3 +88,45 @@ returns. The rule fallback remains scoped to the current request.
 
 The [Stage 1 exit evidence](docs/stage1_exit_evidence.md) records the test and
 browser runs against PostgreSQL.
+## Stage 2 ML Platform Beta
+
+The [Stage 1 manifest](docs/stage1_baseline_manifest.md) pins the accepted inputs.
+Run the training pipeline from the repository root with a clean tracked tree.
+
+```powershell
+.venv/Scripts/python.exe -m rankflow.training_pipeline artifacts/stage0-otto artifacts/stage2/training --reproduce
+```
+
+The output directory contains the immutable model, JSON lineage and model card.
+Reproduction runs both fits and requires exact equality for model checksums,
+canonical lineage, counts and development metrics.
+
+The W2-gate command requires an operator bearer and a separate release signing
+key. Use one durable, access-controlled release registry for the epoch. The
+exclusive claim survives a failed evaluation. The summary contains the
+disposition and registry references.
+
+```powershell
+.venv/Scripts/python.exe -m rankflow.release_gate artifacts/stage0-otto <registered-run> artifacts/stage2/releases --operator <operator-id> --summary docs/stage2_release_decision.md
+```
+
+For serving, set `RANKFLOW_RESCUE_CONFIG` to a provisioned JSON file with
+`stable_generation_id`, set `RANKFLOW_GENERATION_REGISTRY` to the shared bundle
+directory, and configure PostgreSQL and a shared `RANKFLOW_SESSION_KEY`.
+Set `RANKFLOW_ADMIN_BEARER`, `RANKFLOW_RELEASE_REGISTRY`, and
+`RANKFLOW_RELEASE_SIGNING_KEY` for authenticated operator views. Requests to
+`/operator` and its API endpoints require the HTTP Authorization bearer header.
+
+Prepare canary configs through `POST /operator/prepare` and inspect instance
+preloads at `GET /operator/status` before publishing. Mutations provide
+`expected_revision` and a unique `operation_id`. Rollback requests name
+`rollback_config_id`. A committed pointer revision is observable separately
+from the revisions acknowledged by each leased instance.
+
+Run historical candidate replay on the W2-dev population with
+`python -m rankflow.shadow_replay`. Run the demo learning rehearsal with
+`python -m rankflow.demo_learning`, a serving bundle, a separate demo registry,
+and demo click events attributed to at least two distinct sessions. The
+rehearsal retains event IDs, a versioned dataset, model, segment evaluation
+and a signed decision. The feedback policy distinguishes confirmed actions
+from actions attributed to generated lists with unconfirmed impressions.
