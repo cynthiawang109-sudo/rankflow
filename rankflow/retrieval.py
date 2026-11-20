@@ -1,4 +1,4 @@
-﻿"""Deterministic retrieval from a governed W0 snapshot and an observed prefix."""
+"""Deterministic retrieval from a governed W0 snapshot and an observed prefix."""
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 import json
@@ -86,12 +86,12 @@ class Snapshot:
 def recent_items(events, mode):
     last = {}
     weights = Counter()
-    for index, event in enumerate(events):
+    for event in events:
         aid = event["aid"]
-        last[aid] = event["ts"], index
+        last[aid] = event["ts"]
         weights[aid] += EVENT_WEIGHTS[event["type"]] if mode == "event_type" else 1
     return sorted(last, key=lambda aid: (
-        -weights[aid] if mode != "recency" else 0, -last[aid][0], -last[aid][1], aid
+        -weights[aid] if mode != "recency" else 0, -last[aid], aid
     ))
 
 

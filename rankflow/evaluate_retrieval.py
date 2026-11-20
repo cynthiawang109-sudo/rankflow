@@ -1,4 +1,4 @@
-﻿"""W2-dev retrieval evaluation with end-to-end labeled-query denominators."""
+"""W2-dev retrieval evaluation with end-to-end labeled-query denominators."""
 import argparse
 from collections import Counter
 from dataclasses import asdict
@@ -19,12 +19,16 @@ def governed_sessions(directory, window):
     if window not in {"W1", "W2-dev"}:
         raise ValueError("Only W1 and W2-dev are available")
     manifest = json.loads((directory / "data_manifest.json").read_text())
+    members = set(manifest["memberships"][window])
     # The Stage 0 file is sorted JSON. Filter its final window field before decoding.
     suffix = ('"window":"' + window + '"}').encode()
     with (directory / "sessions.jsonl").open("rb") as stream:
         for line in stream:
             if line.rstrip().endswith(suffix):
-                yield json.loads(line)
+                row = json.loads(line)
+                if row["session"] not in members:
+                    raise ValueError("Session is outside the manifest membership")
+                yield row
 
 
 def queries(directory, snapshot, window="W2-dev"):
@@ -123,6 +127,9 @@ def main():
     parser.add_argument("output", type=Path)
     args = parser.parse_args()
     snapshot = Snapshot.load(args.directory)
+    manifest = json.loads((args.directory / "data_manifest.json").read_text())
+    if file_hash(args.directory / "sessions.jsonl") != manifest["artifacts"]["sessions.jsonl"]:
+        raise ValueError("Session checksum mismatch")
     write_report(args.output, {
         "protocol": protocol(snapshot, args.directory, "deterministic retrieval order"),
         "variants": {str(cap): evaluate(queries(args.directory, snapshot), snapshot,
