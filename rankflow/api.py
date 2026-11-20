@@ -373,9 +373,10 @@ def from_environment():
         ):
             raise ValueError("Invalid Alpha generation identifier")
         path = registry / identifier
+    from .store import PostgresStore
+
     store = None
     if dsn := os.environ.get("RANKFLOW_DATABASE_URL"):
-        from .store import PostgresStore
         store = PostgresStore(dsn)
     key = os.environ.get("RANKFLOW_SESSION_KEY")
     traffic = None
@@ -385,7 +386,9 @@ def from_environment():
         if not store or not key:
             raise ValueError("Traffic routing requires PostgreSQL and a shared session key")
         rescue = TrafficConfigSnapshot(**json.loads(Path(rescue_path).read_text(encoding="utf-8-sig")))
-        traffic = TrafficRegistry(store, path.parent, rescue, {"v1": key.encode()})
+        control_dsn = os.environ.get("RANKFLOW_CONTROL_DATABASE_URL")
+        control = PostgresStore(control_dsn) if control_dsn else store
+        traffic = TrafficRegistry(control, path.parent, rescue, {"v1": key.encode()})
     admin = os.environ.get("RANKFLOW_ADMIN_BEARER")
     signing_key = os.environ.get("RANKFLOW_RELEASE_SIGNING_KEY")
     return create_app(Generation.load(path), store, key.encode() if key else None, traffic=traffic,

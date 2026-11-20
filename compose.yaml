@@ -23,7 +23,7 @@ services:
     volumes:
       - ${RANKFLOW_GENERATIONS_DIR:-./artifacts/stage1/generations}:/generations:ro
     healthcheck:
-      test: ["CMD", "/app/.venv/bin/python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/live', timeout=2)"]
+      test: ["CMD", "/app/.venv/bin/python", "-c", "import json, urllib.request; assert json.load(urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=2))['serving_ready']"]
       interval: 3s
       timeout: 3s
       retries: 20

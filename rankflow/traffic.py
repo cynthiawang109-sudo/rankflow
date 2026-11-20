@@ -55,8 +55,11 @@ class TrafficConfigSnapshot:
     routing_salt_id: str = "v1"
     guardrail_policy_version: str = "stage2-v1"
     state: str = "draft"
+    guardrail_mode: str = "synthetic_operational"
 
     def __post_init__(self):
+        if self.guardrail_mode != "synthetic_operational":
+            raise ValueError("Only synthetic operational guardrails are available")
         if not 0 <= self.canary_percent <= 100 or self.state not in TRANSITIONS:
             raise ValueError("Invalid experiment state or canary percentage")
         if self.canary_percent and (self.state != "canary" or not self.canary_generation_id):
@@ -70,7 +73,9 @@ class TrafficConfigSnapshot:
 
     @property
     def config_id(self):
-        return "cfg-" + hashlib.sha256(encoded(asdict(self))).hexdigest()
+        payload = asdict(self)
+        del payload["guardrail_mode"]
+        return "cfg-" + hashlib.sha256(encoded(payload)).hexdigest()
 
     def cohort(self, session_hash, salt):
         digest = hmac.digest(salt, encoded([self.experiment_id, self.routing_salt_id, session_hash]), "sha256")
