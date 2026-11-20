@@ -4,6 +4,7 @@ from collections import defaultdict
 import hashlib
 import os
 from pathlib import Path
+import subprocess
 from tempfile import TemporaryDirectory
 
 from .features import FEATURE_NAMES, FEATURE_VERSION, build_features, feature_code_hash
@@ -108,7 +109,8 @@ def rehearse(store, generation, registry, signing_key):
             "feature_schema": FEATURE_VERSION, "feature_code_sha256": feature_code_hash(),
             "retrieval_snapshot_id": generation.snapshot.snapshot_id, "artifact_sha256": file_hash(artifact),
             "training_configuration": LIGHTGBM_CONFIG, "random_seed": LIGHTGBM_CONFIG["random_state"],
-            "evaluation_protocol_version": "demo-session-holdout-v1",
+            "evaluation_protocol_version": "demo-session-holdout-v2",
+            "code_version": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
         }
         lineage["run_id"] = hashlib.sha256(canonical(lineage)).hexdigest()
         evaluation = {"source": "demo", "slices": {
