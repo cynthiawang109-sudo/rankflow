@@ -1,6 +1,6 @@
 """Build and verify immutable, self-contained Alpha serving generations."""
 import argparse
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import hashlib
 import json
 from pathlib import Path
@@ -10,7 +10,7 @@ from tempfile import TemporaryDirectory
 from .data.ingestion import file_hash
 from .features import FEATURE_NAMES, FEATURE_VERSION, feature_code_hash
 from .retrieval import RetrievalConfig, Snapshot
-from .strategies import RULE, RULE_CONFIG, load_model
+from .strategies import RULE, RULE_CONFIG, RankingStrategy, load_model
 
 FILES = (
     "evaluation_epoch.json", "data_manifest.json", "history.jsonl", "covisitation.jsonl",
@@ -87,9 +87,10 @@ class Generation:
     assigned: object
     challenger: object
     examples: dict
+    model_path: Path | None = None
 
     @classmethod
-    def load(cls, directory, expected_id=None):
+    def load(cls, directory, expected_id=None, *, isolated=False):
         manifest = json.loads((directory / "manifest.json").read_bytes())
         generation_id = identity(manifest)
         if generation_id != (expected_id or directory.name) or manifest["version"] != "serving-generation-v1":
@@ -105,7 +106,10 @@ class Generation:
                 or compatibility["feature_code_sha256"] != feature_code_hash()):
             raise ValueError("Serving feature compatibility mismatch")
         snapshot = Snapshot.load(directory)
-        model = load_model(directory / "lgbm-v1.txt")
+        model_path = directory / "lgbm-v1.txt"
+        model = (RankingStrategy("lgbm-v1", "lightgbm", 1, "evaluated",
+                                 checksums["lgbm-v1.txt"], None)
+                 if isolated else load_model(model_path))
         report = json.loads((directory / "strategy_report.json").read_bytes())
         if (report["artifact_sha256"] != model.artifact_hash
                 or report["feature_code_sha256"] != feature_code_hash()
@@ -133,8 +137,36 @@ class Generation:
         if set(examples) != {"W1", "W2-dev"}:
             raise ValueError("Invalid Playground boundary")
         return cls(generation_id, snapshot, RetrievalConfig(**manifest["retrieval"]), assigned,
-                   model if assigned == RULE else RULE, examples)
+                   model if assigned == RULE else RULE, examples, model_path if isolated else None)
 
+
+
+def cached_generation(source, cache):
+    """Copy a complete immutable generation, verify it, then publish the directory."""
+    identifier = source.name
+    if cache is None:
+        return Generation.load(source, isolated=True)
+    destination = cache / identifier
+    if destination.is_dir():
+        return Generation.load(destination, isolated=True)
+    cache.mkdir(parents=True, exist_ok=True)
+    with TemporaryDirectory(dir=cache) as temporary:
+        staging = Path(temporary)
+        manifest = source / "manifest.json"
+        shutil.copyfile(manifest, staging / manifest.name)
+        checksums = json.loads((staging / manifest.name).read_bytes())["checksums"]
+        if set(checksums) not in (set(FILES), {*FILES, "run.json"}):
+            raise ValueError("Generation file inventory mismatch")
+        for filename in checksums:
+            shutil.copyfile(source / filename, staging / filename)
+        generation = Generation.load(staging, identifier, isolated=True)
+        try:
+            staging.rename(destination)
+        except OSError:
+            if not destination.is_dir():
+                raise
+            return Generation.load(destination, isolated=True)
+        return replace(generation, model_path=destination / "lgbm-v1.txt")
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)

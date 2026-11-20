@@ -23,9 +23,10 @@ from starlette.concurrency import run_in_threadpool
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from .features import FEATURE_VERSION, build_features
-from .generation import Generation
+from .generation import cached_generation
 from .operations import RequestMetrics, emit
 from .retrieval import retrieve
+from .scorer import Scorer
 from .strategies import RULE
 
 LOGGER = logging.getLogger(__name__)
@@ -72,10 +73,21 @@ class Feedback(Input):
         return self
 
 
-def rank_request(generation, events, top_k, deadline_ms, compare=False, request_id=None):
+def rank_request(generation, events, top_k, deadline_ms, compare=False, request_id=None, scorer=None, comparison_scorer=None):
+    def score(strategy, executor=scorer):
+        if not executor or strategy.strategy_type != "lightgbm" or not generation.model_path:
+            return strategy.rank(candidates, rows)
+        scores = executor.score(generation.model_path, strategy.artifact_hash, rows, deadline_ms) if rows else []
+        if len(scores) != len(candidates):
+            raise ValueError("Unexpected inference response length")
+        return sorted(zip(candidates, map(float, scores)), key=lambda row: (-row[1], row[0].aid))
+
+    started = perf_counter()
     snapshot = generation.snapshot
     candidates = retrieve(snapshot, events, generation.config)
+    retrieved = perf_counter()
     rows = build_features(snapshot, events, candidates)
+    featured = perf_counter()
     unknown = sum(event["aid"] not in snapshot.popularity_ranks for event in events)
     assigned = generation.assigned
     served = assigned
@@ -86,10 +98,10 @@ def rank_request(generation, events, top_k, deadline_ms, compare=False, request_
         ranking = RULE.rank(candidates, rows)
         scoring_path = "popularity"
     elif assigned.strategy_type == "lightgbm":
-        started = perf_counter()
+        scoring_started = perf_counter()
         try:
-            ranking = assigned.rank(candidates, rows)
-            if (perf_counter() - started) * 1000 >= deadline_ms:
+            ranking = score(assigned)
+            if (perf_counter() - scoring_started) * 1000 >= deadline_ms:
                 raise TimeoutError
             if not all(math.isfinite(score) for _, score in ranking):
                 raise ValueError("Non-finite model scores")
@@ -99,6 +111,8 @@ def rank_request(generation, events, top_k, deadline_ms, compare=False, request_
             ranking = RULE.rank(candidates, rows)
     else:
         ranking = RULE.rank(candidates, rows)
+
+    scored_at = perf_counter()
 
     def items(scored):
         return [{"aid": candidate.aid, "rank": rank, "score": score,
@@ -115,7 +129,7 @@ def rank_request(generation, events, top_k, deadline_ms, compare=False, request_
         challenger = generation.challenger
         try:
             comparison_path = "popularity" if scoring_path == "popularity" else challenger.strategy_type
-            alternative = items((RULE if comparison_path == "popularity" else challenger).rank(candidates, rows))
+            alternative = items(score(RULE if comparison_path == "popularity" else challenger, comparison_scorer or scorer))
             left = {candidate.aid: rank for rank, (candidate, _) in enumerate(ranking, 1)}
             right = {item["aid"]: item["rank"] for item in alternative}
             intersection = {item["aid"] for item in result["items"]} & right.keys()
@@ -128,7 +142,9 @@ def rank_request(generation, events, top_k, deadline_ms, compare=False, request_
             emit("comparison_failed", logging.WARNING, request_id=request_id)
             result["comparison"] = {"mode": "ranker-only", "status": "unavailable"}
     emit("ranking_outcome", request_id=request_id, generation=generation.generation_id,
-         strategy=served.strategy_id, fallback_reason=reason)
+         strategy=served.strategy_id, fallback_reason=reason,
+         retrieval_ms=(retrieved - started) * 1000, feature_ms=(featured - retrieved) * 1000,
+         scoring_ms=(scored_at - featured) * 1000)
     return result, decision
 
 
@@ -206,6 +222,7 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
     session_key = session_key or secrets.token_bytes(32)
     shadow_executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="rankflow-shadow") if traffic else None
     shadow_capacity = BoundedSemaphore(2)
+    primary_scorer, shadow_scorer, comparison_scorer = Scorer(), Scorer(), Scorer()
     guardrails = None
     if store and traffic:
         from .guardrails import Guardrails
@@ -278,6 +295,8 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
                 await traffic_worker
             if shadow_executor:
                 await run_in_threadpool(shadow_executor.shutdown)
+            for scorer in (primary_scorer, shadow_scorer, comparison_scorer):
+                await run_in_threadpool(scorer.close)
 
     app = FastAPI(title="RankFlow", lifespan=lifespan)
     app.state.counters = Counter()
@@ -337,17 +356,29 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
         if events and events[-1]["ts"] <= selected.snapshot.watermark:
             emit("recommendation_rejected", request_id=data.request_id, reason="cutoff_must_follow_snapshot")
             raise HTTPException(422, "cutoff_must_follow_snapshot")
-        result, decision = rank_request(selected, events, data.top_k, deadline_ms, compare, request_id=data.request_id)
+        result, decision = rank_request(selected, events, data.top_k, deadline_ms, compare, request_id=data.request_id,
+                                        scorer=primary_scorer, comparison_scorer=comparison_scorer)
         if pin:
             result.update(config_id=pin.config.config_id, config_revision=pin.revision, assignment=cohort)
             decision.update(assigned_generation_id=selected.generation_id,
                             served_generation_id=selected.generation_id, traffic_degraded=pin.degraded)
+            if decision["fallback_reason"] and selected is not pin.stable:
+                stable_result, stable_decision = rank_request(
+                    pin.stable, events if not events or events[-1]["ts"] > pin.stable.snapshot.watermark else [],
+                    data.top_k, deadline_ms, request_id=data.request_id,
+                    scorer=primary_scorer,
+                )
+                result.update({key: stable_result[key] for key in
+                               ("served_strategy", "serving_generation", "retrieval_snapshot_id",
+                                "feature_version", "items")})
+                decision.update(served_generation_id=pin.stable.generation_id,
+                                scoring_path=stable_decision["scoring_path"])
             if pin.shadow:
                 count("synthetic_shadow_attempted")
                 def evaluate_shadow():
                     try:
                         comparison, reasons = rank_request(pin.shadow, events, data.top_k, deadline_ms,
-                                                           request_id=data.request_id)
+                                                           request_id=data.request_id, scorer=shadow_scorer)
                         actual = {item["aid"]: item["rank"] for item in result["items"]}
                         alternative = {item["aid"]: item["rank"] for item in comparison["items"]}
                         common = actual.keys() & alternative.keys()
@@ -455,6 +486,11 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
 
 
 def from_environment():
+    log = logging.getLogger("rankflow.operations")
+    if not log.handlers:
+        log.addHandler(logging.StreamHandler())
+        log.propagate = False
+    log.setLevel(logging.INFO)
     if configured := os.environ.get("RANKFLOW_GENERATION"):
         path = Path(configured)
     else:
@@ -472,6 +508,7 @@ def from_environment():
         store = PostgresStore(dsn)
     key = os.environ.get("RANKFLOW_SESSION_KEY")
     traffic = None
+    cache = Path(os.getenv("RANKFLOW_ARTIFACT_CACHE", str(path.parent / ".cache")))
     if rescue_path := os.environ.get("RANKFLOW_RESCUE_CONFIG"):
         import json
         from .traffic import TrafficConfigSnapshot, TrafficRegistry
@@ -490,10 +527,11 @@ def from_environment():
         traffic = TrafficRegistry(control, path.parent, rescue, salts,
                                   poll_seconds=float(os.getenv("RANKFLOW_CONFIG_POLL_SECONDS", "1")),
                                   convergence_seconds=float(os.getenv("RANKFLOW_CONVERGENCE_SECONDS", "10")),
-                                  minimum_capacity=int(os.getenv("RANKFLOW_MINIMUM_CAPACITY", "1")))
+                                  minimum_capacity=int(os.getenv("RANKFLOW_MINIMUM_CAPACITY", "1")),
+                                  artifact_cache=cache)
     admin = os.environ.get("RANKFLOW_ADMIN_BEARER")
     signing_key = os.environ.get("RANKFLOW_RELEASE_SIGNING_KEY")
-    generation = traffic.generation(path.name) if traffic else Generation.load(path)
+    generation = traffic.generation(path.name) if traffic else cached_generation(path, cache)
     return create_app(generation, store, key.encode() if key else None, traffic=traffic,
                       admin_bearer=admin.encode() if admin else None,
                       release_registry=os.environ.get("RANKFLOW_RELEASE_REGISTRY"),

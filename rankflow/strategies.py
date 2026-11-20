@@ -50,13 +50,13 @@ RULE = RankingStrategy("rule-v1", "rule", 1, "active",
                        rule_scores)
 
 
-def load_model(path: Path):
+def load_model(path: Path, *, threads=2):
     import lightgbm
     import numpy as np
 
     model = lightgbm.Booster(model_file=str(path))
     return RankingStrategy("lgbm-v1", "lightgbm", 1, "evaluated", file_hash(path),
-                           lambda rows: model.predict(np.asarray(rows, dtype=np.float32), num_threads=2))
+                           lambda rows: model.predict(np.asarray(rows, dtype=np.float32), num_threads=threads))
 
 
 def rule_order(snapshot, events, candidates):

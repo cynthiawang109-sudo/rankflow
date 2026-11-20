@@ -13,7 +13,7 @@ from .operations import emit
 import psycopg
 from psycopg.types.json import Jsonb
 
-from .generation import Generation, encoded
+from .generation import Generation, cached_generation, encoded
 
 LOGGER = logging.getLogger(__name__)
 
@@ -121,12 +121,13 @@ class TrafficPin:
 
 class TrafficRegistry:
     def __init__(self, store, generation_root, rescue, salts, poll_seconds=1,
-                 promotion_allowed=None, convergence_seconds=10, minimum_capacity=1):
+                 promotion_allowed=None, convergence_seconds=10, minimum_capacity=1, artifact_cache=None):
         if rescue.canary_generation_id or rescue.shadow_generation_id:
             raise ValueError("Rescue configuration must be stable-only")
         self.store = store
         self.generation_root = generation_root
         self.salts = salts
+        self.artifact_cache = artifact_cache
         self.poll_seconds = poll_seconds
         self.promotion_allowed = promotion_allowed
         self.convergence_seconds = convergence_seconds
@@ -143,7 +144,7 @@ class TrafficRegistry:
         ):
             raise ValueError("Invalid generation ID")
         if identifier not in self.generations:
-            self.generations[identifier] = Generation.load(self.generation_root / identifier)
+            self.generations[identifier] = cached_generation(self.generation_root / identifier, self.artifact_cache)
         return self.generations[identifier]
 
     def load(self, config, revision, degraded=False):
