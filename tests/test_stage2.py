@@ -15,7 +15,7 @@ from rankflow.api import create_app
 from rankflow.demo_learning import collect, dataset, rehearse
 from rankflow.epoch_registry import register_epoch
 from rankflow.guardrails import Guardrails
-from rankflow.release_gate import POLICY, disposition, release
+from rankflow.release_gate import POLICY, append_signed, disposition, release
 from rankflow.store import PostgresStore
 from rankflow.traffic import TrafficConfigSnapshot, TrafficRegistry
 from rankflow.training_pipeline import read_json
@@ -41,6 +41,22 @@ class GateTests(unittest.TestCase):
         evaluation, _ = paired_evaluation(queries, STABLE.snapshot, STABLE.config, weak)
         decision, _, _, _ = disposition(evaluation, weak.strategy_id, read_json(POLICY))
         self.assertEqual(decision, "rejected")
+
+    def test_gate_record_requires_operator_bearer(self):
+        with TemporaryDirectory() as workspace:
+            registry = Path(workspace)
+            record = {"window": "W2-gate", "decision": "rejected", "evaluation": {"private": True}}
+            append_signed(registry / "gate.json", record, SIGNING)
+            (registry / "forged.json").write_text(
+                '{"record":{"window":"W2-gate","evaluation":{"forged":true}},"signature":"invalid"}')
+            with TestClient(create_app(STABLE, admin_bearer=SECRET, release_registry=registry,
+                                       signing_key=SIGNING)) as client:
+                self.assertEqual(client.get("/operator/releases").status_code, 401)
+                self.assertEqual(client.get("/v1/playground/prefixes?window=W2-gate").status_code, 404)
+                headers = {"Authorization": "Bearer stage2-test-key"}
+                response = client.get("/operator/releases", headers=headers)
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual([row["record"] for row in response.json()], [record])
 
     def test_demo_provenance_rejected_before_gate_open(self):
         with TemporaryDirectory() as workspace:
