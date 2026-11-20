@@ -29,9 +29,11 @@ CREATE TABLE IF NOT EXISTS delivered_events (
     event_id TEXT PRIMARY KEY, payload JSONB NOT NULL
 );
 CREATE TABLE IF NOT EXISTS acknowledgements (
-    impression_id TEXT PRIMARY KEY REFERENCES impressions(id),
-    kind TEXT NOT NULL, acknowledged_at TIMESTAMPTZ NOT NULL
+    impression_id TEXT NOT NULL REFERENCES impressions(id),
+    kind TEXT NOT NULL, acknowledged_at TIMESTAMPTZ NOT NULL, PRIMARY KEY (impression_id, kind)
 );
+CREATE UNIQUE INDEX IF NOT EXISTS acknowledgements_kind_key
+    ON acknowledgements (impression_id, kind);
 CREATE TABLE IF NOT EXISTS feedback_events (
     event_id TEXT PRIMARY KEY, impression_id TEXT NOT NULL REFERENCES impressions(id),
     occurred_at TIMESTAMPTZ NOT NULL, ingested_at TIMESTAMPTZ NOT NULL, payload JSONB NOT NULL
@@ -51,7 +53,17 @@ class PostgresStore:
 
     def initialize(self):
         with self.connect() as conn:
+            conn.execute("SELECT pg_advisory_xact_lock(621024)")
             conn.execute(SCHEMA)
+            conn.execute("""
+                DO $$ BEGIN
+                    IF EXISTS (SELECT 1 FROM pg_constraint
+                               WHERE conrelid = 'acknowledgements'::regclass
+                               AND contype = 'p' AND cardinality(conkey) = 1) THEN
+                        ALTER TABLE acknowledgements DROP CONSTRAINT acknowledgements_pkey;
+                    END IF;
+                END $$;
+                """)
 
     def ready(self):
         try:
@@ -83,7 +95,10 @@ class PostgresStore:
         return conn.execute(
             """SELECT i.*, a.kind, a.acknowledged_at FROM impressions i
                JOIN decisions d ON d.impression_id = i.id
-               LEFT JOIN acknowledgements a ON a.impression_id = i.id
+               LEFT JOIN LATERAL (
+                   SELECT kind, acknowledged_at FROM acknowledgements
+                   WHERE impression_id = i.id ORDER BY acknowledged_at, kind LIMIT 1
+               ) a ON true
                WHERE i.id = %s""", (impression_id,)
         ).fetchone()
 
@@ -100,7 +115,7 @@ class PostgresStore:
             now = datetime.now(timezone.utc)
             kind = "late_confirmation" if now >= decision["created_at"] + self.ack_window else "confirmed"
             conn.execute("""INSERT INTO acknowledgements VALUES (%s, %s, %s)
-                            ON CONFLICT (impression_id) DO NOTHING""", (impression_id, kind, now))
+                            ON CONFLICT (impression_id, kind) DO NOTHING""", (impression_id, kind, now))
             decision = self._decision(conn, impression_id)
             return {"impression_id": impression_id, "send_state": decision["send_state"],
                     "client_confirmation_state": self._confirmation(decision, now),
@@ -123,7 +138,7 @@ class PostgresStore:
             if (occurred < decision["created_at"] or occurred > now + timedelta(minutes=1)
                     or now > decision["created_at"] + self.attribution_window):
                 return {"attributed": False, "reason": "outside_attribution_window"}
-            result = {**event, "attributed": True, "reason": "attributed",
+            result = {**event, "source": "demo", "attributed": True, "reason": "attributed",
                       "rank": item["rank"], "serving_generation": decision["generation"],
                       "confirmation_state": self._confirmation(decision, now), "ingested_at": now.isoformat()}
             inserted = conn.execute(

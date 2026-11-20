@@ -297,7 +297,7 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
             decision.update(result)
             decision.update(cutoff_ts=events[-1]["ts"] if events else None,
                             decision_latency_ms=round((perf_counter() - started) * 1000, 3),
-                            source="demo", surface="playground" if compare else "api")
+                            source="demo", prefix_events=events, surface="playground" if compare else "api")
             decision["session_hash"] = session_hash
             decision["session_key_id"] = os.environ.get("RANKFLOW_SESSION_KEY_ID", "local-v1")
             try:
