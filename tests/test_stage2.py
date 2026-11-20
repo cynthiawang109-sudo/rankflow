@@ -250,6 +250,19 @@ class PlatformTests(unittest.TestCase):
             self.assertEqual(conn.execute("SELECT action FROM traffic_audit WHERE revision=3").fetchone()["action"],
                              "auto_pause")
 
+        traffic.publish(canary, 3, "override", "operator", "override", reason="Synthetic validation",
+                        override_seconds=30)
+        traffic.refresh()
+        with self.store.connect() as conn:
+            expiry = conn.execute("SELECT * FROM traffic_overrides WHERE revision = 4").fetchone()
+        self.assertEqual(expiry["reason"], "Synthetic validation")
+        self.assertEqual(guardrails.sample(traffic.pin(), expiry["expires_at"] - timedelta(seconds=1))["state"],
+                         "override")
+        with self.assertLogs("rankflow.guardrails", "WARNING"):
+            self.assertEqual(guardrails.sample(traffic.pin(), expiry["expires_at"])["state"], "override_expired")
+        traffic.refresh()
+        self.assertEqual(traffic.pin().config.state, "killed")
+
     def test_epoch_overlap_and_preserved_replay(self):
         epoch = {"epoch_id": "one", "source": "otto_offline", "history_statistics_watermark": 10,
                  "training_data_watermark": 19, "validation_window": [20, 30], "final_test_window": [30, 40],
