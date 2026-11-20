@@ -104,14 +104,8 @@ def paired_evaluation(population, snapshot, config, model):
     return {"no_label": no_label, "slices": summaries}, clusters
 
 
-def train_once(directory, output, code_version, inputs):
-    baseline, manifest, epoch, snapshot, config = inputs
-    report = run(directory, output, config, "python -m rankflow.training_pipeline")
-    artifact = output / "lgbm-v1.txt"
-    model = load_model(artifact)
-    if model.artifact_hash != baseline["strategies"]["lgbm-v1"]["artifact_sha256"]:
-        raise ValueError("Model does not reproduce the frozen lgbm-v1 checksum")
-    evaluation, _ = paired_evaluation(queries(directory, snapshot), snapshot, config, model)
+def build_lineage(inputs, report, model, code_version):
+    baseline, manifest, epoch, snapshot, _ = inputs
     lineage = {
         "source": "otto_offline",
         "epoch_id": epoch["epoch_id"],
@@ -131,6 +125,18 @@ def train_once(directory, output, code_version, inputs):
         "evaluation_protocol_version": PROTOCOL,
     }
     lineage["run_id"] = hashlib.sha256(canonical(lineage)).hexdigest()
+    return lineage
+
+
+def train_once(directory, output, code_version, inputs):
+    baseline, _, _, snapshot, config = inputs
+    report = run(directory, output, config, "python -m rankflow.training_pipeline")
+    artifact = output / "lgbm-v1.txt"
+    model = load_model(artifact)
+    if model.artifact_hash != baseline["strategies"]["lgbm-v1"]["artifact_sha256"]:
+        raise ValueError("Model does not reproduce the frozen lgbm-v1 checksum")
+    evaluation, _ = paired_evaluation(queries(directory, snapshot), snapshot, config, model)
+    lineage = build_lineage(inputs, report, model, code_version)
     training = {key: value for key, value in report["training"].items() if key != "fit_seconds"}
     return {"lineage": lineage, "training": training, "evaluation": evaluation,
             "sampling_limitation": SAMPLING}
