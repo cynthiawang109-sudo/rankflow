@@ -7,6 +7,8 @@ import psycopg
 from psycopg.rows import dict_row
 from psycopg.types.json import Jsonb
 
+from .epoch_registry import SCHEMA as EPOCH_SCHEMA
+
 LOGGER = logging.getLogger(__name__)
 ACK_WINDOW = timedelta(minutes=5)
 ATTRIBUTION_WINDOW = timedelta(hours=24)
@@ -55,6 +57,7 @@ class PostgresStore:
         with self.connect() as conn:
             conn.execute("SELECT pg_advisory_xact_lock(621024)")
             conn.execute(SCHEMA)
+            conn.execute(EPOCH_SCHEMA)
             conn.execute("""
                 DO $$ BEGIN
                     IF EXISTS (SELECT 1 FROM pg_constraint

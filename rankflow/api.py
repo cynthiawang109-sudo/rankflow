@@ -196,7 +196,8 @@ async def consume_outbox(store, stop):
             pass
 
 
-def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic=None):
+def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic=None,
+               admin_bearer=None, release_registry=None, signing_key=None):
     session_key = session_key or secrets.token_bytes(32)
 
     @asynccontextmanager
@@ -342,6 +343,10 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
             raise HTTPException(404, "logging_degraded_no_decision")
         return result
 
+    if admin_bearer:
+        from .operator_console import install_console
+
+        install_console(app, store, traffic, admin_bearer, release_registry, signing_key)
     return app
 
 
@@ -369,4 +374,9 @@ def from_environment():
             raise ValueError("Traffic routing requires PostgreSQL and a shared session key")
         rescue = TrafficConfigSnapshot(**json.loads(Path(rescue_path).read_text(encoding="utf-8-sig")))
         traffic = TrafficRegistry(store, path.parent, rescue, {"v1": key.encode()})
-    return create_app(Generation.load(path), store, key.encode() if key else None, traffic=traffic)
+    admin = os.environ.get("RANKFLOW_ADMIN_BEARER")
+    signing_key = os.environ.get("RANKFLOW_RELEASE_SIGNING_KEY")
+    return create_app(Generation.load(path), store, key.encode() if key else None, traffic=traffic,
+                      admin_bearer=admin.encode() if admin else None,
+                      release_registry=os.environ.get("RANKFLOW_RELEASE_REGISTRY"),
+                      signing_key=signing_key.encode() if signing_key else None)
