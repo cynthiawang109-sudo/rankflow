@@ -1,0 +1,201 @@
+{
+  "candidate_source": "Stage 0 co-visitation candidates from the recorded prefix",
+  "disposition": "proceed to Stage 1 with a registered follow-up data-quality investigation",
+  "inputs": {
+    "data_manifest": "artifacts/stage0-otto/data_manifest.json",
+    "run_report": "docs/data_validation_report_real.json",
+    "session_artifact": "artifacts/stage0-otto/sessions.jsonl",
+    "session_artifact_sha256": "9fb2d0a3249720c94e2228b3453ad24c919669f016f55cc606ce0fb650607200"
+  },
+  "label_policy_version": "nextclick-v1",
+  "outside_windows": {
+    "events": 0,
+    "sessions": 0
+  },
+  "partitions": {
+    "W1": {
+      "all_negative_queries": 94702,
+      "candidate_recall_at_cap": 0.11202167859051655,
+      "eligible_prefixes": 130626,
+      "events": 193729,
+      "labeled_next_click_queries": 106649,
+      "no_label_queries": 23977,
+      "retrieved_positive": 11947,
+      "sessions": 26042
+    },
+    "W2-dev": {
+      "all_negative_queries": 49185,
+      "candidate_recall_at_cap": 0.10207024974441362,
+      "eligible_prefixes": 66981,
+      "events": 98961,
+      "labeled_next_click_queries": 54776,
+      "no_label_queries": 12205,
+      "retrieved_positive": 5591,
+      "sessions": 13226
+    },
+    "W2-gate": {
+      "all_negative_queries": 48232,
+      "candidate_recall_at_cap": 0.10210920192862595,
+      "eligible_prefixes": 65765,
+      "events": 96615,
+      "labeled_next_click_queries": 53717,
+      "no_label_queries": 12048,
+      "retrieved_positive": 5485,
+      "sessions": 12967
+    },
+    "W3": {
+      "all_negative_queries": 110411,
+      "candidate_recall_at_cap": 0.09096073572151919,
+      "eligible_prefixes": 146467,
+      "events": 234470,
+      "labeled_next_click_queries": 121459,
+      "no_label_queries": 25008,
+      "retrieved_positive": 11048,
+      "sessions": 27925
+    }
+  },
+  "query_configuration": {
+    "max_cutoffs_per_session": 10,
+    "min_prefix_length": 1
+  },
+  "recompute_wall_seconds_including_artifact_hash": 26.754,
+  "recomputed_groups": {
+    "boundary_excluded": {
+      "duration_ms": {
+        "max": 2418962039,
+        "mean": 1240177474.2834637,
+        "median": 1207044741.5,
+        "min": 126180,
+        "p25": 718035091,
+        "p75": 1760277832,
+        "p90": 2115782177,
+        "p95": 2245147485,
+        "p99": 2354590572
+      },
+      "event_count": {
+        "max": 495,
+        "mean": 27.413298324363193,
+        "median": 11.0,
+        "min": 2,
+        "p25": 5,
+        "p75": 29,
+        "p90": 68,
+        "p95": 108,
+        "p99": 241
+      },
+      "event_types": {
+        "carts": {
+          "count": 192998,
+          "share": 0.07670348074464352
+        },
+        "clicks": {
+          "count": 2266011,
+          "share": 0.9005841050459092
+        },
+        "orders": {
+          "count": 57148,
+          "share": 0.022712414209447186
+        }
+      },
+      "events": 2516157,
+      "long_sessions": {
+        "count": 30493,
+        "share": 0.3322184211099732
+      },
+      "repeat_item_events": {
+        "count": 991071,
+        "share": 0.3938828141487197
+      },
+      "sessions": 91786,
+      "sessions_above_100_events": {
+        "count": 5136,
+        "share": 0.05595624605059595
+      }
+    },
+    "kept": {
+      "duration_ms": {
+        "max": 603866073,
+        "mean": 49065044.5564622,
+        "median": 692894.0,
+        "min": 0,
+        "p25": 131082,
+        "p75": 27742929,
+        "p90": 189331325,
+        "p95": 317916253,
+        "p99": 477022754
+      },
+      "event_count": {
+        "max": 448,
+        "mean": 7.730496978209843,
+        "median": 4.0,
+        "min": 2,
+        "p25": 2,
+        "p75": 8,
+        "p90": 17,
+        "p95": 26,
+        "p99": 58
+      },
+      "event_types": {
+        "carts": {
+          "count": 68142,
+          "share": 0.08145617466062915
+        },
+        "clicks": {
+          "count": 747599,
+          "share": 0.8936713733103181
+        },
+        "orders": {
+          "count": 20807,
+          "share": 0.024872452029052725
+        }
+      },
+      "events": 836548,
+      "long_sessions": {
+        "count": 7865,
+        "share": 0.07268005988134622
+      },
+      "repeat_item_events": {
+        "count": 288665,
+        "share": 0.3450668700421255
+      },
+      "sessions": 108214,
+      "sessions_above_100_events": {
+        "count": 249,
+        "share": 0.002300996174247325
+      }
+    }
+  },
+  "retrieval_snapshot": {
+    "build_seconds": 17.374049,
+    "configuration": {
+      "H": 20,
+      "candidate_cap": 100,
+      "disk_budget_bytes": 1073741824,
+      "min_count": 1,
+      "pair_definition_version": "canonical-position-v1",
+      "session_event_cap": 500,
+      "sqlite_cache_kib": 8192,
+      "top_n_per_item": 100
+    },
+    "distinct_items": 90126,
+    "exact_pair_count": 680785,
+    "history_statistics_watermark": 1659909572414,
+    "on_disk_bytes": 97005269,
+    "peak_process_rss_bytes": 100184064,
+    "platform": "Windows-10-10.0.26300-SP0",
+    "retrieval_snapshot_id": "cd5b998f1172df6d53ce28560fe1d9a79ca4086759c8830b3a0246187ba357a9",
+    "row_count": 1332494,
+    "source": "otto_offline",
+    "source_sha256": "06716132f1ab1d500f1515ba2c16187d7b0e98066ca66d33b95f022f8c3a340d",
+    "staging_disk_bytes": 19968000,
+    "store": "SQLite",
+    "table_sha256": "2505618567cf2d8d5c9c73c1b44343efa25e005f529655145e6d15dc6ca088a0"
+  },
+  "sampled_sessions": 200000,
+  "sampler": {
+    "cap": 200000,
+    "seed": "rankflow-stage0-sample-v1"
+  },
+  "short_session_max_events": 20,
+  "total_queries": 409839
+}
