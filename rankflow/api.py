@@ -400,7 +400,14 @@ def from_environment():
         rescue = TrafficConfigSnapshot(**json.loads(Path(rescue_path).read_text(encoding="utf-8-sig")))
         control_dsn = os.environ.get("RANKFLOW_CONTROL_DATABASE_URL")
         control = PostgresStore(control_dsn) if control_dsn else store
-        traffic = TrafficRegistry(control, path.parent, rescue, {"v1": key.encode()})
+        salts = {"v1": key.encode()}
+        if salt_path := os.environ.get("RANKFLOW_ROUTING_SALTS"):
+            configured_salts = json.loads(Path(salt_path).read_text(encoding="utf-8-sig"))
+            if not isinstance(configured_salts, dict) or any(not isinstance(value, str) or not value
+                                                           for value in configured_salts.values()):
+                raise ValueError("Routing salts file must map version IDs to nonempty strings")
+            salts.update({version: value.encode() for version, value in configured_salts.items()})
+        traffic = TrafficRegistry(control, path.parent, rescue, salts)
     admin = os.environ.get("RANKFLOW_ADMIN_BEARER")
     signing_key = os.environ.get("RANKFLOW_RELEASE_SIGNING_KEY")
     return create_app(Generation.load(path), store, key.encode() if key else None, traffic=traffic,

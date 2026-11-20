@@ -43,8 +43,9 @@ CREATE TABLE IF NOT EXISTS traffic_tracking (
 );
 CREATE TABLE IF NOT EXISTS traffic_overrides (
     revision BIGINT PRIMARY KEY, reason TEXT NOT NULL,
-    expires_at TIMESTAMPTZ NOT NULL
+    expires_at TIMESTAMPTZ NOT NULL, duration_seconds INTEGER
 );
+ALTER TABLE traffic_overrides ADD COLUMN IF NOT EXISTS duration_seconds INTEGER;
 CREATE TABLE IF NOT EXISTS traffic_incident (
     singleton BOOLEAN PRIMARY KEY CHECK (singleton),
     reason TEXT NOT NULL, opened_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp()
@@ -276,6 +277,11 @@ class TrafficRegistry:
                 if (prior["action"], prior["actor"], prior["config_id"], prior["revision"]) != (
                         action, actor, target_id, expected_revision + 1):
                     raise ValueError("Operation ID was used for a different mutation")
+                if action == "override":
+                    previous = conn.execute("SELECT reason, duration_seconds FROM traffic_overrides WHERE revision=%s",
+                                            (prior["revision"],)).fetchone()
+                    if (previous["reason"], previous["duration_seconds"]) != (reason, override_seconds):
+                        raise ValueError("Operation ID was used for a different override")
                 return prior["revision"]
             if pointer["revision"] != expected_revision:
                 raise ValueError("Traffic revision conflict")
@@ -346,7 +352,8 @@ class TrafficRegistry:
                          (operation_id, action, target.config_id, revision, actor))
             if action == "override":
                 expires = datetime.now(timezone.utc) + timedelta(seconds=override_seconds)
-                conn.execute("INSERT INTO traffic_overrides VALUES (%s, %s, %s)", (revision, reason, expires))
+                conn.execute("INSERT INTO traffic_overrides VALUES (%s, %s, %s, %s)",
+                             (revision, reason, expires, override_seconds))
             recovery = old.config_id if not old.canary_percent else self.rescue.config.config_id
             conn.execute("INSERT INTO traffic_tracking(revision, expected_instances, recovery_config_id) "
                          "VALUES (%s, %s, %s)",
