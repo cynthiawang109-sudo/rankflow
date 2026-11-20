@@ -1,4 +1,3 @@
-from starlette.background import BackgroundTask
 """RankFlow Product Alpha API."""
 import asyncio
 from collections import Counter
@@ -16,7 +15,8 @@ from time import perf_counter
 from typing import Annotated, Literal
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
+from starlette.background import BackgroundTask
 from starlette.concurrency import run_in_threadpool
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -202,18 +202,28 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
     @asynccontextmanager
     async def lifespan(app):
         stop = asyncio.Event()
-        worker = None
+        worker = traffic_worker = None
         if store:
             await run_in_threadpool(store.initialize)
             worker = asyncio.create_task(consume_outbox(store, stop))
         if traffic:
             await run_in_threadpool(traffic.initialize)
+            await run_in_threadpool(traffic.refresh)
+            async def refresh_traffic():
+                while not stop.is_set():
+                    try:
+                        await asyncio.wait_for(stop.wait(), timeout=traffic.poll_seconds)
+                    except TimeoutError:
+                        await run_in_threadpool(traffic.refresh)
+            traffic_worker = asyncio.create_task(refresh_traffic())
         try:
             yield
         finally:
             stop.set()
             if worker:
                 await worker
+            if traffic_worker:
+                await traffic_worker
 
     app = FastAPI(title="RankFlow", lifespan=lifespan)
     app.state.counters = Counter()
