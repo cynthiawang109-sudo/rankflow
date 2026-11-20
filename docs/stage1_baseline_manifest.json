@@ -1,0 +1,204 @@
+{
+  "manifest_version": "stage1-baseline-v1",
+  "stage1_commit": "3f658ef",
+  "acceptance_date": "2026-11-20",
+  "epoch": {
+    "candidate_family": [
+      "LightGBM-LambdaRank",
+      1,
+      "nextclick-v1"
+    ],
+    "dataset_manifest_hash": "b4ce68b9761b403f895acf3c77d7748a8634034abcf12fa701e5d44a05a86b00",
+    "epoch_id": "stage0-initial",
+    "final_test_window": [
+      1661119200000,
+      1661724000000
+    ],
+    "history_statistics_watermark": 1659909572414,
+    "query_manifest_hash": "0101abfbc038bf4c36a1dc7e59a7307c77cc79311d75a15209537cff445fb670",
+    "retrieval_snapshot_id": "cd5b998f1172df6d53ce28560fe1d9a79ca4086759c8830b3a0246187ba357a9",
+    "source": "otto_offline",
+    "training_data_watermark": 1660514395857,
+    "validation_window": [
+      1660514400000,
+      1661119200000
+    ]
+  },
+  "data_manifest_version": "stage0-v1",
+  "label_policy": "nextclick-v1",
+  "query_configuration": {
+    "max_cutoffs_per_session": 10,
+    "min_prefix_length": 1
+  },
+  "windows": {
+    "W0": [
+      1659304800000,
+      1659909600000
+    ],
+    "W1": [
+      1659909600000,
+      1660514400000
+    ],
+    "W2": [
+      1660514400000,
+      1661119200000
+    ],
+    "W3": [
+      1661119200000,
+      1661724000000
+    ]
+  },
+  "validation_split": {
+    "gate_percent": 50,
+    "seed": "rankflow-stage0-w2-v1"
+  },
+  "retrieval": {
+    "snapshot_id": "cd5b998f1172df6d53ce28560fe1d9a79ca4086759c8830b3a0246187ba357a9",
+    "candidate_cap": 100,
+    "recent": 10,
+    "covisitation": 100,
+    "popularity": 20,
+    "top_n_per_item": 100,
+    "recent_mode": "recency"
+  },
+  "features": {
+    "schema": "session-features-v1",
+    "names": [
+      "prefix_frequency",
+      "last_seen_age_ms",
+      "last_seen_missing",
+      "last_clicks",
+      "last_carts",
+      "last_orders",
+      "covisitation_score",
+      "has_covisitation",
+      "candidate_known_without_neighbours",
+      "popularity_rank",
+      "popularity_missing",
+      "candidate_is_unknown_item",
+      "session_length",
+      "prior_clicks",
+      "prior_carts",
+      "prior_orders",
+      "source_recent",
+      "rank_recent",
+      "source_covisitation",
+      "rank_covisitation",
+      "source_popularity",
+      "rank_popularity"
+    ],
+    "code_sha256": "cc885ae447b4a1b9b066e082d990db7a070ebb3cee5f8b2674b3e6f514af071d"
+  },
+  "alpha_generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+  "strategies": {
+    "rule-v1": {
+      "configuration": {
+        "recency": 2,
+        "repeat": 1,
+        "event_type": 0.25,
+        "covisitation": 3,
+        "popularity": 1
+      },
+      "configuration_sha256": "3fbab19012506ca329380fb98e1d55d37712b810fc8b09dd78c3857c7026433b"
+    },
+    "lgbm-v1": {
+      "artifact_sha256": "8d06f0f97a3485540addeae9d6604b3fae3c948c2de2862d08d7de79e7cebd6d",
+      "training_configuration": {
+        "objective": "lambdarank",
+        "n_estimators": 50,
+        "learning_rate": 0.1,
+        "num_leaves": 15,
+        "random_state": 42,
+        "deterministic": true,
+        "force_col_wise": true,
+        "n_jobs": 2,
+        "verbosity": -1,
+        "label_gain": [
+          0,
+          1
+        ]
+      },
+      "lightgbm": "4.7.0"
+    }
+  },
+  "development_metrics": {
+    "window": "W2-dev",
+    "candidate_recall_at_100": {
+      "retrieved": 12234,
+      "labeled": 54776
+    },
+    "strategies": {
+      "rule-v1": {
+        "HitRate@20": 0.19630860230757996,
+        "MRR@20": 0.13396252373193235,
+        "NDCG@20": 0.1484113796392181
+      },
+      "lgbm-v1": {
+        "HitRate@20": 0.19935738279538484,
+        "MRR@20": 0.14246080410483872,
+        "NDCG@20": 0.15567292001013067
+      }
+    }
+  },
+  "tests": {
+    "passed": 24,
+    "failed": 0,
+    "skipped": 0,
+    "postgresql": "16.15",
+    "inventory": {
+      "tests/test_fetch.py": [
+        "ExtractJsonlTests.test_extracts_kaggle_filenames",
+        "ExtractJsonlTests.test_rejects_multiple_matches"
+      ],
+      "tests/test_stage0.py": [
+        "Stage0Tests.test_t09_tied_cutoffs_and_order",
+        "Stage0Tests.test_t17_rejects_invalid_registration",
+        "Stage0Tests.test_t18_exact_pairs",
+        "Stage0Tests.test_future_mutation",
+        "Stage0Tests.test_leakage_and_crossing_accounting",
+        "Stage0Tests.test_determinism_and_replay",
+        "Stage0Tests.test_sampler_and_ingestion_order",
+        "Stage0Tests.test_top_n_and_minimum_count",
+        "Stage0Tests.test_disk_budget_aborts_without_partial_table",
+        "Stage0Tests.test_fixture_cannot_be_used_as_otto",
+        "FetchTests.test_fetch_command_and_hashes",
+        "FetchTests.test_failed_download_does_not_publish"
+      ],
+      "tests/test_stage1.py": [
+        "RetrievalTests.test_sources_and_determinism",
+        "RetrievalTests.test_cold_start",
+        "RetrievalTests.test_train_serve_feature_parity_and_r6",
+        "RetrievalTests.test_point_in_time_features",
+        "RetrievalTests.test_request_scoped_fallback",
+        "ApiTests.test_contract_replay_and_public_boundary_t13",
+        "PostgresGateTests.test_disconnect_after_commit_t05",
+        "PostgresGateTests.test_feedback_top_k_t06_and_review_loop",
+        "PostgresGateTests.test_atomic_degraded_response_and_persisted_fallback",
+        "PostgresGateTests.test_delayed_and_duplicate_ack_t15_and_outbox"
+      ]
+    }
+  },
+  "files_sha256": {
+    "artifacts/stage0-otto/covisitation.jsonl": "2505618567cf2d8d5c9c73c1b44343efa25e005f529655145e6d15dc6ca088a0",
+    "artifacts/stage0-otto/data_manifest.json": "b4ce68b9761b403f895acf3c77d7748a8634034abcf12fa701e5d44a05a86b00",
+    "artifacts/stage0-otto/evaluation_epoch.json": "78bfc10ac838f5d106acc277bb2b7c084def9fe823cb4b16d6162ac953fe89a3",
+    "artifacts/stage0-otto/history.jsonl": "277ce29ac2cd8d93d3408237506ee6d42ee9b7f6b2ef19440e999f4fba69557b",
+    "artifacts/stage0-otto/queries.jsonl": "0101abfbc038bf4c36a1dc7e59a7307c77cc79311d75a15209537cff445fb670",
+    "artifacts/stage0-otto/retrieval_manifest.json": "a546300791a4b13bd95ac30f4d0dd71b0d5fde4d650df44818220d9ef7fbd4bf",
+    "artifacts/stage0-otto/sessions.jsonl": "9fb2d0a3249720c94e2228b3453ad24c919669f016f55cc606ce0fb650607200",
+    "artifacts/stage1/browser_smoke.py": "9eba9b18cf6b6e32b41558247e0f7490cb15fcaba55a763064ae822c8fad5aad",
+    "artifacts/stage1/generations/gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65/data_manifest.json": "b4ce68b9761b403f895acf3c77d7748a8634034abcf12fa701e5d44a05a86b00",
+    "artifacts/stage1/generations/gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65/evaluation_epoch.json": "78bfc10ac838f5d106acc277bb2b7c084def9fe823cb4b16d6162ac953fe89a3",
+    "artifacts/stage1/generations/gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65/manifest.json": "826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+    "artifacts/stage1/generations/gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65/public_prefixes.json": "f542b6e0711b32512627689277a0573042bf2e6f6af573906a6c96bb6c0d7d2c",
+    "artifacts/stage1/generations/gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65/strategy_report.json": "8d1de5a1418df26b393d6265a7370c4f5b5d4fd638767ba5bea1ef877cbb2517",
+    "artifacts/stage1/training/lgbm-v1.txt": "8d06f0f97a3485540addeae9d6604b3fae3c948c2de2862d08d7de79e7cebd6d",
+    "configs/stage1_retrieval.json": "748e00f52e2660fe1c1bf4aa55771e5e40958a8e1c0900fa8f8457b80fcb8847",
+    "docs/stage1_exit_evidence.md": "8aba8e84cc5dddfab6b84a200401e63929eaebc78bccd35a2f46b1897f2c4965",
+    "docs/stage1_retrieval_ablation.json": "ffa107cb47caf5101835db3c91147a2038ce54e86872dcef6ced46f2b4a1b5e3",
+    "docs/stage1_retrieval_ablation.md": "d6554f2e6347798e10547462a2fb40cf74fd767d311ea1f69dd1c5804ce8855d",
+    "docs/stage1_strategy_report.json": "f3fdc60e162868e1b32b200085f57efde0566e721a43cb00a9e8b7150399ff05",
+    "docs/stage1_strategy_report.md": "5da3ea9955fe1ad7f7dfd516e500e903ca65e3b18160092cc289910e1fe6f1be",
+    "rankflow/playground.html": "723399acb652699ad07b6a76e838ba1769301e3b7930efa5116c572ffc12969d"
+  }
+}
