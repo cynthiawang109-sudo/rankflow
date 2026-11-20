@@ -303,47 +303,51 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
                             served_generation_id=selected.generation_id, traffic_degraded=pin.degraded)
             if pin.shadow:
                 count("synthetic_shadow_attempted")
-                if shadow_capacity.acquire(blocking=False):
-                    def evaluate_shadow():
-                        try:
-                            comparison, reasons = rank_request(pin.shadow, events, data.top_k, deadline_ms)
-                            actual = {item["aid"]: item["rank"] for item in result["items"]}
-                            alternative = {item["aid"]: item["rank"] for item in comparison["items"]}
-                            common = actual.keys() & alternative.keys()
-                            overlap = len(common)
-                            same_rank = sum(actual[aid] == alternative[aid] for aid in common)
-                            if store and result["impression_id"]:
-                                store.record_shadow(result["impression_id"], {
-                                    "source": "demo", "mode": "live", "comparison": "full-generation",
-                                    "validation": "synthetic operational validation",
-                                    "config_id": pin.config.config_id,
-                                    "served_generation": selected.generation_id,
-                                    "shadow_generation": pin.shadow.generation_id,
-                                    "top_k": data.top_k, "top_k_overlap": overlap,
-                                    "intersection_size": overlap, "rank_agreement": same_rank / overlap if overlap >= 2 else None,
-                                    "comparison_status": "compared" if overlap >= 2 else "insufficient_overlap",
-                                    "shadow_fallback_used": comparison["fallback_used"],
-                                    "shadow_fallback_reason": reasons["fallback_reason"],
-                                })
-                            if reasons["fallback_reason"] == "logical_deadline":
-                                count("synthetic_shadow_timed_out")
-                            elif comparison["fallback_used"]:
-                                count("synthetic_shadow_failed")
-                            else:
-                                count("synthetic_shadow_completed")
-                        except Exception:
-                            LOGGER.exception("Synthetic live shadow failed")
+                def evaluate_shadow():
+                    try:
+                        comparison, reasons = rank_request(pin.shadow, events, data.top_k, deadline_ms)
+                        actual = {item["aid"]: item["rank"] for item in result["items"]}
+                        alternative = {item["aid"]: item["rank"] for item in comparison["items"]}
+                        common = actual.keys() & alternative.keys()
+                        overlap = len(common)
+                        same_rank = sum(actual[aid] == alternative[aid] for aid in common)
+                        if store and result["impression_id"]:
+                            store.record_shadow(result["impression_id"], {
+                                "source": "demo", "mode": "live", "comparison": "full-generation",
+                                "validation": "synthetic operational validation",
+                                "config_id": pin.config.config_id,
+                                "served_generation": selected.generation_id,
+                                "shadow_generation": pin.shadow.generation_id,
+                                "top_k": data.top_k, "top_k_overlap": overlap,
+                                "intersection_size": overlap, "rank_agreement": same_rank / overlap if overlap >= 2 else None,
+                                "comparison_status": "compared" if overlap >= 2 else "insufficient_overlap",
+                                "shadow_fallback_used": comparison["fallback_used"],
+                                "shadow_fallback_reason": reasons["fallback_reason"],
+                            })
+                        if reasons["fallback_reason"] == "logical_deadline":
+                            count("synthetic_shadow_timed_out")
+                        elif comparison["fallback_used"]:
                             count("synthetic_shadow_failed")
+                        else:
+                            count("synthetic_shadow_completed")
+                    except Exception:
+                        LOGGER.exception("Synthetic live shadow failed")
+                        count("synthetic_shadow_failed")
 
-                    async def shadow():
-                        try:
-                            await asyncio.get_running_loop().run_in_executor(shadow_executor, evaluate_shadow)
-                        finally:
-                            shadow_capacity.release()
+                async def shadow():
+                    if not shadow_capacity.acquire(blocking=False):
+                        count("synthetic_shadow_shed")
+                        return
+                    try:
+                        future = shadow_executor.submit(evaluate_shadow)
+                    except RuntimeError:
+                        shadow_capacity.release()
+                        count("synthetic_shadow_shed")
+                        return
+                    future.add_done_callback(lambda _: shadow_capacity.release())
+                    await asyncio.wrap_future(future)
 
-                    request.state.shadow_task = shadow
-                else:
-                    count("synthetic_shadow_shed")
+                request.state.shadow_task = shadow
         result.update(request_id=data.request_id, impression_id=None, logging_status="degraded")
         if store:
             decision.update(result)
