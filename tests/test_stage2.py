@@ -2,6 +2,7 @@
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
 from datetime import datetime, timezone
+from unittest.mock import patch
 import os
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -111,6 +112,7 @@ class PlatformTests(unittest.TestCase):
         self.assertEqual({row["revision"] for row in first.fleet()}, {2})
         self.assertEqual(old.select("session")[1], "stable")
         self.assertEqual(old.config.config_id, shadow.config_id)
+        self.assertEqual(old.select("session")[0].generation_id, STABLE.generation_id)
         assignment = [first.pin().select(str(i))[1] for i in range(100)]
         self.assertEqual(set(assignment), {"stable", "canary"})
         self.assertEqual(assignment, [second.pin().select(str(i))[1] for i in range(100)])
@@ -161,6 +163,51 @@ class PlatformTests(unittest.TestCase):
             self.store.drain()
             with self.store.connect() as conn:
                 self.assertEqual(conn.execute("SELECT count(*) FROM delivered_events").fetchone()["count"], 2)
+
+    def test_control_outage_uses_designated_rescue(self):
+        first, second = self.registry(), self.registry()
+        shadow = replace(self.rescue, state="shadowing", shadow_generation_id="candidate", shadow_mode="live")
+        first.publish(shadow, 0, "shadow-before-outage", "test")
+        first.refresh()
+        second.refresh()
+        pinned = first.pin()
+        with patch.object(self.store, "connect", side_effect=OSError("test outage")):
+            with self.assertLogs("rankflow.traffic", "ERROR"):
+                first.refresh()
+                second.refresh()
+        self.assertEqual(pinned.config.config_id, shadow.config_id)
+        for instance in (first, second):
+            pin = instance.pin()
+            self.assertTrue(pin.degraded)
+            self.assertEqual(pin.config.config_id, self.rescue.config_id)
+            self.assertEqual(pin.select("existing-session")[1], "stable")
+            instance.refresh()
+            self.assertFalse(instance.pin().degraded)
+
+    def test_rollback_targets_named_config(self):
+        registry = self.registry()
+        shadow = replace(self.rescue, state="shadowing", shadow_generation_id="candidate", shadow_mode="live")
+        registry.publish(shadow, 0, "shadow", "test")
+        self.assertEqual(registry.publish(self.rescue.config_id, 1, "rollback", "test", "rollback"), 2)
+        self.assertEqual(registry.publish(self.rescue.config_id, 1, "rollback", "test", "rollback"), 2)
+        registry.refresh()
+        self.assertEqual(registry.pin().config.config_id, self.rescue.config_id)
+        self.assertEqual(registry.pin().revision, 2)
+
+    def test_late_ack_preserves_confirmed_state_and_deduplicates(self):
+        with TestClient(create_app(STABLE, self.store, SECRET)) as client:
+            impression = client.post("/v1/recommend", json=payload([event(1)])).json()["impression_id"]
+            route = f"/v1/impressions/{impression}/ack"
+            self.assertEqual(client.post(route).json()["client_confirmation_state"], "confirmed")
+            with self.store.connect() as conn:
+                conn.execute("UPDATE impressions SET created_at = created_at - interval '1 hour' WHERE id = %s",
+                             (impression,))
+            for _ in range(2):
+                self.assertEqual(client.post(route).json()["client_confirmation_state"], "confirmed")
+            with self.store.connect() as conn:
+                rows = conn.execute("SELECT kind FROM acknowledgements WHERE impression_id = %s",
+                                    (impression,)).fetchall()
+        self.assertCountEqual([row["kind"] for row in rows], ["confirmed", "late_confirmation"])
 
     def test_epoch_overlap_and_preserved_replay(self):
         epoch = {"epoch_id": "one", "source": "otto_offline", "history_statistics_watermark": 10,
