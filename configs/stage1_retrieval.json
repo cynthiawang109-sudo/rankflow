@@ -1,0 +1,8 @@
+{
+  "candidate_cap": 100,
+  "recent": 10,
+  "covisitation": 100,
+  "popularity": 20,
+  "top_n_per_item": 100,
+  "recent_mode": "recency"
+}

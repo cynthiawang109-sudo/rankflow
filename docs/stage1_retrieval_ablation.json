@@ -1,0 +1,1112 @@
+{
+  "protocol": {
+    "report_version": "retrieval-v1",
+    "window": "W2-dev",
+    "label_policy": "nextclick-v1",
+    "snapshot_id": "cd5b998f1172df6d53ce28560fe1d9a79ca4086759c8830b3a0246187ba357a9",
+    "watermark": 1659909572414,
+    "epoch": {
+      "candidate_family": [
+        "LightGBM-LambdaRank",
+        1,
+        "nextclick-v1"
+      ],
+      "dataset_manifest_hash": "b4ce68b9761b403f895acf3c77d7748a8634034abcf12fa701e5d44a05a86b00",
+      "epoch_id": "stage0-initial",
+      "final_test_window": [
+        1661119200000,
+        1661724000000
+      ],
+      "history_statistics_watermark": 1659909572414,
+      "query_manifest_hash": "0101abfbc038bf4c36a1dc7e59a7307c77cc79311d75a15209537cff445fb670",
+      "retrieval_snapshot_id": "cd5b998f1172df6d53ce28560fe1d9a79ca4086759c8830b3a0246187ba357a9",
+      "source": "otto_offline",
+      "training_data_watermark": 1660514395857,
+      "validation_window": [
+        1660514400000,
+        1661119200000
+      ]
+    },
+    "caps": [
+      50,
+      100,
+      200,
+      300
+    ],
+    "ordering": "deterministic retrieval order (interim)",
+    "denominator": "Labeled queries, including retrieval misses. No-label queries counted separately.",
+    "recall_definition": "Target membership anywhere in the capped candidate union.",
+    "pre_rank_definition": "Target membership within ordered candidate depth.",
+    "memory_definition": "Cumulative process peak RSS at each variant completion. Includes shared snapshot and population.",
+    "platform": "Windows-10-10.0.26300-SP0",
+    "command": "python -m rankflow.study artifacts\\stage0-otto docs\\stage1_retrieval_ablation"
+  },
+  "variants": {
+    "recent": {
+      "configuration": {
+        "candidate_cap": 100,
+        "recent": 100,
+        "covisitation": 0,
+        "popularity": 0,
+        "top_n_per_item": 100,
+        "recent_mode": "recency"
+      },
+      "counts": {
+        "queries": 66981,
+        "labeled": 54776,
+        "prefix_events": 214039,
+        "unknown_item_events": 108303,
+        "pre_rank_hits@20": 8407,
+        "pre_rank_hits@50": 8407,
+        "no_label": 12205,
+        "retrieved": 8407
+      },
+      "candidate_recall@100": 0.1534796261136264,
+      "pre-rank hit rate@20": 0.1534796261136264,
+      "pre-rank hit rate@50": 0.1534796261136264,
+      "candidate_count_distribution": {
+        "0": 16434,
+        "1": 17957,
+        "2": 9481,
+        "3": 5172,
+        "4": 2908,
+        "5": 1539,
+        "6": 764,
+        "7": 335,
+        "8": 128,
+        "9": 49,
+        "10": 9
+      },
+      "source_overlap": {
+        "recent": 80246
+      },
+      "target_source_overlap": {
+        "recent": 8407
+      },
+      "source_contribution": {
+        "recent": 8407,
+        "covisitation": 0,
+        "popularity": 0
+      },
+      "cold_start_cases": {
+        "all_unknown": 16434,
+        "no_neighbours": 305
+      },
+      "cold_start_query_rate": 0.30559003943332846,
+      "unknown_item_rate": 0.5059965707184205,
+      "wall_seconds": 0.9521554999998898,
+      "peak_process_rss_bytes": 317636608
+    },
+    "covisitation": {
+      "configuration": {
+        "candidate_cap": 100,
+        "recent": 0,
+        "covisitation": 100,
+        "popularity": 0,
+        "top_n_per_item": 100,
+        "recent_mode": "recency"
+      },
+      "counts": {
+        "queries": 66981,
+        "labeled": 54776,
+        "prefix_events": 214039,
+        "unknown_item_events": 108303,
+        "pre_rank_hits@20": 3265,
+        "pre_rank_hits@50": 4701,
+        "no_label": 12205,
+        "retrieved": 5591
+      },
+      "candidate_recall@100": 0.10207024974441362,
+      "pre-rank hit rate@20": 0.059606396962173215,
+      "pre-rank hit rate@50": 0.08582225792317803,
+      "candidate_count_distribution": {
+        "0": 16739,
+        "7": 614,
+        "39": 212,
+        "5": 731,
+        "6": 562,
+        "21": 397,
+        "13": 483,
+        "14": 462,
+        "20": 477,
+        "45": 256,
+        "65": 198,
+        "4": 833,
+        "8": 520,
+        "31": 353,
+        "9": 510,
+        "85": 146,
+        "87": 114,
+        "91": 120,
+        "37": 319,
+        "62": 163,
+        "100": 9686,
+        "36": 254,
+        "40": 365,
+        "10": 514,
+        "2": 834,
+        "16": 528,
+        "19": 460,
+        "26": 370,
+        "74": 117,
+        "61": 168,
+        "35": 256,
+        "3": 879,
+        "34": 323,
+        "47": 213,
+        "70": 176,
+        "96": 71,
+        "60": 200,
+        "1": 1120,
+        "73": 119,
+        "23": 385,
+        "89": 145,
+        "28": 371,
+        "55": 210,
+        "38": 317,
+        "52": 223,
+        "63": 182,
+        "25": 429,
+        "27": 407,
+        "51": 202,
+        "77": 115,
+        "98": 75,
+        "18": 433,
+        "46": 257,
+        "68": 196,
+        "50": 214,
+        "12": 519,
+        "33": 299,
+        "43": 208,
+        "93": 105,
+        "29": 292,
+        "57": 195,
+        "41": 273,
+        "30": 373,
+        "24": 381,
+        "76": 131,
+        "15": 561,
+        "79": 130,
+        "95": 93,
+        "67": 194,
+        "42": 287,
+        "86": 111,
+        "71": 178,
+        "22": 373,
+        "59": 215,
+        "92": 122,
+        "81": 116,
+        "83": 74,
+        "53": 210,
+        "90": 83,
+        "80": 153,
+        "82": 86,
+        "97": 95,
+        "32": 344,
+        "48": 202,
+        "56": 168,
+        "84": 107,
+        "17": 483,
+        "11": 569,
+        "75": 134,
+        "72": 159,
+        "54": 257,
+        "64": 178,
+        "78": 130,
+        "49": 180,
+        "58": 197,
+        "44": 198,
+        "94": 77,
+        "69": 140,
+        "99": 109,
+        "88": 123,
+        "66": 141
+      },
+      "source_overlap": {
+        "covisitation": 1894500
+      },
+      "target_source_overlap": {
+        "covisitation": 5591
+      },
+      "source_contribution": {
+        "recent": 0,
+        "covisitation": 5591,
+        "popularity": 0
+      },
+      "cold_start_cases": {
+        "all_unknown": 16434,
+        "no_neighbours": 305
+      },
+      "cold_start_query_rate": 0.30559003943332846,
+      "unknown_item_rate": 0.5059965707184205,
+      "wall_seconds": 6.084220899999991,
+      "peak_process_rss_bytes": 317636608
+    },
+    "popularity": {
+      "configuration": {
+        "candidate_cap": 100,
+        "recent": 0,
+        "covisitation": 0,
+        "popularity": 100,
+        "top_n_per_item": 100,
+        "recent_mode": "recency"
+      },
+      "counts": {
+        "queries": 66981,
+        "labeled": 54776,
+        "prefix_events": 214039,
+        "unknown_item_events": 108303,
+        "pre_rank_hits@20": 230,
+        "pre_rank_hits@50": 623,
+        "no_label": 12205,
+        "retrieved": 1087
+      },
+      "candidate_recall@100": 0.019844457426610194,
+      "pre-rank hit rate@20": 0.004198919234701329,
+      "pre-rank hit rate@50": 0.011373594274864904,
+      "candidate_count_distribution": {
+        "100": 54776
+      },
+      "source_overlap": {
+        "popularity": 5477600
+      },
+      "target_source_overlap": {
+        "popularity": 1087
+      },
+      "source_contribution": {
+        "recent": 0,
+        "covisitation": 0,
+        "popularity": 1087
+      },
+      "cold_start_cases": {
+        "all_unknown": 16434,
+        "no_neighbours": 305
+      },
+      "cold_start_query_rate": 0.30559003943332846,
+      "unknown_item_rate": 0.5059965707184205,
+      "wall_seconds": 18.281100899999956,
+      "peak_process_rss_bytes": 317636608
+    },
+    "recent+covisitation": {
+      "configuration": {
+        "candidate_cap": 100,
+        "recent": 100,
+        "covisitation": 100,
+        "popularity": 0,
+        "top_n_per_item": 100,
+        "recent_mode": "recency"
+      },
+      "counts": {
+        "queries": 66981,
+        "labeled": 54776,
+        "prefix_events": 214039,
+        "unknown_item_events": 108303,
+        "pre_rank_hits@20": 10639,
+        "pre_rank_hits@50": 11646,
+        "no_label": 12205,
+        "retrieved": 12226
+      },
+      "candidate_recall@100": 0.22319994158025414,
+      "pre-rank hit rate@20": 0.19422739886081494,
+      "pre-rank hit rate@50": 0.2126113626405725,
+      "candidate_count_distribution": {
+        "0": 16434,
+        "8": 588,
+        "41": 291,
+        "6": 720,
+        "22": 439,
+        "7": 591,
+        "15": 488,
+        "20": 443,
+        "46": 219,
+        "67": 196,
+        "5": 775,
+        "10": 498,
+        "34": 319,
+        "86": 116,
+        "87": 120,
+        "91": 100,
+        "38": 279,
+        "64": 183,
+        "100": 9850,
+        "37": 308,
+        "9": 543,
+        "12": 602,
+        "3": 836,
+        "17": 485,
+        "21": 425,
+        "29": 368,
+        "75": 153,
+        "62": 181,
+        "36": 253,
+        "4": 860,
+        "35": 323,
+        "48": 223,
+        "72": 184,
+        "99": 96,
+        "61": 227,
+        "2": 1115,
+        "74": 113,
+        "24": 366,
+        "58": 232,
+        "14": 504,
+        "54": 213,
+        "40": 244,
+        "65": 147,
+        "26": 441,
+        "18": 514,
+        "52": 179,
+        "78": 139,
+        "19": 449,
+        "69": 192,
+        "51": 200,
+        "13": 466,
+        "45": 267,
+        "96": 71,
+        "30": 303,
+        "42": 315,
+        "32": 353,
+        "25": 364,
+        "31": 355,
+        "79": 97,
+        "63": 159,
+        "16": 531,
+        "94": 110,
+        "39": 320,
+        "28": 370,
+        "43": 236,
+        "95": 84,
+        "33": 302,
+        "57": 182,
+        "68": 163,
+        "44": 224,
+        "88": 130,
+        "47": 244,
+        "23": 406,
+        "81": 175,
+        "83": 91,
+        "56": 192,
+        "66": 179,
+        "98": 80,
+        "82": 130,
+        "92": 132,
+        "93": 135,
+        "11": 482,
+        "50": 174,
+        "59": 159,
+        "85": 69,
+        "97": 87,
+        "27": 412,
+        "89": 137,
+        "76": 99,
+        "60": 230,
+        "70": 191,
+        "49": 242,
+        "84": 107,
+        "73": 124,
+        "80": 135,
+        "53": 239,
+        "55": 246,
+        "1": 305,
+        "77": 128,
+        "90": 108,
+        "71": 172
+      },
+      "source_overlap": {
+        "recent": 62778,
+        "covisitation": 1853482,
+        "recent+covisitation": 17468
+      },
+      "target_source_overlap": {
+        "covisitation": 3819,
+        "recent+covisitation": 1759,
+        "recent": 6648
+      },
+      "source_contribution": {
+        "recent": 8407,
+        "covisitation": 5578,
+        "popularity": 0
+      },
+      "cold_start_cases": {
+        "all_unknown": 16434,
+        "no_neighbours": 305
+      },
+      "cold_start_query_rate": 0.30559003943332846,
+      "unknown_item_rate": 0.5059965707184205,
+      "wall_seconds": 10.470770800000082,
+      "peak_process_rss_bytes": 317636608
+    },
+    "recent+popularity": {
+      "configuration": {
+        "candidate_cap": 100,
+        "recent": 100,
+        "covisitation": 0,
+        "popularity": 100,
+        "top_n_per_item": 100,
+        "recent_mode": "recency"
+      },
+      "counts": {
+        "queries": 66981,
+        "labeled": 54776,
+        "prefix_events": 214039,
+        "unknown_item_events": 108303,
+        "pre_rank_hits@20": 8545,
+        "pre_rank_hits@50": 8768,
+        "no_label": 12205,
+        "retrieved": 9058
+      },
+      "candidate_recall@100": 0.16536439316488974,
+      "pre-rank hit rate@20": 0.1559989776544472,
+      "pre-rank hit rate@50": 0.16007010369504893,
+      "candidate_count_distribution": {
+        "100": 54776
+      },
+      "source_overlap": {
+        "popularity": 5397354,
+        "recent": 76626,
+        "recent+popularity": 3620
+      },
+      "target_source_overlap": {
+        "recent": 7984,
+        "popularity": 651,
+        "recent+popularity": 423
+      },
+      "source_contribution": {
+        "recent": 8407,
+        "covisitation": 0,
+        "popularity": 1074
+      },
+      "cold_start_cases": {
+        "all_unknown": 16434,
+        "no_neighbours": 305
+      },
+      "cold_start_query_rate": 0.30559003943332846,
+      "unknown_item_rate": 0.5059965707184205,
+      "wall_seconds": 24.193474100000003,
+      "peak_process_rss_bytes": 317636608
+    },
+    "covisitation+popularity": {
+      "configuration": {
+        "candidate_cap": 100,
+        "recent": 0,
+        "covisitation": 100,
+        "popularity": 100,
+        "top_n_per_item": 100,
+        "recent_mode": "recency"
+      },
+      "counts": {
+        "queries": 66981,
+        "labeled": 54776,
+        "prefix_events": 214039,
+        "unknown_item_events": 108303,
+        "pre_rank_hits@20": 2495,
+        "pre_rank_hits@50": 3837,
+        "no_label": 12205,
+        "retrieved": 5233
+      },
+      "candidate_recall@100": 0.09553454067474806,
+      "pre-rank hit rate@20": 0.04554914561121659,
+      "pre-rank hit rate@50": 0.07004892653716957,
+      "candidate_count_distribution": {
+        "100": 54776
+      },
+      "source_overlap": {
+        "popularity": 4196121,
+        "covisitation": 1229641,
+        "covisitation+popularity": 51838
+      },
+      "target_source_overlap": {
+        "covisitation": 4397,
+        "popularity": 480,
+        "covisitation+popularity": 356
+      },
+      "source_contribution": {
+        "recent": 0,
+        "covisitation": 4753,
+        "popularity": 836
+      },
+      "cold_start_cases": {
+        "all_unknown": 16434,
+        "no_neighbours": 305
+      },
+      "cold_start_query_rate": 0.30559003943332846,
+      "unknown_item_rate": 0.5059965707184205,
+      "wall_seconds": 23.887847599999986,
+      "peak_process_rss_bytes": 317636608
+    },
+    "recent+covisitation+popularity": {
+      "configuration": {
+        "candidate_cap": 100,
+        "recent": 100,
+        "covisitation": 100,
+        "popularity": 100,
+        "top_n_per_item": 100,
+        "recent_mode": "recency"
+      },
+      "counts": {
+        "queries": 66981,
+        "labeled": 54776,
+        "prefix_events": 214039,
+        "unknown_item_events": 108303,
+        "pre_rank_hits@20": 10148,
+        "pre_rank_hits@50": 11114,
+        "no_label": 12205,
+        "retrieved": 11980
+      },
+      "candidate_recall@100": 0.21870892361618227,
+      "pre-rank hit rate@20": 0.1852636191032569,
+      "pre-rank hit rate@50": 0.2028990798890025,
+      "candidate_count_distribution": {
+        "100": 54776
+      },
+      "source_overlap": {
+        "popularity": 4147054,
+        "recent": 60348,
+        "covisitation": 1200004,
+        "covisitation+popularity": 50296,
+        "recent+covisitation": 16278,
+        "recent+popularity": 2430,
+        "recent+covisitation+popularity": 1190
+      },
+      "target_source_overlap": {
+        "covisitation": 3035,
+        "recent+covisitation": 1659,
+        "recent": 6325,
+        "popularity": 280,
+        "recent+popularity": 323,
+        "covisitation+popularity": 258,
+        "recent+covisitation+popularity": 100
+      },
+      "source_contribution": {
+        "recent": 8407,
+        "covisitation": 5052,
+        "popularity": 961
+      },
+      "cold_start_cases": {
+        "all_unknown": 16434,
+        "no_neighbours": 305
+      },
+      "cold_start_query_rate": 0.30559003943332846,
+      "unknown_item_rate": 0.5059965707184205,
+      "wall_seconds": 25.684673200000134,
+      "peak_process_rss_bytes": 317636608
+    },
+    "A:repeat": {
+      "configuration": {
+        "candidate_cap": 100,
+        "recent": 100,
+        "covisitation": 100,
+        "popularity": 100,
+        "top_n_per_item": 100,
+        "recent_mode": "repeat"
+      },
+      "counts": {
+        "queries": 66981,
+        "labeled": 54776,
+        "prefix_events": 214039,
+        "unknown_item_events": 108303,
+        "pre_rank_hits@20": 10148,
+        "pre_rank_hits@50": 11114,
+        "no_label": 12205,
+        "retrieved": 11980
+      },
+      "candidate_recall@100": 0.21870892361618227,
+      "pre-rank hit rate@20": 0.1852636191032569,
+      "pre-rank hit rate@50": 0.2028990798890025,
+      "candidate_count_distribution": {
+        "100": 54776
+      },
+      "source_overlap": {
+        "popularity": 4147054,
+        "recent": 60348,
+        "covisitation": 1200004,
+        "covisitation+popularity": 50296,
+        "recent+covisitation": 16278,
+        "recent+popularity": 2430,
+        "recent+covisitation+popularity": 1190
+      },
+      "target_source_overlap": {
+        "covisitation": 3035,
+        "recent+covisitation": 1659,
+        "recent": 6325,
+        "popularity": 280,
+        "recent+popularity": 323,
+        "covisitation+popularity": 258,
+        "recent+covisitation+popularity": 100
+      },
+      "source_contribution": {
+        "recent": 8407,
+        "covisitation": 5052,
+        "popularity": 961
+      },
+      "cold_start_cases": {
+        "all_unknown": 16434,
+        "no_neighbours": 305
+      },
+      "cold_start_query_rate": 0.30559003943332846,
+      "unknown_item_rate": 0.5059965707184205,
+      "wall_seconds": 23.385091099999954,
+      "peak_process_rss_bytes": 317636608
+    },
+    "A:event_type": {
+      "configuration": {
+        "candidate_cap": 100,
+        "recent": 100,
+        "covisitation": 100,
+        "popularity": 100,
+        "top_n_per_item": 100,
+        "recent_mode": "event_type"
+      },
+      "counts": {
+        "queries": 66981,
+        "labeled": 54776,
+        "prefix_events": 214039,
+        "unknown_item_events": 108303,
+        "pre_rank_hits@20": 10148,
+        "pre_rank_hits@50": 11114,
+        "no_label": 12205,
+        "retrieved": 11980
+      },
+      "candidate_recall@100": 0.21870892361618227,
+      "pre-rank hit rate@20": 0.1852636191032569,
+      "pre-rank hit rate@50": 0.2028990798890025,
+      "candidate_count_distribution": {
+        "100": 54776
+      },
+      "source_overlap": {
+        "popularity": 4147054,
+        "recent": 60348,
+        "covisitation": 1200004,
+        "covisitation+popularity": 50296,
+        "recent+covisitation": 16278,
+        "recent+popularity": 2430,
+        "recent+covisitation+popularity": 1190
+      },
+      "target_source_overlap": {
+        "covisitation": 3035,
+        "recent+covisitation": 1659,
+        "recent": 6325,
+        "popularity": 280,
+        "recent+popularity": 323,
+        "covisitation+popularity": 258,
+        "recent+covisitation+popularity": 100
+      },
+      "source_contribution": {
+        "recent": 8407,
+        "covisitation": 5052,
+        "popularity": 961
+      },
+      "cold_start_cases": {
+        "all_unknown": 16434,
+        "no_neighbours": 305
+      },
+      "cold_start_query_rate": 0.30559003943332846,
+      "unknown_item_rate": 0.5059965707184205,
+      "wall_seconds": 27.237053500000002,
+      "peak_process_rss_bytes": 317636608
+    },
+    "C:50": {
+      "configuration": {
+        "candidate_cap": 50,
+        "recent": 100,
+        "covisitation": 50,
+        "popularity": 50,
+        "top_n_per_item": 100,
+        "recent_mode": "recency"
+      },
+      "counts": {
+        "queries": 66981,
+        "labeled": 54776,
+        "prefix_events": 214039,
+        "unknown_item_events": 108303,
+        "pre_rank_hits@20": 10148,
+        "pre_rank_hits@50": 11114,
+        "no_label": 12205,
+        "retrieved": 11114
+      },
+      "candidate_recall@50": 0.2028990798890025,
+      "pre-rank hit rate@20": 0.1852636191032569,
+      "pre-rank hit rate@50": 0.2028990798890025,
+      "candidate_count_distribution": {
+        "50": 54776
+      },
+      "source_overlap": {
+        "popularity": 1924089,
+        "recent": 65537,
+        "covisitation": 715291,
+        "covisitation+popularity": 19174,
+        "recent+covisitation": 12630,
+        "recent+popularity": 1518,
+        "recent+covisitation+popularity": 561
+      },
+      "target_source_overlap": {
+        "covisitation": 2434,
+        "recent+covisitation": 1371,
+        "recent": 6783,
+        "popularity": 153,
+        "covisitation+popularity": 120,
+        "recent+covisitation+popularity": 47,
+        "recent+popularity": 206
+      },
+      "source_contribution": {
+        "recent": 8407,
+        "covisitation": 3972,
+        "popularity": 526
+      },
+      "cold_start_cases": {
+        "all_unknown": 16434,
+        "no_neighbours": 305
+      },
+      "cold_start_query_rate": 0.30559003943332846,
+      "unknown_item_rate": 0.5059965707184205,
+      "wall_seconds": 14.680994299999838,
+      "peak_process_rss_bytes": 317636608
+    },
+    "C:200": {
+      "configuration": {
+        "candidate_cap": 200,
+        "recent": 100,
+        "covisitation": 200,
+        "popularity": 200,
+        "top_n_per_item": 100,
+        "recent_mode": "recency"
+      },
+      "counts": {
+        "queries": 66981,
+        "labeled": 54776,
+        "prefix_events": 214039,
+        "unknown_item_events": 108303,
+        "pre_rank_hits@20": 10148,
+        "pre_rank_hits@50": 11114,
+        "no_label": 12205,
+        "retrieved": 12744
+      },
+      "candidate_recall@200": 0.23265663794362496,
+      "pre-rank hit rate@20": 0.1852636191032569,
+      "pre-rank hit rate@50": 0.2028990798890025,
+      "candidate_count_distribution": {
+        "200": 54776
+      },
+      "source_overlap": {
+        "popularity": 8975586,
+        "recent": 56135,
+        "covisitation": 1790584,
+        "covisitation+popularity": 108784,
+        "recent+covisitation": 18271,
+        "recent+popularity": 2902,
+        "recent+covisitation+popularity": 2938
+      },
+      "target_source_overlap": {
+        "covisitation": 3398,
+        "recent+covisitation": 1765,
+        "recent": 5968,
+        "popularity": 466,
+        "recent+popularity": 376,
+        "covisitation+popularity": 473,
+        "recent+covisitation+popularity": 298
+      },
+      "source_contribution": {
+        "recent": 8407,
+        "covisitation": 5934,
+        "popularity": 1613
+      },
+      "cold_start_cases": {
+        "all_unknown": 16434,
+        "no_neighbours": 305
+      },
+      "cold_start_query_rate": 0.30559003943332846,
+      "unknown_item_rate": 0.5059965707184205,
+      "wall_seconds": 69.75126660000001,
+      "peak_process_rss_bytes": 317636608
+    },
+    "C:300": {
+      "configuration": {
+        "candidate_cap": 300,
+        "recent": 100,
+        "covisitation": 300,
+        "popularity": 300,
+        "top_n_per_item": 100,
+        "recent_mode": "recency"
+      },
+      "counts": {
+        "queries": 66981,
+        "labeled": 54776,
+        "prefix_events": 214039,
+        "unknown_item_events": 108303,
+        "pre_rank_hits@20": 10148,
+        "pre_rank_hits@50": 11114,
+        "no_label": 12205,
+        "retrieved": 13108
+      },
+      "candidate_recall@300": 0.23930188403680444,
+      "pre-rank hit rate@20": 0.1852636191032569,
+      "pre-rank hit rate@50": 0.2028990798890025,
+      "candidate_count_distribution": {
+        "300": 54776
+      },
+      "source_overlap": {
+        "popularity": 14146981,
+        "recent": 54620,
+        "covisitation": 2049616,
+        "covisitation+popularity": 155957,
+        "recent+covisitation": 17880,
+        "recent+popularity": 3646,
+        "recent+covisitation+popularity": 4100
+      },
+      "target_source_overlap": {
+        "covisitation": 3393,
+        "recent+covisitation": 1697,
+        "recent": 5833,
+        "popularity": 644,
+        "recent+popularity": 484,
+        "covisitation+popularity": 664,
+        "recent+covisitation+popularity": 393
+      },
+      "source_contribution": {
+        "recent": 8407,
+        "covisitation": 6147,
+        "popularity": 2185
+      },
+      "cold_start_cases": {
+        "all_unknown": 16434,
+        "no_neighbours": 305
+      },
+      "cold_start_query_rate": 0.30559003943332846,
+      "unknown_item_rate": 0.5059965707184205,
+      "wall_seconds": 87.14688619999993,
+      "peak_process_rss_bytes": 317636608
+    },
+    "quota:10/100/20": {
+      "configuration": {
+        "candidate_cap": 100,
+        "recent": 10,
+        "covisitation": 100,
+        "popularity": 20,
+        "top_n_per_item": 100,
+        "recent_mode": "recency"
+      },
+      "counts": {
+        "queries": 66981,
+        "labeled": 54776,
+        "prefix_events": 214039,
+        "unknown_item_events": 108303,
+        "pre_rank_hits@20": 10148,
+        "pre_rank_hits@50": 11212,
+        "no_label": 12205,
+        "retrieved": 12234
+      },
+      "candidate_recall@100": 0.2233459909449394,
+      "pre-rank hit rate@20": 0.1852636191032569,
+      "pre-rank hit rate@50": 0.20468818460639696,
+      "candidate_count_distribution": {
+        "100": 28733,
+        "28": 599,
+        "60": 250,
+        "26": 725,
+        "42": 433,
+        "27": 584,
+        "35": 510,
+        "40": 431,
+        "66": 231,
+        "87": 184,
+        "25": 786,
+        "30": 521,
+        "54": 356,
+        "57": 322,
+        "83": 153,
+        "56": 250,
+        "29": 531,
+        "61": 298,
+        "32": 591,
+        "23": 836,
+        "37": 496,
+        "41": 410,
+        "49": 377,
+        "94": 108,
+        "82": 162,
+        "24": 862,
+        "55": 291,
+        "67": 257,
+        "91": 147,
+        "80": 236,
+        "22": 1119,
+        "44": 382,
+        "78": 242,
+        "34": 469,
+        "58": 301,
+        "74": 191,
+        "46": 430,
+        "38": 520,
+        "72": 188,
+        "86": 158,
+        "97": 120,
+        "39": 491,
+        "68": 220,
+        "85": 170,
+        "89": 193,
+        "71": 190,
+        "33": 492,
+        "64": 223,
+        "50": 331,
+        "52": 342,
+        "84": 182,
+        "45": 346,
+        "51": 355,
+        "99": 114,
+        "81": 242,
+        "36": 506,
+        "98": 151,
+        "62": 329,
+        "76": 188,
+        "59": 274,
+        "48": 385,
+        "63": 216,
+        "53": 286,
+        "77": 198,
+        "88": 172,
+        "43": 398,
+        "92": 207,
+        "31": 481,
+        "70": 185,
+        "79": 163,
+        "47": 410,
+        "96": 111,
+        "90": 211,
+        "69": 240,
+        "93": 118,
+        "65": 246,
+        "73": 291,
+        "75": 203,
+        "95": 126
+      },
+      "source_overlap": {
+        "popularity": 2418087,
+        "recent": 62265,
+        "covisitation": 1634284,
+        "covisitation+popularity": 15448,
+        "recent+covisitation": 17181,
+        "recent+popularity": 513,
+        "recent+covisitation+popularity": 287
+      },
+      "target_source_overlap": {
+        "covisitation": 3616,
+        "recent+covisitation": 1739,
+        "recent": 6583,
+        "popularity": 148,
+        "covisitation+popularity": 63,
+        "recent+covisitation+popularity": 20,
+        "recent+popularity": 65
+      },
+      "source_contribution": {
+        "recent": 8407,
+        "covisitation": 5438,
+        "popularity": 296
+      },
+      "cold_start_cases": {
+        "all_unknown": 16434,
+        "no_neighbours": 305
+      },
+      "cold_start_query_rate": 0.30559003943332846,
+      "unknown_item_rate": 0.5059965707184205,
+      "wall_seconds": 17.18848930000013,
+      "peak_process_rss_bytes": 317636608
+    }
+  },
+  "baseline_slices": {
+    "Length \u226420": {
+      "sessions": 12309,
+      "queries": 57811,
+      "labeled": 45606,
+      "retrieved": 4469,
+      "label_yield": 0.7888810088045528,
+      "candidate_recall@100": 0.09799149234749814
+    },
+    "Duration <1h": {
+      "sessions": 8774,
+      "queries": 39538,
+      "labeled": 30701,
+      "retrieved": 3107,
+      "label_yield": 0.7764934999241236,
+      "candidate_recall@100": 0.10120191524706036
+    },
+    "Repeat share 0": {
+      "sessions": 4943,
+      "queries": 15429,
+      "labeled": 10560,
+      "retrieved": 865,
+      "label_yield": 0.6844254326268715,
+      "candidate_recall@100": 0.08191287878787878
+    },
+    "Repeat share \u226550%": {
+      "sessions": 3618,
+      "queries": 19280,
+      "labeled": 15557,
+      "retrieved": 1558,
+      "label_yield": 0.8068983402489627,
+      "candidate_recall@100": 0.10014784341454008
+    },
+    "Duration 1\u201324h": {
+      "sessions": 2330,
+      "queries": 14192,
+      "labeled": 12370,
+      "retrieved": 1247,
+      "label_yield": 0.8716178128523112,
+      "candidate_recall@100": 0.10080840743734842
+    },
+    "Repeat share (0, 50%)": {
+      "sessions": 4665,
+      "queries": 32272,
+      "labeled": 28659,
+      "retrieved": 3168,
+      "label_yield": 0.8880453644025781,
+      "candidate_recall@100": 0.11054119124882236
+    },
+    "Length 21\u2013100": {
+      "sessions": 892,
+      "queries": 8920,
+      "labeled": 8920,
+      "retrieved": 1106,
+      "label_yield": 1.0,
+      "candidate_recall@100": 0.12399103139013452
+    },
+    "Duration \u226524h": {
+      "sessions": 2122,
+      "queries": 13251,
+      "labeled": 11705,
+      "retrieved": 1237,
+      "label_yield": 0.8833295600332051,
+      "candidate_recall@100": 0.10568133276377617
+    },
+    "Length >100": {
+      "sessions": 25,
+      "queries": 250,
+      "labeled": 250,
+      "retrieved": 16,
+      "label_yield": 1.0,
+      "candidate_recall@100": 0.064
+    }
+  },
+  "slice_wall_seconds": 1.029451999999992,
+  "markdown": [
+    "",
+    "## W2-dev boundary-exclusion follow-up",
+    "",
+    "Slices use the full retained session for diagnosis. Ranking uses only the prefix. The pinned Stage 0 co-visitation path supplies recall for this table.",
+    "",
+    "| Slice | Sessions | Queries | Labeled | Label yield | Pinned candidate_recall@100 |",
+    "|---|---:|---:|---:|---:|---:|",
+    "| Duration 1\u201324h | 2,330 | 14,192 | 12,370 | 87.16% | 10.08% |",
+    "| Duration <1h | 8,774 | 39,538 | 30,701 | 77.65% | 10.12% |",
+    "| Duration \u226524h | 2,122 | 13,251 | 11,705 | 88.33% | 10.57% |",
+    "| Length 21\u2013100 | 892 | 8,920 | 8,920 | 100.00% | 12.40% |",
+    "| Length >100 | 25 | 250 | 250 | 100.00% | 6.40% |",
+    "| Length \u226420 | 12,309 | 57,811 | 45,606 | 78.89% | 9.80% |",
+    "| Repeat share (0, 50%) | 4,665 | 32,272 | 28,659 | 88.80% | 11.05% |",
+    "| Repeat share 0 | 4,943 | 15,429 | 10,560 | 68.44% | 8.19% |",
+    "| Repeat share \u226550% | 3,618 | 19,280 | 15,557 | 80.69% | 10.01% |",
+    "",
+    "Reproduced the pinned baseline with 5,591 hits across 54,776 labeled queries (10.2070%). Slice computation took 1.029s.",
+    "",
+    "The Stage 0 sign-off documents the wider boundary-excluded population. The table measures label yield and retrieval coverage within retained W2-dev sessions."
+  ]
+}
