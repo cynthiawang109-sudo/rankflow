@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ranking Playground · RankFlow</title>
+<style>
+:root { font-family: system-ui, sans-serif; color: #172a27; background: #f1f4ef; }
+body { max-width: 1160px; margin: auto; padding: 2rem 1rem; }
+h1 { font-size: clamp(2rem, 5vw, 3.3rem); margin: 0 0 1rem; letter-spacing: -.055em; }
+section, article { background: #fff; border: 1px solid #dbe3da; border-radius: .8rem; padding: 1rem; margin: 1rem 0; }
+label, button { display: inline-block; margin: .25rem; }
+button, select, input { font: inherit; border-radius: .35rem; padding: .4rem .65rem; border: 1px solid #738b80; }
+button { background: #195747; color: white; cursor: pointer; }
+button:disabled { opacity: .55; }
+input { width: min(80vw, 23rem); }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+td, th { padding: .45rem; text-align: left; border-bottom: 1px solid #dbe3da; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 465px), 1fr)); gap: 1rem; }
+code, output { overflow-wrap: anywhere; }
+small { color: #4b645b; }
+</style>
+<main>
+<h1>Ranking Playground</h1>
+<section aria-label="Session">
+  <label>Window <select id="window"><option>W2-dev</option><option>W1</option></select></label>
+  <label>Prefix <select id="prefix"></select></label>
+  <p id="cutoff"></p>
+  <label>Custom item IDs <input id="custom" placeholder="101, 222" autocomplete="off"></label>
+  <button id="rank">Rank session</button>
+  <button id="empty">Rank empty session</button>
+</section>
+<p role="status" id="status"></p>
+<p id="provenance"></p>
+<details id="requestDetails" hidden><summary>API replay payload for POST /v1/recommend</summary><code id="requestPayload"></code></details>
+<p id="agreement"></p>
+<div class="grid" id="results"></div>
+<section id="feedbackPanel" hidden>
+  <h2>Demo interaction</h2>
+  <label>Returned item <select id="aid"></select></label>
+  <label>Action <select id="action"><option>click</option><option>cart</option><option>order</option></select></label>
+  <button id="feedback">Submit feedback</button>
+  <p><output id="event"></output></p>
+</section>
+</main>
+<script>
+const csrf = "__CSRF__";
+const get = (id) => document.getElementById(id);
+const session = crypto.randomUUID();
+let examples = [];
+let impression = null;
+async function api(path, payload) {
+  const response = await fetch(path, payload === undefined ? {} : {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf },
+    body: JSON.stringify(payload)
+  });
+  const result = await response.json();
+  if (!response.ok) throw Error(typeof result.detail === "string" ? result.detail : JSON.stringify(result.detail));
+  return result;
+}
+function showPrefix() {
+  const example = examples[Number(get("prefix").value)];
+  get("cutoff").textContent = example
+    ? new Date(example.cutoff_ts).toISOString() + " · " + example.events.map(event => event.aid).join(", ")
+    : "No prefixes available.";
+}
+async function load() {
+  try {
+    examples = await api("/v1/playground/prefixes?window=" + encodeURIComponent(get("window").value));
+    get("prefix").replaceChildren(...examples.map((example, index) => new Option("Prefix " + (index + 1), index)));
+    showPrefix();
+  } catch (error) { get("status").textContent = error.message; }
+}
+function table(title, items, movements = {}) {
+  const card = document.createElement("article");
+  const heading = document.createElement("h2");
+  heading.textContent = title;
+  const note = document.createElement("small");
+  note.textContent = "Synthetic display labels";
+  const table = document.createElement("table");
+  const header = table.createTHead().insertRow();
+  for (const label of ["Rank", "Item", "Relative score", "Sources", "Movement"]) {
+    const th = document.createElement("th");
+    th.textContent = label;
+    header.append(th);
+  }
+  const body = table.createTBody();
+  for (const item of items) {
+    const sources = Object.entries(item.sources).filter(([, source]) => source.present)
+      .map(([name, source]) => name + " #" + source.rank).join(", ");
+    const row = body.insertRow();
+    for (const value of [item.rank, "Item " + item.aid, item.score.toFixed(4), sources, movements[item.aid] ?? "—"]) {
+      row.insertCell().textContent = value;
+    }
+  }
+  card.append(heading, note, table);
+  return card;
+}
+async function rank(empty = false) {
+  get("rank").disabled = get("empty").disabled = true;
+  get("status").textContent = "Ranking…";
+  get("feedbackPanel").hidden = true;
+  get("event").textContent = "";
+  try {
+    const custom = get("custom").value.trim();
+    let events = examples[Number(get("prefix").value)]?.events ?? [];
+    if (empty) events = [];
+    else if (custom) {
+      const aids = custom.split(",").map(value => value.trim());
+      if (aids.some(value => !/^\d+$/.test(value) || !Number.isSafeInteger(Number(value)))) {
+        throw Error("Enter comma-separated non-negative item IDs.");
+      }
+      const now = Date.now();
+      events = aids.map((aid, index) => ({aid: Number(aid), ts: now + index, type: "clicks"}));
+    }
+    const payload = {request_id: crypto.randomUUID(), session_id: session, events, top_k: 20};
+    const result = await api("/v1/playground/rank", payload);
+    get("requestDetails").hidden = false;
+    get("requestPayload").textContent = JSON.stringify(payload);
+    impression = result.impression_id;
+    get("provenance").textContent = [
+      "Assigned " + result.assigned_strategy, "Served " + result.served_strategy,
+      result.serving_generation, "Snapshot " + result.retrieval_snapshot_id,
+      "Fallback " + result.fallback_used, "Logging " + result.logging_status
+    ].join(" · ");
+    const comparison = result.comparison;
+    const cards = [table(result.served_strategy, result.items)];
+    if (comparison.items) cards.push(table(comparison.strategy, comparison.items, comparison.movements));
+    get("results").replaceChildren(...cards);
+    get("agreement").textContent = comparison.items
+      ? "Ranker-only comparison · " + comparison.top_k_overlap + " shared top results · " + comparison.same_rank + " at the same rank"
+      : "Ranker-only comparison unavailable";
+    get("aid").replaceChildren(...result.items.map(item => new Option(item.aid, item.aid)));
+    get("feedbackPanel").hidden = !impression || result.items.length === 0;
+    get("status").textContent = "";
+    if (impression) {
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      await api("/v1/impressions/" + encodeURIComponent(impression) + "/ack", {});
+    }
+  } catch (error) { get("status").textContent = error.message; }
+  finally { get("rank").disabled = get("empty").disabled = false; }
+}
+get("feedback").onclick = async () => {
+  try {
+    const result = await api("/v1/feedback", {event_id: crypto.randomUUID(), impression_id: impression,
+      aid: Number(get("aid").value), action: get("action").value, occurred_at: new Date().toISOString(), source: "demo"});
+    get("event").textContent = result.event_id + " · " + result.action + " on item " + result.aid +
+      " · " + result.reason + " · source=" + result.source + " · " + result.confirmation_state;
+  } catch (error) { get("event").textContent = error.message; }
+};
+get("rank").onclick = () => rank();
+get("empty").onclick = () => rank(true);
+get("window").onchange = load;
+get("prefix").onchange = showPrefix;
+load();
+</script>
+</html>
