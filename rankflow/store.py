@@ -7,6 +7,7 @@ import psycopg
 from psycopg.rows import dict_row
 from psycopg.types.json import Jsonb
 
+from .operations import emit
 from .epoch_registry import SCHEMA as EPOCH_SCHEMA
 
 LOGGER = logging.getLogger(__name__)
@@ -91,6 +92,8 @@ class PostgresStore:
             conn.execute("INSERT INTO decisions VALUES (%s, %s)", (impression_id, Jsonb(payload)))
             conn.execute("INSERT INTO outbox(event_id, impression_id, payload) VALUES (%s, %s, %s)",
                          (event_id, impression_id, Jsonb(event)))
+        emit("decision_committed", request_id=decision.get("request_id"), impression_id=impression_id,
+             event_id=event_id)
         return impression_id
 
     def record_shadow(self, impression_id, observation):
@@ -183,4 +186,6 @@ class PostgresStore:
                              (row["event_id"], Jsonb(row["payload"])))
                 conn.execute("UPDATE outbox SET delivered_at = clock_timestamp() WHERE event_id = %s",
                              (row["event_id"],))
+        for row in rows:
+            emit("outbox_delivered", request_id=row["payload"].get("request_id"), event_id=row["event_id"])
         return len(rows)

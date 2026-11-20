@@ -8,6 +8,7 @@ from fastapi import Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, ConfigDict, Field
 
+from .operations import ALERT_CATALOGUE
 from .epoch_registry import register_epoch
 from .training_pipeline import canonical, read_json
 from .traffic import TrafficConfigSnapshot
@@ -105,6 +106,55 @@ def install_console(app, store, traffic, bearer, release_registry=None, signing_
     @app.get("/operator/releases", dependencies=operator_only)
     def releases():
         return list(verified_records(release_registry, signing_key))
+
+    @app.get("/operator/runbook", response_class=HTMLResponse, dependencies=operator_only)
+    def runbook():
+        return """<h1>RankFlow operations runbook</h1>
+<h2 id="canary-health">Canary health</h2>
+<p>Check closed canary windows and the auto_pause audit row. If the pause failed,
+page the on-call operator and POST /operator/traffic/kill with the current revision
+and a new operation ID. Investigate missing telemetry or scoring failures before resuming.</p>
+<h2 id="database-and-outbox">Database and outbox</h2>
+<p>Page the database on-call. Check connectivity and the oldest pending outbox
+event. Restore connectivity and verify delivery resumes. Degraded responses have no attribution ID.</p>
+<h2 id="fleet-convergence">Fleet convergence</h2>
+<p>Read the instance revisions and prior stable config_id from traffic history.
+POST /operator/traffic/rollback with that rollback_config_id, the current
+expected_revision and a new operation ID. Verify every serving instance reports the rollback revision.</p>"""
+
+    @app.get("/operator/metrics", dependencies=operator_only)
+    def metrics():
+        groups = []
+        if store:
+            with store.connect() as conn:
+                groups = conn.execute("""
+                    SELECT coalesce(d.payload->>'assigned_generation_id', i.generation) AS generation,
+                           d.payload->>'assignment' AS cohort, d.payload->>'source' AS source,
+                           count(*) FILTER (WHERE i.created_at + %s <= statement_timestamp()) AS closed_impressions,
+                           count(a.impression_id) FILTER (WHERE i.created_at + %s <= statement_timestamp()) AS confirmed,
+                           count(*) FILTER (WHERE i.send_state = 'send_completed') AS send_completed,
+                           count(*) FILTER (WHERE i.send_state = 'send_failed') AS send_failed,
+                           count(*) FILTER (WHERE i.send_state = 'send_unknown') AS send_unknown,
+                           count(*) FILTER (WHERE o.delivered_at IS NULL AND o.event_id IS NOT NULL) AS pending_outbox,
+                           max(extract(epoch FROM statement_timestamp() - o.created_at))
+                               FILTER (WHERE o.delivered_at IS NULL) AS oldest_pending_seconds,
+                           count(*) FILTER (WHERE s.payload->>'comparison_status' = 'compared') AS compared_shadow,
+                           sum(1 - (s.payload->>'top_k_overlap')::numeric /
+                               nullif((s.payload->>'top_k')::numeric, 0))
+                               FILTER (WHERE s.payload->>'comparison_status' = 'compared') AS shadow_divergence_sum
+                    FROM impressions i JOIN decisions d ON d.impression_id = i.id
+                    LEFT JOIN acknowledgements a ON a.impression_id = i.id AND a.kind = 'confirmed'
+                    LEFT JOIN outbox o ON o.impression_id = i.id
+                    LEFT JOIN shadow_observations s ON s.impression_id = i.id
+                    GROUP BY 1, 2, 3
+                    """, (store.ack_window, store.ack_window)).fetchall()
+        return {"instance_id": traffic.instance_id if traffic else None,
+                "requests": app.state.request_metrics.snapshot(), "durable": groups,
+                "alert_catalogue": ALERT_CATALOGUE,
+                "experiment": traffic.pin().config.state if traffic else None,
+                "gate_decisions": [record["record"]["decision"]
+                                   for record in verified_records(release_registry, signing_key)],
+                "canary": guardrails.status if guardrails else None}
 
     @app.get("/operator/events", dependencies=operator_only)
     def events():

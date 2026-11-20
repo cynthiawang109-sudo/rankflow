@@ -8,6 +8,8 @@ from time import monotonic
 from uuid import uuid4
 import logging
 
+from .operations import emit
+
 from psycopg.types.json import Jsonb
 
 from .generation import Generation, encoded
@@ -235,8 +237,9 @@ class TrafficRegistry:
                 WHERE revision=%s AND state<>'partially_converged'
                 """, (revision,))
             if result.rowcount:
-                LOGGER.warning("Traffic revision %s did not converge, missing instances %s",
-                               revision, sorted(required - acknowledged))
+                emit("fleet_stale", logging.WARNING, revision=revision,
+                     missing_instances=sorted(required - acknowledged),
+                     rollback_config_id=active["recovery_config_id"])
         action = active["action"]
         try:
             if action == "rollback":

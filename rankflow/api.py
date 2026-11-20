@@ -24,6 +24,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from .features import FEATURE_VERSION, build_features
 from .generation import Generation
+from .operations import RequestMetrics, emit
 from .retrieval import retrieve
 from .strategies import RULE
 
@@ -71,7 +72,7 @@ class Feedback(Input):
         return self
 
 
-def rank_request(generation, events, top_k, deadline_ms, compare=False):
+def rank_request(generation, events, top_k, deadline_ms, compare=False, request_id=None):
     snapshot = generation.snapshot
     candidates = retrieve(snapshot, events, generation.config)
     rows = build_features(snapshot, events, candidates)
@@ -124,8 +125,10 @@ def rank_request(generation, events, top_k, deadline_ms, compare=False):
                                     "same_rank": sum(left[aid] == right[aid] for aid in intersection),
                                     "movements": {aid: left[aid] - rank for aid, rank in right.items()}}
         except Exception:
-            LOGGER.exception("Playground comparison failed")
+            emit("comparison_failed", logging.WARNING, request_id=request_id)
             result["comparison"] = {"mode": "ranker-only", "status": "unavailable"}
+    emit("ranking_outcome", request_id=request_id, generation=generation.generation_id,
+         strategy=served.strategy_id, fallback_reason=reason)
     return result, decision
 
 
@@ -190,7 +193,7 @@ async def consume_outbox(store, stop):
             if delivered:
                 continue
         except Exception:
-            LOGGER.exception("Outbox delivery will retry")
+            emit("outbox_retry", logging.WARNING)
             delay = min(delay * 2, 30)
         try:
             await asyncio.wait_for(stop.wait(), timeout=delay)
@@ -278,6 +281,7 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
 
     app = FastAPI(title="RankFlow", lifespan=lifespan)
     app.state.counters = Counter()
+    app.state.request_metrics = RequestMetrics()
     counters_lock = Lock()
 
     def count(name):
@@ -323,13 +327,15 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
     def recommend(data, request, compare):
         csrf(request)
         started = perf_counter()
+        emit("recommendation_request", request_id=data.request_id)
         events = [event.model_dump() for event in data.events]
         session_hash = hmac.new(session_key, data.session_id.encode(), hashlib.sha256).hexdigest()
         pin = traffic.pin() if traffic else None
         selected, cohort = pin.select(session_hash) if pin else (generation, "stable")
         if events and events[-1]["ts"] <= selected.snapshot.watermark:
+            emit("recommendation_rejected", request_id=data.request_id, reason="cutoff_must_follow_snapshot")
             raise HTTPException(422, "cutoff_must_follow_snapshot")
-        result, decision = rank_request(selected, events, data.top_k, deadline_ms, compare)
+        result, decision = rank_request(selected, events, data.top_k, deadline_ms, compare, request_id=data.request_id)
         if pin:
             result.update(config_id=pin.config.config_id, config_revision=pin.revision, assignment=cohort)
             decision.update(assigned_generation_id=selected.generation_id,
@@ -338,7 +344,8 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
                 count("synthetic_shadow_attempted")
                 def evaluate_shadow():
                     try:
-                        comparison, reasons = rank_request(pin.shadow, events, data.top_k, deadline_ms)
+                        comparison, reasons = rank_request(pin.shadow, events, data.top_k, deadline_ms,
+                                                           request_id=data.request_id)
                         actual = {item["aid"]: item["rank"] for item in result["items"]}
                         alternative = {item["aid"]: item["rank"] for item in comparison["items"]}
                         common = actual.keys() & alternative.keys()
@@ -364,7 +371,7 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
                         else:
                             count("synthetic_shadow_completed")
                     except Exception:
-                        LOGGER.exception("Synthetic live shadow failed")
+                        emit("shadow_failed", logging.WARNING, request_id=data.request_id)
                         count("synthetic_shadow_failed")
 
                 async def shadow():
@@ -375,6 +382,7 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
                         future = shadow_executor.submit(evaluate_shadow)
                     except RuntimeError:
                         shadow_capacity.release()
+                        emit("shadow_executor_closed", logging.WARNING, request_id=data.request_id)
                         count("synthetic_shadow_shed")
                         return
                     future.add_done_callback(lambda _: shadow_capacity.release())
@@ -395,7 +403,13 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
                 request.state.persisted_impression = impression_id
                 count("impressions_persisted")
             except Exception:
-                LOGGER.exception("Recommendation decision persistence failed")
+                emit("logging_degraded", logging.WARNING, request_id=data.request_id,
+                     generation=selected.generation_id, cohort=cohort, source="demo")
+        app.state.request_metrics.record(selected.generation_id, cohort, "demo",
+                                         result["fallback_used"], result["logging_status"] == "degraded")
+        emit("recommendation_outcome", request_id=data.request_id, generation=selected.generation_id,
+             cohort=cohort, source="demo", logging_status=result["logging_status"],
+             fallback_reason=decision["fallback_reason"])
         count("impressions_served")
         result["latency_ms"] = round((perf_counter() - started) * 1000, 3)
         if task := getattr(request.state, "shadow_task", None):

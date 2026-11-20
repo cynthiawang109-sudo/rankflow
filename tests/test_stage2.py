@@ -279,6 +279,43 @@ class PlatformTests(unittest.TestCase):
         traffic.refresh()
         self.assertEqual(traffic.pin().config.state, "killed")
 
+    def test_sustained_canary_fallback_pauses(self):
+        traffic = self.registry()
+        shadow = replace(self.rescue, state="shadowing", shadow_generation_id="candidate", shadow_mode="live")
+        traffic.publish(shadow, 0, "shadow", "test")
+        canary = replace(shadow, state="canary", canary_generation_id="candidate", canary_percent=50)
+        traffic.prepare(canary)
+        traffic.refresh()
+        traffic.publish(canary, 1, "canary", "test")
+        traffic.refresh()
+        end = datetime.now(timezone.utc).replace(second=0, microsecond=0) + timedelta(minutes=3)
+        with self.store.connect() as conn:
+            conn.execute("UPDATE traffic_audit SET recorded_at=%s WHERE revision=2",
+                         (end - timedelta(minutes=3),))
+            for offset, failed in ((3, False), (2, True), (1, True)):
+                for index in range(20):
+                    impression = str(uuid4())
+                    conn.execute("INSERT INTO impressions (id, generation, items, created_at) "
+                                 "VALUES (%s, 'stable', '[]', %s)",
+                                 (impression, end - timedelta(minutes=offset)))
+                    conn.execute("INSERT INTO decisions VALUES (%s, "
+                                 "jsonb_build_object('config_revision', 2, 'source', 'demo', "
+                                 "'assignment', 'canary', 'assigned_generation_id', 'candidate', "
+                                 "'fallback_used', %s::boolean))", (impression, failed and index < 2))
+        guardrails = Guardrails(self.store, traffic)
+        sample = guardrails.sample(traffic.pin(), end - timedelta(minutes=1))
+        self.assertEqual(sample["health"], "degraded")
+        self.assertNotEqual(sample["state"], "auto_pause")
+        with self.assertLogs("rankflow.operations", "WARNING") as alerts:
+            sample = guardrails.sample(traffic.pin(), end)
+        self.assertEqual((sample["health"], sample["state"]), ("degraded", "auto_pause"))
+        self.assertIn("canary_fallback", alerts.output[0])
+        traffic.refresh()
+        self.assertEqual(traffic.pin().config.state, "killed")
+        with self.store.connect() as conn:
+            self.assertEqual(conn.execute("SELECT action FROM traffic_audit WHERE revision=3").fetchone()["action"],
+                             "auto_pause")
+
     def test_epoch_overlap_and_preserved_replay(self):
         epoch = {"epoch_id": "one", "source": "otto_offline", "history_statistics_watermark": 10,
                  "training_data_watermark": 19, "validation_window": [20, 30], "final_test_window": [30, 40],

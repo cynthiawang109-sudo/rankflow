@@ -24,3 +24,15 @@ SPEC section 12 includes a pointwise comparison and the later-OTTO rehearsal
 in the Stage 2 exit criteria. The kickoff pins LambdaRank for the promotion
 comparison and also requests a demo rehearsal. The demo rehearsal provides
 provenance-validation evidence. The existing SPEC exit criteria still apply.
+# Stage 3 open reconciliation
+
+The kickoff and Addendum v3.0.4 reuse test IDs for different scenarios.
+Treat the kickoff scenario names and the Addendum scenario names as separate
+evidence requirements. For example, the kickoff T16 denotes rollback and kill
+while Addendum T16 denotes destructive restore and accounting for lost outbox
+events. The Addendum stage mapping also calls for scenarios beyond the kickoff
+list. Record scenarios by name and cite the source alongside each test ID.
+
+SPEC ?12 places the reference deployment in Stage 3. The owner kickoff puts
+the AWS Fargate/CDK deployment in Stage 4 and asks for local multi-instance
+evidence in Stage 3. Stage 3 drills use the local deployment.
