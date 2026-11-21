@@ -1,6 +1,10 @@
 """Transactional decision capture and idempotent demo attribution."""
+from contextlib import contextmanager
+from contextvars import ContextVar
+from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 import logging
+from time import perf_counter
 from uuid import uuid4
 
 import psycopg
@@ -51,6 +55,52 @@ CREATE TABLE IF NOT EXISTS feedback_events (
 """
 
 
+@dataclass
+class PersistenceTiming:
+    connection: psycopg.Connection | None = None
+    started: float | None = None
+    ended: float | None = None
+    outcome: str = "unconfirmed"
+
+
+_persistence_timing = ContextVar("persistence_timing", default=None)
+
+
+class PersistenceConnection(psycopg.Connection):
+    def _exec_command(self, command, *args, **kwargs):
+        # psycopg 3.3.9 routes the implicit BEGIN and context-exit COMMIT/ROLLBACK
+        # through this generator. Its result carries the server command tag.
+        timing = _persistence_timing.get()
+        if timing is None or timing.connection is not self:
+            return (yield from super()._exec_command(command, *args, **kwargs))
+
+        if isinstance(command, bytes) and (command == b"BEGIN" or command.startswith(b"BEGIN ")):
+            timing.started = perf_counter()
+        result = yield from super()._exec_command(command, *args, **kwargs)
+        if timing.started is not None and command in (b"COMMIT", b"ROLLBACK") and result is not None:
+            timing.ended = perf_counter()
+            timing.outcome = {b"COMMIT": "committed", b"ROLLBACK": "rolled_back"}.get(
+                result.command_status, "unconfirmed")
+        return result
+
+
+@contextmanager
+def measure_persistence(request_id, impression_id):
+    timing = PersistenceTiming()
+    token = _persistence_timing.set(timing)
+    try:
+        yield timing
+    finally:
+        _persistence_timing.reset(token)
+        committed = timing.outcome == "committed"
+        elapsed_ms = None
+        if timing.ended is not None:
+            elapsed_ms = (timing.ended - timing.started) * 1000
+        emit("persistence_latency", request_id=request_id, impression_id=impression_id,
+             transaction_outcome=timing.outcome, persistence_ms=elapsed_ms if committed else None,
+             elapsed_ms=elapsed_ms)
+
+
 class PostgresStore:
     def __init__(self, dsn, ack_window=ACK_WINDOW, attribution_window=ATTRIBUTION_WINDOW,
                  *, pool_decisions=False):
@@ -61,12 +111,13 @@ class PostgresStore:
         self.attribution_window = attribution_window
         self.decision_pool = ConnectionPool(
             self.dsn, kwargs={"connect_timeout": 2, "row_factory": dict_row, "options": self.options},
+            connection_class=PersistenceConnection,
             min_size=4, max_size=12, timeout=2, max_waiting=40, open=False,
         ) if pool_decisions else None
 
     def connect(self):
-        return psycopg.connect(self.dsn, connect_timeout=2, row_factory=dict_row,
-                               options=self.options)
+        return PersistenceConnection.connect(self.dsn, connect_timeout=2, row_factory=dict_row,
+                                             options=self.options)
 
     def initialize(self):
         with self.connect() as conn:
@@ -98,7 +149,8 @@ class PostgresStore:
         payload = dict(decision, impression_id=impression_id, logging_status="persisted")
         event = {"event_id": event_id, "type": "recommendation_generated", **payload}
         transaction = self.decision_pool.connection() if self.decision_pool else self.connect()
-        with transaction as conn:
+        with measure_persistence(decision.get("request_id"), impression_id) as timing, transaction as conn:
+            timing.connection = conn
             conn.execute("""
                 WITH impression AS (
                     INSERT INTO impressions(id, generation, items) VALUES (%s, %s, %s)

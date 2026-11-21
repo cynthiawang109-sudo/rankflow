@@ -149,6 +149,46 @@ def rank_request(generation, events, top_k, deadline_ms, compare=False, request_
     return result, decision
 
 
+class HandlerLatency:
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        started = perf_counter()
+        status = None
+        completed = False
+
+        def record(ended):
+            emit("handler_latency", request_id=scope.get("state", {}).get("recommendation_request_id"),
+                 path=getattr(scope.get("route"), "path", None), status=status, response_completed=completed,
+                 handler_ms=(ended - started) * 1000)
+
+        async def observe(message):
+            nonlocal status, completed
+            await send(message)
+            if message["type"] == "http.response.start":
+                status = message["status"]
+            if message["type"] == "http.response.body" and not message.get("more_body"):
+                completed = True
+                record(perf_counter())
+
+        try:
+            await self.app(scope, receive, observe)
+        finally:
+            if not completed:
+                record(perf_counter())
+
+
+class RankFlowApp(FastAPI):
+    def build_middleware_stack(self):
+        # Include the final response produced by Starlette's server-error middleware.
+        return HandlerLatency(super().build_middleware_stack())
+
+
 class DeliveryObservation:
     def __init__(self, app, store, rate_limit):
         self.app, self.store = app, store
@@ -315,7 +355,7 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
             for scorer in (primary_scorer, shadow_scorer, comparison_scorer):
                 await run_in_threadpool(scorer.close)
 
-    app = FastAPI(title="RankFlow", lifespan=lifespan)
+    app = RankFlowApp(title="RankFlow", lifespan=lifespan)
     app.state.counters = Counter()
     app.state.request_metrics = RequestMetrics()
     counters_lock = Lock()
@@ -361,6 +401,7 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
         return generation.examples[window]
 
     def recommend(data, request, compare):
+        request.state.recommendation_request_id = data.request_id
         csrf(request)
         started = perf_counter()
         emit("recommendation_request", request_id=data.request_id)
@@ -441,7 +482,6 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
 
                 request.state.shadow_task = shadow
         result.update(request_id=data.request_id, impression_id=None, logging_status="degraded")
-        persistence_ms = None
         if store:
             decision.update(result)
             decision.update(cutoff_ts=events[-1]["ts"] if events else None,
@@ -449,7 +489,6 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
                             source="demo", prefix_events=events, surface="playground" if compare else "api")
             decision["session_hash"] = session_hash
             decision["session_key_id"] = os.environ.get("RANKFLOW_SESSION_KEY_ID", "local-v1")
-            persistence_started = perf_counter()
             try:
                 impression_id = store.persist(decision)
                 result.update(impression_id=impression_id, logging_status="persisted")
@@ -458,13 +497,11 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
             except Exception:
                 emit("logging_degraded", logging.WARNING, request_id=data.request_id,
                      generation=selected.generation_id, cohort=cohort, source="demo")
-            finally:
-                persistence_ms = (perf_counter() - persistence_started) * 1000
         app.state.request_metrics.record(selected.generation_id, cohort, "demo",
                                          result["fallback_used"], result["logging_status"] == "degraded")
         emit("recommendation_outcome", request_id=data.request_id, generation=selected.generation_id,
              cohort=cohort, source="demo", logging_status=result["logging_status"],
-             fallback_reason=decision["fallback_reason"], persistence_ms=persistence_ms)
+             fallback_reason=decision["fallback_reason"])
         count("impressions_served")
         result["latency_ms"] = round((perf_counter() - started) * 1000, 3)
         if task := getattr(request.state, "shadow_task", None):

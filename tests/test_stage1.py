@@ -6,6 +6,7 @@ import json
 import os
 from uuid import uuid4
 import unittest
+from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
@@ -30,6 +31,53 @@ GENERATION = Generation("test-generation", SNAPSHOT, CONFIG, RULE, MODEL, {
     "W1": [], "W2-dev": [{"prefix_id": 0, "window": "W2-dev", "cutoff_ts": 20,
                          "events": [event(1)]}],
 })
+
+
+class HandlerLatencyTests(unittest.IsolatedAsyncioTestCase):
+    async def test_handler_span_includes_final_send_even_on_route_error(self):
+        from starlette.responses import StreamingResponse
+
+        for fails in (False, True):
+            with self.subTest(fails=fails):
+                app = create_app(GENERATION)
+                clock = 0.0
+
+                @app.get("/timed")
+                async def route():
+                    nonlocal clock
+                    clock += 1
+                    if fails:
+                        raise RuntimeError("route failed")
+
+                    async def body():
+                        nonlocal clock
+                        clock += 2
+                        yield b"first chunk"
+                        clock += 4
+
+                    async def background():
+                        nonlocal clock
+                        clock += 100
+
+                    return StreamingResponse(body(), background=background)
+
+                async def send(message):
+                    nonlocal clock
+                    if message["type"] == "http.response.body":
+                        clock += 8
+
+                scope = {"type": "http", "asgi": {"spec_version": "2.4"}, "method": "GET",
+                         "path": "/timed", "headers": [], "query_string": b""}
+                with patch("rankflow.api.perf_counter", side_effect=lambda: clock), patch("rankflow.api.emit") as emit:
+                    if fails:
+                        with self.assertRaisesRegex(RuntimeError, "route failed"):
+                            await app(scope, None, send)
+                    else:
+                        await app(scope, None, send)
+                emit.assert_called_once_with(
+                    "handler_latency", request_id=None, path="/timed", status=500 if fails else 200,
+                    response_completed=True, handler_ms=9000 if fails else 23000,
+                )
 
 
 class RetrievalTests(unittest.TestCase):
@@ -174,9 +222,87 @@ class PostgresGateTests(unittest.TestCase):
                               pool_decisions=True)
         store.decision_pool = ConnectionPool(
             store.dsn, kwargs=store.decision_pool.kwargs,
+            connection_class=store.decision_pool.connection_class,
             min_size=1, max_size=1, timeout=0.25, open=False,
         )
         return store
+
+    def test_persistence_span_excludes_pool_wait_return_and_post_commit_logging(self):
+        from psycopg import Connection
+
+        store = self.pooled_store()
+        pool = store.decision_pool
+        clock = 0.0
+        getconn, putconn = pool.getconn, pool.putconn
+        execute_command = Connection._exec_command
+
+        def delayed_acquire(*args, **kwargs):
+            nonlocal clock
+            clock += 10
+            return getconn(*args, **kwargs)
+
+        def delayed_return(conn):
+            nonlocal clock
+            clock += 20
+            putconn(conn)
+
+        def delayed_command(conn, command, *args, **kwargs):
+            nonlocal clock
+            result = yield from execute_command(conn, command, *args, **kwargs)
+            if command == b"BEGIN":
+                clock += 1
+            if command == b"COMMIT":
+                clock += 2
+            return result
+
+        def delayed_logging(event, **fields):
+            nonlocal clock
+            if event == "decision_committed":
+                clock += 40
+
+        pool.open(wait=True)
+        self.addCleanup(pool.close)
+        with (patch.object(pool, "getconn", side_effect=delayed_acquire),
+              patch.object(pool, "putconn", side_effect=delayed_return),
+              patch.object(Connection, "_exec_command", delayed_command),
+              patch("rankflow.store.perf_counter", side_effect=lambda: clock),
+              patch("rankflow.store.emit", side_effect=delayed_logging) as emit):
+            decision = {"request_id": "timed", "serving_generation": GENERATION.generation_id, "items": []}
+            impression_id = store.persist(decision)
+        self.assertEqual(clock, 73)
+        self.assertEqual(emit.call_args_list[0].args, ("persistence_latency",))
+        self.assertEqual(emit.call_args_list[0].kwargs, dict(
+            request_id="timed", impression_id=impression_id, transaction_outcome="committed",
+            persistence_ms=3000, elapsed_ms=3000,
+        ))
+        self.assertEqual(emit.call_args_list[1].args, ("decision_committed",))
+        with store.connect() as conn:
+            self.assertIsNotNone(store._decision(conn, impression_id))
+
+    def test_persistence_rollback_has_no_commit_sample(self):
+        from psycopg import Cursor
+
+        execute = Cursor.execute
+
+        def fail_after_insert(cursor, query, *args, **kwargs):
+            execute(cursor, query, *args, **kwargs)
+            if "WITH impression AS" in query:
+                raise RuntimeError("force rollback after insert")
+            return cursor
+
+        decision = {"request_id": "rollback", "serving_generation": GENERATION.generation_id, "items": []}
+        with (patch.object(Cursor, "execute", fail_after_insert),
+              patch("rankflow.store.emit") as emit):
+            with self.assertRaisesRegex(RuntimeError, "force rollback"):
+                self.store.persist(decision)
+        emit.assert_called_once()
+        self.assertEqual(emit.call_args.args, ("persistence_latency",))
+        span = emit.call_args.kwargs
+        self.assertEqual(span["transaction_outcome"], "rolled_back")
+        self.assertIsNone(span["persistence_ms"])
+        self.assertGreaterEqual(span["elapsed_ms"], 0)
+        with self.store.connect() as conn:
+            self.assertIsNone(self.store._decision(conn, span["impression_id"]))
 
     def test_exhausted_decision_pool_degrades_then_recovers(self):
         store = self.pooled_store()
