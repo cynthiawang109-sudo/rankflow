@@ -12,6 +12,30 @@ measurement and verification only.
 threshold or protocol adjustment after results are seen; any model,
 gate, or W3 work. If a defect blocks measurement, STOP and report.
 
+## Gate status (updated 2026-11-21)
+
+The first launch of this benchmark stopped at preflight: **Not
+Verified — instrumentation mismatch**. The owner then authorized a
+Measurement Correctness Fix only (no optimization, no contract
+change). The fix landed in commit `b45393e`: Handler is now measured
+by ASGI middleware from request entry through the final response-body
+send; Persistence is measured at the psycopg driver level from BEGIN
+dispatch on the acquired connection through COMMIT acknowledgement,
+excluding pool wait and post-commit logging. Independent verification
+(diff review plus a full-suite rerun: 63 passed / 0 failed /
+0 skipped) confirmed the boundaries match the frozen definitions and
+that no SQL, transaction, pool, or execution behaviour changed.
+**The gate is passed; execute B1–B3 now.**
+
+**Measurement Definition labelling (mandatory):** the benchmark
+report and the performance decision must state that Handler and
+Persistence percentiles are measured under the amendment v2
+boundaries as implemented in `b45393e`, and must not present
+comparisons against Stage 4 / performance-track Handler or
+Persistence percentiles as improvement or regression — those were
+measured under a different definition. Client-visible comparisons
+remain valid (unchanged definition).
+
 ## Frozen contract (summary — the amendment file governs)
 
 - Handler p95 <= 100 ms — Stable, Peak, Shadow, Canary.
