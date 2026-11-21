@@ -1,9 +1,9 @@
 services:
   postgres:
-    image: postgres:16
+    image: postgres:16@sha256:23fdb7b8156ad34bc663ed911f360764c5a5e237d6d70d1e379e025f63439a2f
     environment:
       POSTGRES_USER: rankflow
-      POSTGRES_PASSWORD: rankflow-local
+      POSTGRES_PASSWORD: ${RANKFLOW_POSTGRES_PASSWORD:?Set a local PostgreSQL password}
       POSTGRES_DB: rankflow
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U rankflow -d rankflow"]
@@ -15,9 +15,10 @@ services:
   api:
     build: .
     environment:
-      RANKFLOW_DATABASE_URL: postgresql://rankflow:rankflow-local@postgres:5432/rankflow
+      RANKFLOW_DATABASE_URL: postgresql://rankflow:${RANKFLOW_POSTGRES_PASSWORD:?Set a local PostgreSQL password}@postgres:5432/rankflow
       RANKFLOW_GENERATION_REGISTRY: /generations
-      RANKFLOW_SESSION_KEY: ${RANKFLOW_SESSION_KEY:-rankflow-compose-local-session-key}
+      RANKFLOW_SESSION_KEY: ${RANKFLOW_SESSION_KEY:?Set a session HMAC key}
+      RANKFLOW_ARTIFACT_CACHE: /app/.artifact-cache
     ports:
       - "127.0.0.1:${RANKFLOW_PORT:-8000}:8000"
     volumes:

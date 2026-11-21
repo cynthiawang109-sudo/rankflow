@@ -27,6 +27,7 @@ from .generation import cached_generation
 from .operations import RequestMetrics, emit
 from .retrieval import retrieve
 from .scorer import Scorer
+from .security import RateLimit, csrf
 from .strategies import RULE
 
 LOGGER = logging.getLogger(__name__)
@@ -149,13 +150,24 @@ def rank_request(generation, events, top_k, deadline_ms, compare=False, request_
 
 
 class DeliveryObservation:
-    def __init__(self, app, store):
+    def __init__(self, app, store, rate_limit):
         self.app, self.store = app, store
+        self.rate_limit = rate_limit
 
     async def __call__(self, scope, receive, send):
         if scope["type"] != "http":
             await self.app(scope, receive, send)
             return
+        path = scope["path"]
+        if path.startswith("/v1/") or path == "/playground":
+            family = "ack" if path.startswith("/v1/impressions/") else path
+            if family not in {"/v1/recommend", "/v1/playground/rank", "/v1/playground/prefixes",
+                              "/v1/feedback", "/playground", "ack"}:
+                family = "other"
+            if not self.rate_limit.allow(family):
+                await JSONResponse({"detail": "rate_limit_exceeded"}, status_code=429,
+                                   headers={"Retry-After": "1"})(scope, receive, send)
+                return
         if scope["method"] == "POST":
             incoming = bytearray()
             while True:
@@ -218,7 +230,8 @@ async def consume_outbox(store, stop):
 
 
 def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic=None,
-               admin_bearer=None, release_registry=None, signing_key=None):
+               admin_bearer=None, release_registry=None, signing_key=None, *,
+               operator_bearer=None, viewer_bearer=None, public_rate=100, public_burst=200):
     session_key = session_key or secrets.token_bytes(32)
     shadow_executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="rankflow-shadow") if traffic else None
     shadow_capacity = BoundedSemaphore(2)
@@ -306,13 +319,9 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
     def count(name):
         with counters_lock:
             app.state.counters[name] += 1
-    app.add_middleware(DeliveryObservation, store=store)
-
-    def csrf(request):
-        token = request.cookies.get("rankflow_csrf")
-        supplied = request.headers.get("x-csrf-token", "")
-        if (token or request.headers.get("origin")) and (not token or not hmac.compare_digest(token, supplied)):
-            raise HTTPException(403, "csrf_token_required")
+    app.state.count = count
+    app.add_middleware(DeliveryObservation, store=store,
+                       rate_limit=RateLimit(public_rate, public_burst))
 
     @app.get("/health/live")
     def live():
@@ -336,7 +345,7 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
 
     @app.get("/v1/playground/prefixes")
     def prefixes(window: str = "W2-dev"):
-        if window not in generation.examples:
+        if window in {"W2-gate", "W3"} or window not in generation.examples:
             count("public_window_denied")
             LOGGER.warning("Public Playground partition read denied")
             raise HTTPException(404, "window_unavailable")
@@ -352,7 +361,7 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
         if traffic and pin is None:
             emit("recommendation_rejected", request_id=data.request_id, reason="traffic_bundle_unavailable")
             raise HTTPException(503, "traffic_bundle_unavailable")
-        selected, cohort = pin.select(session_hash) if pin else (generation, "stable")
+        selected, cohort = pin.select(data.session_id) if pin else (generation, "stable")
         if events and events[-1]["ts"] <= selected.snapshot.watermark:
             emit("recommendation_rejected", request_id=data.request_id, reason="cutoff_must_follow_snapshot")
             raise HTTPException(422, "cutoff_must_follow_snapshot")
@@ -478,10 +487,14 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
             raise HTTPException(404, "logging_degraded_no_decision")
         return result
 
-    if admin_bearer:
+    bearers = {role: secret for role, secret in {"admin": admin_bearer, "operator": operator_bearer,
+                                                  "viewer": viewer_bearer}.items() if secret}
+    if len(set(bearers.values())) != len(bearers):
+        raise ValueError("Console role tokens must be distinct")
+    if bearers:
         from .operator_console import install_console
 
-        install_console(app, store, traffic, admin_bearer, release_registry, signing_key, guardrails)
+        install_console(app, store, traffic, bearers, release_registry, signing_key, guardrails)
     return app
 
 
@@ -517,13 +530,15 @@ def from_environment():
         rescue = TrafficConfigSnapshot(**json.loads(Path(rescue_path).read_text(encoding="utf-8-sig")))
         control_dsn = os.environ.get("RANKFLOW_CONTROL_DATABASE_URL")
         control = PostgresStore(control_dsn) if control_dsn else store
-        salts = {"v1": key.encode()}
+        salts = {}
         if salt_path := os.environ.get("RANKFLOW_ROUTING_SALTS"):
             configured_salts = json.loads(Path(salt_path).read_text(encoding="utf-8-sig"))
             if not isinstance(configured_salts, dict) or any(not isinstance(value, str) or not value
                                                            for value in configured_salts.values()):
                 raise ValueError("Routing salts file must map version IDs to nonempty strings")
             salts.update({version: value.encode() for version, value in configured_salts.items()})
+        if rescue.routing_salt_id not in salts or any(value == key.encode() for value in salts.values()):
+            raise ValueError("Routing salts must be configured separately from the session HMAC key")
         traffic = TrafficRegistry(control, path.parent, rescue, salts,
                                   poll_seconds=float(os.getenv("RANKFLOW_CONFIG_POLL_SECONDS", "1")),
                                   convergence_seconds=float(os.getenv("RANKFLOW_CONVERGENCE_SECONDS", "10")),
@@ -531,8 +546,14 @@ def from_environment():
                                   artifact_cache=cache)
     admin = os.environ.get("RANKFLOW_ADMIN_BEARER")
     signing_key = os.environ.get("RANKFLOW_RELEASE_SIGNING_KEY")
+    operator = os.environ.get("RANKFLOW_OPERATOR_BEARER")
+    viewer = os.environ.get("RANKFLOW_VIEWER_BEARER")
     generation = traffic.generation(path.name) if traffic else cached_generation(path, cache)
     return create_app(generation, store, key.encode() if key else None, traffic=traffic,
                       admin_bearer=admin.encode() if admin else None,
                       release_registry=os.environ.get("RANKFLOW_RELEASE_REGISTRY"),
-                      signing_key=signing_key.encode() if signing_key else None)
+                      signing_key=signing_key.encode() if signing_key else None,
+                      operator_bearer=operator.encode() if operator else None,
+                      viewer_bearer=viewer.encode() if viewer else None,
+                      public_rate=float(os.getenv("RANKFLOW_PUBLIC_RATE", "100")),
+                      public_burst=int(os.getenv("RANKFLOW_PUBLIC_BURST", "200")))

@@ -1,6 +1,8 @@
 """Immutable evaluation epoch registration."""
 from psycopg.types.json import Jsonb
 
+from .security import append_audit
+
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS evaluation_epochs (
     epoch_id TEXT PRIMARY KEY, manifest JSONB NOT NULL,
@@ -9,7 +11,7 @@ CREATE TABLE IF NOT EXISTS evaluation_epochs (
 """
 
 
-def register_epoch(store, epoch):
+def register_epoch(store, epoch, *, audit=None):
     required = {"epoch_id", "source", "history_statistics_watermark", "training_data_watermark",
                 "validation_window", "final_test_window", "retrieval_snapshot_id",
                 "dataset_manifest_hash", "query_manifest_hash", "candidate_family"}
@@ -37,4 +39,6 @@ def register_epoch(store, epoch):
                     raise ValueError("Evaluation windows overlap a registered epoch")
         conn.execute("INSERT INTO evaluation_epochs(epoch_id, manifest) VALUES (%s, %s)",
                      (epoch["epoch_id"], Jsonb(epoch)))
+        if audit:
+            append_audit(conn, *audit, "register_epoch", epoch["epoch_id"])
     return True

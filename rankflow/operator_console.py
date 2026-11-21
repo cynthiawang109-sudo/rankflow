@@ -9,6 +9,7 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, ConfigDict, Field
 
 from .operations import ALERT_CATALOGUE
+from .security import LEVELS, csrf
 from .epoch_registry import register_epoch
 from .training_pipeline import canonical, read_json
 from .traffic import TrafficConfigSnapshot
@@ -29,17 +30,32 @@ def verified_records(registry, key):
         for path in sorted(Path(registry).glob("*.json")):
             document = read_json(path)
             expected = hmac.new(key, canonical(document["record"]), hashlib.sha256).hexdigest()
-            if hmac.compare_digest(expected, document["signature"]):
+            if document["record"].get("window") != "W3" and hmac.compare_digest(expected, document["signature"]):
                 yield document
 
 
-def install_console(app, store, traffic, bearer, release_registry=None, signing_key=None, guardrails=None):
-    def authenticate(request: Request):
-        actual = request.headers.get("authorization", "")
-        if not bearer or not hmac.compare_digest(actual.encode(), b"Bearer " + bearer):
-            raise HTTPException(401, "operator_authentication_required", headers={"WWW-Authenticate": "Bearer"})
+def install_console(app, store, traffic, bearers, release_registry=None, signing_key=None, guardrails=None):
+    def require(minimum):
+        def authenticate(request: Request):
+            actual = request.headers.get("authorization", "").encode()
+            role = next((role for role, token in bearers.items()
+                         if hmac.compare_digest(actual, b"Bearer " + token)), None)
+            if not role or LEVELS[role] < LEVELS[minimum]:
+                if request.url.path == "/operator/releases":
+                    app.state.count("protected_release_read_denied")
+                if role:
+                    raise HTTPException(403, "insufficient_role")
+                raise HTTPException(401, "operator_authentication_required", headers={"WWW-Authenticate": "Bearer"})
+            if request.method == "POST":
+                csrf(request)
+            return role
 
-    operator_only = [Depends(authenticate)]
+        return authenticate
+
+    operator_role, admin_role = require("operator"), require("admin")
+    viewer_role = require("viewer")
+    viewer_only = [Depends(viewer_role)]
+    operator_only = [Depends(operator_role)]
 
     if traffic:
         def approved(generation):
@@ -54,7 +70,7 @@ def install_console(app, store, traffic, bearer, release_registry=None, signing_
 
         traffic.promotion_allowed = approved
 
-    @app.get("/operator", response_class=HTMLResponse, dependencies=operator_only)
+    @app.get("/operator", response_class=HTMLResponse, dependencies=viewer_only)
     def console():
         return HTMLResponse("""<!doctype html><html lang="en"><meta charset="utf-8">
 <title>RankFlow Operator Console</title><h1>RankFlow Operator Console</h1>
@@ -63,7 +79,7 @@ def install_console(app, store, traffic, bearer, release_registry=None, signing_
 <li><a href="/operator/events">Provenance, outbox and acknowledgement counts</a></li>
 <li><a href="/operator/epochs">Evaluation epochs</a></li></ul></nav></html>""", headers={"Cache-Control": "no-store"})
 
-    @app.get("/operator/status", dependencies=operator_only)
+    @app.get("/operator/status", dependencies=viewer_only)
     def status():
         pin = traffic.pin() if traffic else None
         generations, history = [], []
@@ -103,7 +119,7 @@ def install_console(app, store, traffic, bearer, release_registry=None, signing_
     def releases():
         return list(verified_records(release_registry, signing_key))
 
-    @app.get("/operator/runbook", response_class=HTMLResponse, dependencies=operator_only)
+    @app.get("/operator/runbook", response_class=HTMLResponse, dependencies=viewer_only)
     def runbook():
         return """<h1>RankFlow operations runbook</h1>
 <h2 id="canary-health">Canary health</h2>
@@ -118,8 +134,8 @@ event. Restore connectivity and verify delivery resumes. Degraded responses have
 POST /operator/traffic/rollback with that rollback_config_id, the current
 expected_revision and a new operation ID. Verify every serving instance reports the rollback revision.</p>"""
 
-    @app.get("/operator/metrics", dependencies=operator_only)
-    def metrics():
+    @app.get("/operator/metrics")
+    def metrics(role: str = Depends(viewer_role)):
         groups = []
         if store:
             with store.connect() as conn:
@@ -149,10 +165,11 @@ expected_revision and a new operation ID. Verify every serving instance reports 
                 "alert_catalogue": ALERT_CATALOGUE,
                 "experiment": traffic.pin().config.state if traffic else None,
                 "gate_decisions": [record["record"]["decision"]
-                                   for record in verified_records(release_registry, signing_key)],
+                                   for record in verified_records(release_registry, signing_key)]
+                                  if LEVELS[role] >= LEVELS["operator"] else None,
                 "canary": guardrails.status if guardrails else None}
 
-    @app.get("/operator/events", dependencies=operator_only)
+    @app.get("/operator/events", dependencies=viewer_only)
     def events():
         if store is None:
             raise HTTPException(503, "event_store_unavailable")
@@ -181,33 +198,34 @@ expected_revision and a new operation ID. Verify every serving instance reports 
                     """).fetchall(),
             }
 
-    @app.get("/operator/epochs", dependencies=operator_only)
+    @app.get("/operator/epochs", dependencies=viewer_only)
     def epochs():
         if store is None:
             raise HTTPException(503, "epoch_registry_unavailable")
         with store.connect() as conn:
             return conn.execute("SELECT * FROM evaluation_epochs ORDER BY registered_at").fetchall()
 
-    @app.post("/operator/epochs", dependencies=operator_only)
-    def add_epoch(manifest: dict):
+    @app.post("/operator/epochs")
+    def add_epoch(manifest: dict, role: str = Depends(admin_role)):
         if store is None:
             raise HTTPException(503, "epoch_registry_unavailable")
         try:
-            return {"registered": register_epoch(store, manifest)}
+            return {"registered": register_epoch(store, manifest, audit=(signing_key or bearers[role], role))}
         except (TypeError, ValueError) as error:
             raise HTTPException(409, str(error)) from error
 
-    @app.post("/operator/prepare", dependencies=operator_only)
-    def prepare(configuration: dict):
+    @app.post("/operator/prepare")
+    def prepare(configuration: dict, role: str = Depends(operator_role)):
         if traffic is None:
             raise HTTPException(503, "traffic_control_unavailable")
         try:
-            return {"config_id": traffic.prepare(TrafficConfigSnapshot(**configuration))}
+            return {"config_id": traffic.prepare(TrafficConfigSnapshot(**configuration),
+                                                       audit=(signing_key or bearers[role], role))}
         except (OSError, TypeError, ValueError) as error:
             raise HTTPException(409, str(error)) from error
 
-    @app.post("/operator/traffic/{action}", dependencies=operator_only)
-    def change(action: str, operation: PublishRequest):
+    @app.post("/operator/traffic/{action}")
+    def change(action: str, operation: PublishRequest, role: str = Depends(operator_role)):
         if traffic is None:
             raise HTTPException(503, "traffic_control_unavailable")
         try:
@@ -217,8 +235,11 @@ expected_revision and a new operation ID. Verify every serving instance reports 
                 target = TrafficConfigSnapshot(**operation.configuration)
             else:
                 raise ValueError("Invalid traffic operation")
-            revision = traffic.publish(target, operation.expected_revision, operation.operation_id, "admin", action,
-                                       reason=operation.reason, override_seconds=operation.override_seconds)
+            if (action == "resolve" or getattr(target, "state", None) == "promoted") and role != "admin":
+                raise HTTPException(403, "admin_role_required")
+            revision = traffic.publish(target, operation.expected_revision, operation.operation_id, role, action,
+                                       reason=operation.reason, override_seconds=operation.override_seconds,
+                                       audit_key=signing_key or bearers[role])
         except (TypeError, ValueError) as error:
             raise HTTPException(409, str(error)) from error
         return {"state": "pointer_committed", "revision": revision}

@@ -48,6 +48,7 @@ uv run python -m rankflow.evaluate_retrieval artifacts/stage0-otto artifacts/sta
 uv run python -m rankflow.study artifacts/stage0-otto artifacts/stage1/retrieval_ablation --rule
 uv run python -m rankflow.train artifacts/stage0-otto artifacts/stage1/training configs/stage1_retrieval.json
 uv run python -m rankflow.generation artifacts/stage0-otto artifacts/stage1/training artifacts/stage1/generations
+# Set RANKFLOW_POSTGRES_PASSWORD (URL-safe) and RANKFLOW_SESSION_KEY to distinct generated values.
 docker compose up --build
 ```
 
@@ -134,5 +135,9 @@ from actions attributed to generated lists with unconfirmed impressions.
 The [Stage 2 exit evidence](docs/stage2_exit_evidence.md) links the training
 replay, signed release decision, model cards, drills and PostgreSQL run.
 `RANKFLOW_CONTROL_DATABASE_URL` optionally isolates control-plane connectivity
-from event logging. `RANKFLOW_ROUTING_SALTS` optionally points to a protected
-JSON mapping from routing salt IDs to secret values.
+from event logging. `RANKFLOW_ROUTING_SALTS` points to a protected JSON mapping
+from routing salt IDs to secrets when traffic control is enabled. Every routing
+salt must differ from `RANKFLOW_SESSION_KEY`. Start a new experiment when moving
+from Stage 2's shared-key routing to Stage 3's independent key configuration.
+Viewer and operator bearers are configured separately with
+`RANKFLOW_VIEWER_BEARER` and `RANKFLOW_OPERATOR_BEARER`.

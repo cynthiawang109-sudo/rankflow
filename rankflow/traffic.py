@@ -9,6 +9,7 @@ from uuid import uuid4
 import logging
 
 from .operations import emit
+from .security import AUDIT_SCHEMA, append_audit
 
 import psycopg
 from psycopg.types.json import Jsonb
@@ -157,6 +158,7 @@ class TrafficRegistry:
         with self.store.connect() as conn:
             conn.execute("SELECT pg_advisory_xact_lock(621025)")
             conn.execute(SCHEMA)
+            conn.execute(AUDIT_SCHEMA)
             rescue = self.rescue.config
             conn.execute("INSERT INTO traffic_configs VALUES (%s, %s) ON CONFLICT DO NOTHING",
                          (rescue.config_id, Jsonb(asdict(rescue))))
@@ -276,13 +278,15 @@ class TrafficRegistry:
         except ValueError:
             LOGGER.info("Traffic recovery operation lost its expected revision")
 
-    def prepare(self, target):
+    def prepare(self, target, *, audit=None):
         with self.lock, self.store.connect() as conn:
             self.load(target, -1)
             conn.execute("INSERT INTO traffic_configs VALUES (%s, %s) ON CONFLICT DO NOTHING",
                          (target.config_id, Jsonb(asdict(target))))
             conn.execute("INSERT INTO traffic_preloads VALUES (%s) ON CONFLICT DO NOTHING",
                          (target.config_id,))
+            if audit:
+                append_audit(conn, *audit, "prepare", target.config_id)
         return target.config_id
 
     def fleet(self):
@@ -293,7 +297,7 @@ class TrafficRegistry:
                 """, (3 * self.poll_seconds,)).fetchall()
 
     def publish(self, target, expected_revision, operation_id, actor, action="publish", *,
-                reason=None, override_seconds=None):
+                reason=None, override_seconds=None, audit_key=None):
         if action not in {"publish", "rollback", "kill", "auto_pause", "rescue", "resolve", "override", "override_expired"}:
             raise ValueError("Unknown traffic change")
         with self.lock, self.store.connect() as conn:
@@ -380,6 +384,9 @@ class TrafficRegistry:
             conn.execute("INSERT INTO traffic_audit(operation_id, action, config_id, revision, actor) "
                          "VALUES (%s, %s, %s, %s, %s)",
                          (operation_id, action, target.config_id, revision, actor))
+            if audit_key:
+                append_audit(conn, audit_key, actor, action,
+                             {"config_id": target.config_id, "operation_id": operation_id, "revision": revision})
             if action == "override":
                 expires = datetime.now(timezone.utc) + timedelta(seconds=override_seconds)
                 conn.execute("INSERT INTO traffic_overrides VALUES (%s, %s, %s, %s)",

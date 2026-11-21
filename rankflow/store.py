@@ -9,6 +9,7 @@ from psycopg.rows import dict_row
 from psycopg.types.json import Jsonb
 
 from .operations import emit
+from .security import AUDIT_SCHEMA
 from .epoch_registry import SCHEMA as EPOCH_SCHEMA
 
 LOGGER = logging.getLogger(__name__)
@@ -66,6 +67,7 @@ class PostgresStore:
             conn.execute("SELECT pg_advisory_xact_lock(621024)")
             conn.execute(SCHEMA)
             conn.execute(EPOCH_SCHEMA)
+            conn.execute(AUDIT_SCHEMA)
             conn.execute("""
                 DO $$ BEGIN
                     IF EXISTS (SELECT 1 FROM pg_constraint

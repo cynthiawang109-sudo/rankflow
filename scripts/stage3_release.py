@@ -36,6 +36,9 @@ def run(root, dsn, children):
     stable = TrafficConfigSnapshot(stable_id)
     rescue = root / "rescue.json"
     rescue.write_bytes(encoded(asdict(stable)))
+    salts = root / "salts.json"
+    salts.write_text(json.dumps({"v1": uuid4().hex}))
+    session_key = uuid4().hex
     fixture = root / "fixture"
     shutil.copytree(registry / stable_id, fixture)
     (fixture / "manifest.json").write_bytes(encoded(manifest))
@@ -56,7 +59,7 @@ def run(root, dsn, children):
         node, url = nodes[index]
         env = dict(os.environ, RANKFLOW_GENERATION=str(node / stable_id),
                    RANKFLOW_DATABASE_URL=dsn, RANKFLOW_RESCUE_CONFIG=str(rescue),
-                   RANKFLOW_SESSION_KEY=uuid, RANKFLOW_CONFIG_POLL_SECONDS=".25",
+                   RANKFLOW_SESSION_KEY=session_key, RANKFLOW_ROUTING_SALTS=str(salts), RANKFLOW_CONFIG_POLL_SECONDS=".25",
                    RANKFLOW_CONVERGENCE_SECONDS="3", RANKFLOW_MINIMUM_CAPACITY="2")
         with (root / f"node{index}.log").open("wb") as log:
             child = subprocess.Popen([sys.executable, "-m", "uvicorn", "rankflow.api:from_environment",
