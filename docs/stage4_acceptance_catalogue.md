@@ -28,5 +28,6 @@ report are separate SPEC exit criteria.
 | T21 | Stage 4 `test_two_instances_sticky_canary_cas_and_kill` exercises a 10% canary, consistent session assignments across two instances, a held in-flight pin during a config update, and stable-only routing on named rollback. Stage 3 covers the HTTP in-flight pin. |
 | T22 | Stage 4 `test_control_outage_spanning_config_transition` expires two leased pins over a simulated control outage, observes serving-ready stable rescue and release-unready status, and verifies convergence after recovery. |
 | T23 | Stage 4 `test_render_then_crash_preserves_unknown_send_and_confirmation` confirms a rendered decision after the worker dies with `send_unknown`. It checks the confirmation and send denominators after the window closes and verifies duplicate late acknowledgements leave exactly one late record. |
+| SPEC section 14 feature drift demo | Closed. [The W2-dev drift demo](closure_drift_evidence.md) captured normal measurements, a controlled shift, a signed Console alert and recovery. |
 | Stage 4 independent reproducibility | See [reproduction log](reproduction_log.md). The catalogue has no additional T-number for this exit criterion. |
 | Stage 4 final report | See [final evaluation report](final_evaluation_report.md). The catalogue has no additional T-number for this exit criterion. |

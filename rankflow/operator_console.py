@@ -2,6 +2,8 @@
 from dataclasses import asdict
 import hashlib
 import hmac
+from html import escape
+import json
 from pathlib import Path
 
 from fastapi import Depends, HTTPException, Request
@@ -9,6 +11,7 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, ConfigDict, Field
 
 from .operations import ALERT_CATALOGUE
+from .drift import reports as drift_reports
 from .security import LEVELS, csrf
 from .epoch_registry import register_epoch
 from .training_pipeline import canonical, read_json
@@ -77,7 +80,24 @@ def install_console(app, store, traffic, bearers, release_registry=None, signing
 <nav><ul><li><a href="/operator/status">Traffic, generations and health</a></li>
 <li><a href="/operator/releases">Release and evaluation history</a></li>
 <li><a href="/operator/events">Provenance, outbox and acknowledgement counts</a></li>
-<li><a href="/operator/epochs">Evaluation epochs</a></li></ul></nav></html>""", headers={"Cache-Control": "no-store"})
+<li><a href="/operator/epochs">Evaluation epochs</a></li></ul></nav>
+<form action="/operator/drift"><label>Drift demo ID <input name="demo_id" required></label>
+<button>View drift measurements and alerts</button></form></html>""", headers={"Cache-Control": "no-store"})
+
+    @app.get("/operator/drift", response_class=HTMLResponse, dependencies=viewer_only)
+    def drift(demo_id: str):
+        if not (store and signing_key):
+            raise HTTPException(503, "drift_audit_unavailable")
+        records = drift_reports(store, signing_key, demo_id)
+        if not records:
+            raise HTTPException(404, "drift_demo_not_found")
+        evidence = escape(json.dumps(records, indent=2))
+        return HTMLResponse(
+            '<!doctype html><html lang="en"><meta charset="utf-8">'
+            '<title>RankFlow Operator Console | Feature drift</title>'
+            '<h1>Feature drift demo</h1><pre>' + evidence + '</pre></html>',
+            headers={"Cache-Control": "no-store"},
+        )
 
     @app.get("/operator/status", dependencies=viewer_only)
     def status():

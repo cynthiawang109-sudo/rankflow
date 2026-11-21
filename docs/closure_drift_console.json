@@ -1,0 +1,266 @@
+{
+  "method": "GET",
+  "path": "/operator/drift",
+  "demo_id": "34232ec3fb5c4b5e9850047df494a33c",
+  "authenticated_status": 200,
+  "unauthenticated_status": 401,
+  "content_type": "text/html; charset=utf-8",
+  "view_heading": "Feature drift demo",
+  "displayed_audit_records": [
+    {
+      "actor": "local-drift-monitor",
+      "action": "feature_drift_demo",
+      "subject": {
+        "psi": 0.0024008305770577684,
+        "phase": "normal",
+        "action": "Investigate and block promotion of new generations until reviewed.",
+        "source": "demo",
+        "status": "clear",
+        "window": 1,
+        "demo_id": "34232ec3fb5c4b5e9850047df494a33c",
+        "feature": "session_length",
+        "alert_id": null,
+        "breached": false,
+        "strategy": "rule-v1",
+        "bin_edges": [
+          2,
+          5,
+          10,
+          20,
+          50
+        ],
+        "threshold": 0.25,
+        "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+        "population": "W2-dev",
+        "missing_rate": 0.0,
+        "minimum_count": 1000,
+        "missing_count": 0,
+        "feature_schema": "session-features-v1",
+        "observed_count": 146308,
+        "observed_counts": [
+          24965,
+          58028,
+          55137,
+          8178,
+          0,
+          0
+        ],
+        "reference_counts": [
+          23802,
+          56607,
+          59103,
+          8338,
+          0,
+          0
+        ],
+        "consecutive_windows": 2
+      },
+      "audit_id": "fa8ba5dad24e4d4c95fff4d80552c623",
+      "recorded_at": "2026-11-21T14:17:25.106044+00:00"
+    },
+    {
+      "actor": "local-drift-monitor",
+      "action": "feature_drift_demo",
+      "subject": {
+        "psi": 24.016019922552882,
+        "phase": "shift",
+        "action": "Investigate and block promotion of new generations until reviewed.",
+        "source": "demo",
+        "status": "clear",
+        "window": 2,
+        "demo_id": "34232ec3fb5c4b5e9850047df494a33c",
+        "feature": "session_length",
+        "alert_id": null,
+        "breached": true,
+        "strategy": "rule-v1",
+        "bin_edges": [
+          2,
+          5,
+          10,
+          20,
+          50
+        ],
+        "threshold": 0.25,
+        "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+        "population": "W2-dev",
+        "missing_rate": 0.0,
+        "minimum_count": 1000,
+        "missing_count": 0,
+        "feature_schema": "session-features-v1",
+        "observed_count": 149723,
+        "observed_counts": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          149723
+        ],
+        "reference_counts": [
+          23802,
+          56607,
+          59103,
+          8338,
+          0,
+          0
+        ],
+        "consecutive_windows": 2
+      },
+      "audit_id": "c341f74b9c7344419bd343ca9b53c69f",
+      "recorded_at": "2026-11-21T14:17:25.157832+00:00"
+    },
+    {
+      "actor": "local-drift-monitor",
+      "action": "feature_drift_demo",
+      "subject": {
+        "psi": 23.924433722231456,
+        "phase": "shift",
+        "action": "Investigate and block promotion of new generations until reviewed.",
+        "source": "demo",
+        "status": "raised",
+        "window": 3,
+        "demo_id": "34232ec3fb5c4b5e9850047df494a33c",
+        "feature": "session_length",
+        "alert_id": "31bdd95f16864661be1056997351e190",
+        "breached": true,
+        "strategy": "rule-v1",
+        "bin_edges": [
+          2,
+          5,
+          10,
+          20,
+          50
+        ],
+        "threshold": 0.25,
+        "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+        "population": "W2-dev",
+        "missing_rate": 0.0,
+        "minimum_count": 1000,
+        "missing_count": 0,
+        "feature_schema": "session-features-v1",
+        "observed_count": 136624,
+        "observed_counts": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          136624
+        ],
+        "reference_counts": [
+          23802,
+          56607,
+          59103,
+          8338,
+          0,
+          0
+        ],
+        "consecutive_windows": 2
+      },
+      "audit_id": "1d320f8f63b94a3486dda9add9da3a6d",
+      "recorded_at": "2026-11-21T14:17:25.162796+00:00"
+    },
+    {
+      "actor": "local-drift-monitor",
+      "action": "feature_drift_demo",
+      "subject": {
+        "psi": 1.5808304336260777e-05,
+        "phase": "recovery",
+        "action": "Investigate and block promotion of new generations until reviewed.",
+        "source": "demo",
+        "status": "active",
+        "window": 4,
+        "demo_id": "34232ec3fb5c4b5e9850047df494a33c",
+        "feature": "session_length",
+        "alert_id": "31bdd95f16864661be1056997351e190",
+        "breached": false,
+        "strategy": "rule-v1",
+        "bin_edges": [
+          2,
+          5,
+          10,
+          20,
+          50
+        ],
+        "threshold": 0.25,
+        "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+        "population": "W2-dev",
+        "missing_rate": 0.0,
+        "minimum_count": 1000,
+        "missing_count": 0,
+        "feature_schema": "session-features-v1",
+        "observed_count": 146184,
+        "observed_counts": [
+          23698,
+          55733,
+          58526,
+          8227,
+          0,
+          0
+        ],
+        "reference_counts": [
+          23802,
+          56607,
+          59103,
+          8338,
+          0,
+          0
+        ],
+        "consecutive_windows": 2
+      },
+      "audit_id": "4d0e111f74da4cbe8d9ae6937231ab5c",
+      "recorded_at": "2026-11-21T14:17:25.166372+00:00"
+    },
+    {
+      "actor": "local-drift-monitor",
+      "action": "feature_drift_demo",
+      "subject": {
+        "psi": 0.0028511316237935166,
+        "phase": "recovery",
+        "action": "Investigate and block promotion of new generations until reviewed.",
+        "source": "demo",
+        "status": "recovered",
+        "window": 5,
+        "demo_id": "34232ec3fb5c4b5e9850047df494a33c",
+        "feature": "session_length",
+        "alert_id": "31bdd95f16864661be1056997351e190",
+        "breached": false,
+        "strategy": "rule-v1",
+        "bin_edges": [
+          2,
+          5,
+          10,
+          20,
+          50
+        ],
+        "threshold": 0.25,
+        "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+        "population": "W2-dev",
+        "missing_rate": 0.0,
+        "minimum_count": 1000,
+        "missing_count": 0,
+        "feature_schema": "session-features-v1",
+        "observed_count": 141291,
+        "observed_counts": [
+          23817,
+          56739,
+          53013,
+          7722,
+          0,
+          0
+        ],
+        "reference_counts": [
+          23802,
+          56607,
+          59103,
+          8338,
+          0,
+          0
+        ],
+        "consecutive_windows": 2
+      },
+      "audit_id": "5bd1b46d8a4449879c280bfa84079a2f",
+      "recorded_at": "2026-11-21T14:17:25.169908+00:00"
+    }
+  ]
+}
