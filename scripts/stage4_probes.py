@@ -1,4 +1,5 @@
 """Probe the Stage 4 fleet exclusively through the HTTPS ALB."""
+import argparse
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, replace
 from datetime import datetime, timezone
@@ -44,7 +45,7 @@ def alb_client(deployment):
     return httpx.Client(base_url=url, verify=tls, trust_env=False, timeout=15), roles
 
 
-def run():
+def run(reliability_only=False, resume=False, confirm_task_drain=False):
     deployment_file = WORK / "deployment.json"
     deployment = json.loads(deployment_file.read_bytes())
     cf = AWS.client("cloudformation")
@@ -58,24 +59,28 @@ def run():
         def status(headers=roles["VIEWER"]):
             return client.get("/operator/status", headers=headers).raise_for_status().json()
 
-        evidence = {"started": datetime.now(timezone.utc).isoformat(), "phases": [], "modes": {}}
+        evidence_file = WORK / "probes.json"
+        evidence = (json.loads(evidence_file.read_bytes()) if resume or confirm_task_drain else
+                    {"started": datetime.now(timezone.utc).isoformat(), "phases": [], "modes": {}})
         ecs = AWS.client("ecs")
         service_description = ecs.describe_services(cluster=deployment["Cluster"],
                                                     services=[deployment["Service"]])["services"][0]
-        evidence["service"] = {key: service_description[key] for key in
-                               ("desiredCount", "runningCount", "pendingCount", "taskDefinition")}
+        service_key = "restored_task_drain_service" if confirm_task_drain else "service"
+        evidence[service_key] = {key: service_description[key] for key in
+                                 ("desiredCount", "runningCount", "pendingCount", "taskDefinition")}
 
         def save():
-            (WORK / "probes.json").write_text(json.dumps(evidence, indent=2), encoding="utf-8")
+            evidence_file.write_text(json.dumps(evidence, indent=2), encoding="utf-8")
 
         def converge(revision, config_id, started, label):
             observations = {}
             sampled = {}
 
             def sample():
-                info = client.get("/health/ready", headers={"Connection": "close"}).raise_for_status().json()
-                if info["release_ready"] and info["config_revision"] == revision and info["config_id"] == config_id:
-                    observations.setdefault(info["instance_id"], round(perf_counter() - started, 6))
+                for _ in range(4):
+                    info = client.get("/health/ready", headers={"Connection": "close"}).raise_for_status().json()
+                    if info["release_ready"] and info["config_revision"] == revision and info["config_id"] == config_id:
+                        observations.setdefault(info["instance_id"], round(perf_counter() - started, 6))
                 fleet = status()
                 leased = {row["instance_id"] for row in fleet["instances"] if row["leased"]}
                 sampled.update(leased=sorted(leased), convergence=fleet["convergence"], latest_readiness=info)
@@ -94,24 +99,47 @@ def run():
 
         stable = TrafficConfigSnapshot(deployment["Stable"])
         fixture = deployment["Fixture"]
-        assert client.get("/health/live").raise_for_status().json()["live"]
-        assert client.get("/operator/status").status_code == 401
-        assert client.post("/operator/prepare", headers=roles["VIEWER"], json={}).status_code == 403
-        assert client.post("/operator/epochs", headers=roles["OPERATOR"], json={}).status_code == 403
-        assert client.post("/operator/epochs", headers=roles["ADMIN"], json={}).status_code == 409
-        converge(0, stable.config_id, perf_counter(), "initial stable")
-
-        prefixes = client.get("/v1/playground/prefixes", params={"window": "W2-dev"}).raise_for_status().json()
-        for sealed in ("W2-gate", "W3"):
-            assert client.get("/v1/playground/prefixes", params={"window": sealed}).status_code == 404
-        epoch = json.loads(Path("artifacts/stage0-otto/evaluation_epoch.json").read_bytes())
-        assert client.post("/operator/epochs", headers=roles["ADMIN"], json=epoch).raise_for_status().json()["registered"]
+        stable_revision = 0
+        retry_phase = None
+        if confirm_task_drain:
+            assert evidence["finished"] and (WORK / "restore.json").exists()
+            restored = json.loads((WORK / "restore.json").read_bytes())
+            assert restored["restored_probe"]["serving_generation"] == deployment["Stable"]
+            fleet = status()
+            assert fleet["release_ready"] and fleet["config_id"] == stable.config_id
+            assert fleet["revision"] == restored["checkpoint_revision"]
+        elif resume:
+            fleet = status()
+            assert fleet["release_ready"] and fleet["config_id"] == stable.config_id
+            stable_revision = fleet["revision"]
+            timeout = evidence.pop("convergence_timeout")
+            retry_phase = timeout["phase"]
+            if retry_phase == "stage4-named-shadow":
+                evidence["first_publication_timeout"] = timeout
+                evidence["history_before_retry"] = fleet["traffic_history"]
+            else:
+                assert retry_phase == "stage4-named-rollback"
+                assert fleet["traffic_history"][0]["operation_id"] == retry_phase
+                evidence["rollback_observation_timeout"] = timeout
+                evidence["rollback_follow_up_history"] = fleet["traffic_history"]
+            save()
+        else:
+            assert client.get("/health/live").raise_for_status().json()["live"]
+            assert client.get("/operator/status").status_code == 401
+            assert client.post("/operator/prepare", headers=roles["VIEWER"], json={}).status_code == 403
+            assert client.post("/operator/epochs", headers=roles["OPERATOR"], json={}).status_code == 403
+            assert client.post("/operator/epochs", headers=roles["ADMIN"], json={}).status_code == 409
+            converge(0, stable.config_id, perf_counter(), "initial stable")
+            prefixes = client.get("/v1/playground/prefixes", params={"window": "W2-dev"}).raise_for_status().json()
+            for sealed in ("W2-gate", "W3"):
+                assert client.get("/v1/playground/prefixes", params={"window": sealed}).status_code == 404
+            epoch = json.loads(Path("artifacts/stage0-otto/evaluation_epoch.json").read_bytes())
+            assert client.post("/operator/epochs", headers=roles["ADMIN"], json=epoch).raise_for_status().json()["registered"]
+            evidence["public_prefix_response"] = bool(prefixes)
+            evidence["role_and_window_checks"] = "passed"
         examples = json.loads((Path("artifacts/stage1/generations") / deployment["Stable"] /
                                "public_prefixes.json").read_bytes())["W2-dev"]
-        evidence["public_prefix_response"] = bool(prefixes)
-        evidence["role_and_window_checks"] = "passed"
-        run_id = uuid4().hex
-        evidence["run_id"] = run_id
+        run_id = evidence.setdefault("run_id", uuid4().hex)
 
         def request(label, index):
             started = perf_counter()
@@ -157,50 +185,125 @@ def run():
             assert response.json()["state"] == "pointer_committed"
             converge(revision + 1, rollback or target.config_id, started, label)
 
-        measure("stable", 4)
-        measure("peak", 12)
-        shadow = replace(stable, state="shadowing", shadow_mode="live", shadow_generation_id=fixture)
-        publish(0, "stage4-named-shadow", target=shadow)
-        measure("shadow", 4)
-        canary = replace(stable, state="canary", canary_generation_id=fixture, canary_percent=100)
-        client.post("/operator/prepare", headers=roles["OPERATOR"], json=asdict(canary)).raise_for_status()
+        def prepare(target):
+            client.post("/operator/prepare", headers=roles["OPERATOR"], json=asdict(target),
+                        timeout=60).raise_for_status()
 
-        def prepared():
-            leased = [row for row in status()["instances"] if row["leased"]]
-            return len(leased) == 2 and all(canary.config_id in row["prepared"] for row in leased)
+            def prepared():
+                leased = [row for row in status()["instances"] if row["leased"]]
+                return len(leased) == 2 and all(target.config_id in row["prepared"] for row in leased)
 
-        require_until(prepared)
-        publish(1, "stage4-named-canary", target=canary)
-        measure("canary", 4, generation=fixture)
-        publish(2, "stage4-named-rollback", rollback=stable.config_id)
+            require_until(prepared)
+
+        if reliability_only and not resume and not confirm_task_drain:
+            baseline = request("initial-stable", 0)
+            assert baseline["status"] == 200 and baseline["logging_status"] == "persisted"
+            assert baseline["generation"] == stable.stable_generation_id and baseline["strategy"] == "rule-v1"
+            evidence["initial_stable"] = baseline
+            save()
+        elif not reliability_only:
+            measure("stable", 4)
+            measure("peak", 12)
+        if not confirm_task_drain:
+            if retry_phase == "stage4-named-rollback":
+                converge(stable_revision, stable.config_id, perf_counter(), "rollback follow-up sampling")
+            else:
+                shadow = replace(stable, state="shadowing", shadow_mode="live", shadow_generation_id=fixture)
+                if reliability_only:
+                    prepare(shadow)
+                operation = "stage4-named-shadow-after-preload" if resume else "stage4-named-shadow"
+                publish(stable_revision, operation, target=shadow)
+                rollback_revision = stable_revision + 1
+                if not reliability_only:
+                    measure("shadow", 4)
+                    canary = replace(stable, state="canary", canary_generation_id=fixture, canary_percent=100)
+                    prepare(canary)
+                    publish(rollback_revision, "stage4-named-canary", target=canary)
+                    rollback_revision += 1
+                    measure("canary", 4, generation=fixture)
+                publish(rollback_revision, "stage4-named-rollback", rollback=stable.config_id)
 
         service = dict(cluster=deployment["Cluster"], serviceName=deployment["Service"])
         tasks = ecs.list_tasks(**service)["taskArns"]
         assert len(tasks) == 2
         initial_instances = {row["instance_id"] for row in status()["instances"] if row["leased"]}
+        elb = AWS.client("elbv2")
+        target_group = dict(TargetGroupArn=deployment["Targets"])
+
+        def target_health():
+            return {row["Target"]["Id"]: row["TargetHealth"]["State"]
+                    for row in elb.describe_target_health(**target_group)["TargetHealthDescriptions"]}
+
+        before = target_health()
+        task_network = ecs.describe_tasks(cluster=deployment["Cluster"], tasks=[tasks[0]])["tasks"][0]
+        target_ip = next(detail["value"] for attachment in task_network["attachments"]
+                         for detail in attachment["details"] if detail["name"] == "privateIPv4Address")
 
         def stop():
             sleep(1)
-            return ecs.stop_task(cluster=deployment["Cluster"], task=tasks[0], reason="Stage 4 task-loss drill")
+            stopped_at = datetime.now(timezone.utc).isoformat()
+            ecs.stop_task(cluster=deployment["Cluster"], task=tasks[0], reason="Stage 4 task-loss drill")
+            samples = []
+            deadline = perf_counter() + 120
+            while perf_counter() < deadline:
+                health = target_health()
+                if not samples or health != samples[-1]["targets"]:
+                    samples.append({"at": datetime.now(timezone.utc).isoformat(), "targets": health})
+                if health.get(target_ip, "removed") in {"unused", "removed"}:
+                    break
+                sleep(.5)
+            return stopped_at, samples
 
+        label = "task-drain-confirmation" if confirm_task_drain else "task-loss"
+        rows, batches = [], []
+
+        def batch(executor):
+            offset = len(rows)
+            started = datetime.now(timezone.utc).isoformat()
+            rows.extend(executor.map(lambda index: request(label, index), range(offset, offset + 4)))
+            batches.append({"started": started, "finished": datetime.now(timezone.utc).isoformat(),
+                            "first_request": offset, "requests": 4})
+
+        traffic_started = datetime.now(timezone.utc).isoformat()
         with ThreadPoolExecutor(5) as executor:
             stopped = executor.submit(stop)
-            rows = list(executor.map(lambda index: request("task-loss", index), range(200)))
-            stopped.result()
-        evidence["task_loss"] = {"stopped_task": tasks[0], "requests": rows}
+            while not stopped.done():
+                next_batch = perf_counter() + 1
+                batch(executor)
+                sleep(max(0, next_batch - perf_counter()))
+            stopped_at, after_stop = stopped.result()
+            batch(executor)
+        loss = {"stopped_task": tasks[0], "requests": rows, "traffic_batches": batches,
+                "traffic_started": traffic_started, "traffic_finished": datetime.now(timezone.utc).isoformat(),
+                "stop_requested_at": stopped_at, "stopped_target": target_ip,
+                "targets_before": before, "targets_after_stop": after_stop,
+                "initial_instances": sorted(initial_instances)}
+        evidence["task_drain_confirmation" if confirm_task_drain else "task_loss"] = loss
         save()
 
         def replaced():
             instances = {row["instance_id"] for row in status()["instances"] if row["leased"]}
-            targets = AWS.client("elbv2").describe_target_health(TargetGroupArn=deployment["Targets"])
+            targets = target_health()
             return (instances if len(instances) == 2 and len(initial_instances & instances) == 1
-                    and sum(row["TargetHealth"]["State"] == "healthy" for row in targets["TargetHealthDescriptions"]) == 2
+                    and list(targets.values()).count("healthy") == 2
                     else None)
 
-        evidence["task_loss"]["replacement_instances"] = sorted(require_until(replaced, 180))
-        evidence["finished"] = datetime.now(timezone.utc).isoformat()
+        loss["replacement_instances"] = sorted(require_until(replaced, 180))
+        loss["targets_after_replacement"] = target_health()
+        finished = datetime.now(timezone.utc).isoformat()
+        if confirm_task_drain:
+            loss["finished"] = finished
+        else:
+            evidence["finished"] = finished
         save()
 
 
 if __name__ == "__main__":
-    run()
+    parser = argparse.ArgumentParser(description=__doc__)
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument("--reliability-only", action="store_true")
+    modes.add_argument("--resume-reliability", action="store_true")
+    modes.add_argument("--confirm-task-drain", action="store_true")
+    args = parser.parse_args()
+    run(args.reliability_only or args.resume_reliability or args.confirm_task_drain,
+        args.resume_reliability, args.confirm_task_drain)

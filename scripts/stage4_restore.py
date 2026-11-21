@@ -41,6 +41,8 @@ def run():
         stage = get("/operator/status")
         evidence["checkpoint_config"] = stage["config_id"]
         evidence["checkpoint_revision"] = stage["revision"]
+        evidence["checkpoint_configuration"] = stage["configuration"]
+        evidence["checkpoint_traffic_history"] = stage["traffic_history"]
         evidence["checkpoint_epochs"] = get("/operator/epochs")
         evidence["checkpoint_at"] = datetime.now(timezone.utc).isoformat()
         checkpoint = perf_counter()
@@ -50,10 +52,16 @@ def run():
         save()
         rds.get_waiter("db_snapshot_available").wait(DBSnapshotIdentifier=evidence["snapshot_id"],
                                                      WaiterConfig={"Delay": 15, "MaxAttempts": 80})
+        snapshot = rds.describe_db_snapshots(DBSnapshotIdentifier=evidence["snapshot_id"])["DBSnapshots"][0]
+        snapshot_at = snapshot["SnapshotCreateTime"]
+        evidence["snapshot_created_at"] = snapshot_at.isoformat()
         evidence["post_snapshot_impression"] = recommend()["impression_id"]
         evidence["before_restore"] = get("/operator/events")
         start = perf_counter()
-        evidence["rpo_seconds"] = round(start - checkpoint, 3)
+        evidence["restore_started_at"] = datetime.now(timezone.utc).isoformat()
+        evidence["rpo_seconds"] = round((datetime.fromisoformat(evidence["restore_started_at"]) -
+                                         snapshot_at).total_seconds(), 3)
+        evidence["checkpoint_to_restore_start_seconds"] = round(start - checkpoint, 3)
         db = rds.describe_db_instances(DBInstanceIdentifier=deployment["DatabaseId"])["DBInstances"][0]
         rds.restore_db_instance_from_db_snapshot(
             DBInstanceIdentifier=evidence["restore_id"], DBSnapshotIdentifier=evidence["snapshot_id"],
@@ -78,10 +86,32 @@ def run():
         old_count = sum(row["decisions"] for row in evidence["before_restore"]["provenance"])
         recovered_count = sum(row["decisions"] for row in evidence["restored_before_probe"]["provenance"])
         evidence["unrecoverable_decisions"] = old_count - recovered_count
+        old_outbox = sum(evidence["before_restore"]["outbox"].values())
+        recovered_outbox = sum(evidence["restored_before_probe"]["outbox"].values())
+        evidence["unrecoverable_outbox_events"] = old_outbox - recovered_outbox
+        assert evidence["unrecoverable_decisions"] == evidence["unrecoverable_outbox_events"] == 1
         stage_status = get("/operator/status")
         assert stage_status["config_id"] == evidence["checkpoint_config"]
         assert stage_status["revision"] == evidence["checkpoint_revision"]
+        assert stage_status["configuration"] == evidence["checkpoint_configuration"]
+        assert stage_status["traffic_history"] == evidence["checkpoint_traffic_history"]
         assert get("/operator/epochs") == evidence["checkpoint_epochs"]
+        evidence["restored_configuration_and_history_match"] = True
+
+        restored_instances = set()
+
+        def sample_restored_fleet():
+            for _ in range(4):
+                ready = client.get("/health/ready", headers={"Connection": "close"}).raise_for_status().json()
+                if (ready["serving_ready"] and ready["release_ready"]
+                        and ready["config_id"] == evidence["checkpoint_config"]
+                        and ready["config_revision"] == evidence["checkpoint_revision"]):
+                    restored_instances.add(ready["instance_id"])
+            leased = {item["instance_id"] for item in get("/operator/status")["instances"] if item["leased"]}
+            return len(leased) == 2 and leased <= restored_instances
+
+        require_until(sample_restored_fleet)
+        evidence["restored_instances"] = sorted(restored_instances)
         evidence["restored_probe"] = {key: value for key, value in recommend().items()
                                       if key in ("impression_id", "config_revision", "config_id",
                                                  "served_strategy", "serving_generation", "logging_status")}

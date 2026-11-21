@@ -6,7 +6,7 @@ are staged. The second deployment configures an HTTPS ALB listener and
 an ECS Fargate service with two desired tasks. Both tasks use the private
 RDS PostgreSQL instance. See [architecture](architecture.md).
 
-## Deployment outputs
+## Original deployment outputs
 
 | Output | Recorded value |
 | --- | --- |
@@ -44,7 +44,7 @@ Secrets are generated at deployment and injected from Secrets Manager.
 
 AWS ALB certificate handling follows the [HTTPS listener documentation](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html).
 
-## Deployment verification
+## Original deployment verification
 
 ECS reported desired 2, running 2, pending 0. The service was
 `RankFlowStage4-ServiceD69D759B-fPMrAq0zZaeS`. Both API processes completed
@@ -68,3 +68,45 @@ sample both instance IDs within the 90 s observation window. The recorded
 run closed each readiness connection to resample ALB routing. Benchmark
 requests used the regular shared HTTP client. No direct task API probes
 were used.
+
+## Continuation deployment
+
+CloudFormation reported the original stack as `DELETE_COMPLETE` before the
+continuation. The continuation recreated `RankFlowStage4` in `ca-central-1`
+with the original CDK app and the `project=rankflow` and `stage=stage4` tags.
+It pushed the retained original image, whose ECR digest matched the original
+record, and staged the same stable generation and synthetic routing fixture.
+
+| Output | Continuation value |
+| --- | --- |
+| ALB DNS | `RankFl-Alb16-JAWEjQdS9AcH-1068338514.ca-central-1.elb.amazonaws.com` |
+| ECS cluster | `RankFlowStage4-ClusterEB0386A7-4VbZyhzigVtG` |
+| ECS service | `RankFlowStage4-ServiceD69D759B-DvmsWLup6fLg` |
+| RDS identifier | `rankflowstage4-databaseb269d8bb-c8p9fpguzk8d` |
+| RDS endpoint | `rankflowstage4-databaseb269d8bb-c8p9fpguzk8d.cj2oy2sok398.ca-central-1.rds.amazonaws.com` |
+| S3 bundle bucket | `rankflowstage4-bundles3fb864e8-zdfxhjhb4yry` |
+| ECR image digest | `sha256:7ef3b8886a71102986064d230125c47b47b1afad10a36b63a36771f4308a5382` |
+| Stable generation | `gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65` |
+
+ECS reported desired 2, running 2 and pending 0. The liveness probe passed.
+Readiness sampled both serving instances on revision 0 through the HTTPS ALB.
+The public recommendation returned HTTP 200, `rule-v1`, the stable generation
+above, and persisted impression `6d26eb9f-0a11-4367-9dae-84bb83c8bb9e`.
+
+Run the reliability and snapshot drills against a fresh deployment after
+the HTTPS update. The snapshot drill creates a private RDS instance and
+updates the ECS service to use it. Remove the drill resources and stack
+after collecting the evidence.
+
+```powershell
+$env:PYTHONPATH = (Resolve-Path artifacts/stage4/python).Path
+uv run --locked python -m scripts.stage4_probes --reliability-only
+uv run --locked python -m scripts.stage4_restore
+```
+
+The continuation used `--resume-reliability` after the capacity rollback
+and again to complete the named rollback's ALB sampling. It used
+`--confirm-task-drain` after restore to observe requests across the full
+target drain window.
+
+[Expected and observed reliability outcomes](stage4_exit_evidence.md)
