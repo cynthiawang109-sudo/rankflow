@@ -40,3 +40,30 @@ through the ECS endpoint switch, both ALB readiness observations, and a
 persisted stable recommendation. These manual-snapshot measurements were
 within R29's 24-hour and 4-hour targets.
 [Recorded cloud probes and snapshot checks](stage4_reliability_evidence.json)
+
+## 4.5 Reproducibility and product documentation
+
+Two clean-room fits matched the archived Stage 2 model SHA-256 and the
+full W2-dev evaluation matched all archived slice counts and metrics.
+A fresh Compose deployment served `rule-v1` from the rebuilt stable bundle
+and persisted a recommendation in an initially empty PostgreSQL volume.
+The historical release disposition replay used the verified signed
+aggregate record. W2-gate and W3 data remained closed.
+[Reproduction log](reproduction_log.md) · [Evidence index](stage4_evidence_index.md)
+
+The Addendum catalogue records the scenario coverage. T07's isolated replay
+with incompatible feature schemas remains open because the current loader
+rejects that bundle. The demo lacks the controlled feature-shift and drift
+alert sequence from SPEC section 14. Independent OTTO replay requires the
+checksum-pinned artifact archive. These limitations leave the Product
+Complete gate open.
+[Addendum acceptance catalogue](stage4_acceptance_catalogue.md) · [Demo evidence](stage4_evidence_index.md)
+
+## Frozen evaluation and latency verdict
+
+The original W3 opening and report remain the Stage 4 final evaluation.
+`rule-v1` remains stable and the Stage 2 rejection stands.
+[W3 report and access record](final_evaluation_report.md)
+
+**SPEC section 9.3 missed in every measured mode. PostgreSQL persistence
+dominated in-handler latency.** [Reference latency verdict](stage4_latency_verdict.md)
