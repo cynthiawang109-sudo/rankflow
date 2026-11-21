@@ -153,7 +153,9 @@ class DatabaseFaultDrills(TestCase):
             with ThreadPoolExecutor(1) as reading:
                 output = reading.submit(child.stdout.readline)
                 try:
-                    self.assertEqual(output.result(timeout=10).strip(), b"transaction_open")
+                    # This bounds process startup and database setup. The crash is
+                    # triggered only after the worker confirms an open transaction.
+                    self.assertEqual(output.result(timeout=90).strip(), b"transaction_open")
                 finally:
                     child.kill()
                     child.wait(timeout=10)

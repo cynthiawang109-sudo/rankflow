@@ -4,8 +4,6 @@ import os
 import sys
 from threading import Event
 
-from rankflow.store import PostgresStore
-
 
 def inference():
     for message in sys.stdin.buffer:
@@ -18,6 +16,8 @@ def inference():
 
 
 def transaction(operation):
+    from rankflow.store import PostgresStore
+
     class InterruptedStore(PostgresStore):
         def connect(self):
             connection = super().connect()
