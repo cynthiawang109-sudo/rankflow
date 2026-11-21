@@ -52,7 +52,7 @@ class SecurityDrills(TestCase):
                         self.assertEqual(response.status_code, code)
             for role in ("public", "viewer", "operator", "admin"):
                 headers = authorization(role) if role != "public" else {}
-                for route in ("/health/live", "/health/ready", "/openapi.json", "/docs",
+                for route in ("/health/live", "/health/ready", "/health/routable", "/openapi.json", "/docs",
                               "/docs/oauth2-redirect", "/redoc"):
                     self.assertEqual(client.get(route, headers=headers).status_code, 200)
                 for route in ("/v1/recommend", "/v1/playground/rank"):

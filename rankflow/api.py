@@ -334,6 +334,11 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
         state["release_ready"] = bool(state["release_ready"] and store and store.ready())
         return state
 
+    @app.get("/health/routable", include_in_schema=False)
+    def routable():
+        state = traffic.readiness() if traffic else {"serving_ready": True}
+        return JSONResponse(state, status_code=200 if state["serving_ready"] else 503)
+
     @app.get("/playground", response_class=HTMLResponse)
     def playground():
         token = secrets.token_urlsafe(32)
@@ -432,6 +437,7 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
 
                 request.state.shadow_task = shadow
         result.update(request_id=data.request_id, impression_id=None, logging_status="degraded")
+        persistence_ms = None
         if store:
             decision.update(result)
             decision.update(cutoff_ts=events[-1]["ts"] if events else None,
@@ -439,6 +445,7 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
                             source="demo", prefix_events=events, surface="playground" if compare else "api")
             decision["session_hash"] = session_hash
             decision["session_key_id"] = os.environ.get("RANKFLOW_SESSION_KEY_ID", "local-v1")
+            persistence_started = perf_counter()
             try:
                 impression_id = store.persist(decision)
                 result.update(impression_id=impression_id, logging_status="persisted")
@@ -447,11 +454,13 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
             except Exception:
                 emit("logging_degraded", logging.WARNING, request_id=data.request_id,
                      generation=selected.generation_id, cohort=cohort, source="demo")
+            finally:
+                persistence_ms = (perf_counter() - persistence_started) * 1000
         app.state.request_metrics.record(selected.generation_id, cohort, "demo",
                                          result["fallback_used"], result["logging_status"] == "degraded")
         emit("recommendation_outcome", request_id=data.request_id, generation=selected.generation_id,
              cohort=cohort, source="demo", logging_status=result["logging_status"],
-             fallback_reason=decision["fallback_reason"])
+             fallback_reason=decision["fallback_reason"], persistence_ms=persistence_ms)
         count("impressions_served")
         result["latency_ms"] = round((perf_counter() - started) * 1000, 3)
         if task := getattr(request.state, "shadow_task", None):
