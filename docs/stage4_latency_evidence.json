@@ -1,0 +1,3045 @@
+{
+  "started": "2026-11-21T03:33:00.709897+00:00",
+  "collected_at": "2026-11-21T03:36:19.398242+00:00",
+  "run_id": "f6d740dad53744f497c20623e52045f5",
+  "service": {
+    "desiredCount": 2,
+    "runningCount": 2,
+    "pendingCount": 0,
+    "taskDefinition": "arn:aws:ecs:ca-central-1:711302834638:task-definition/RankFlowStage4Task332A2A57:1"
+  },
+  "modes": {
+    "stable": {
+      "concurrency": 4,
+      "client_p95_ms": 326.249,
+      "client_p99_ms": 618.664,
+      "started": "2026-11-21T03:33:03.423847+00:00",
+      "finished": "2026-11-21T03:33:05.617177+00:00",
+      "errors": 0,
+      "requests": [
+        {
+          "ms": 60.801500000707165,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 31.807,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2479639999819483,
+            "feature_ms": 0.76495299998669,
+            "scoring_ms": 0.10880100001031678
+          },
+          "persistence_ms": 29.878058999997847
+        },
+        {
+          "ms": 139.46519999990414,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 58.86,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.4446560000133104,
+            "feature_ms": 0.524573000006967,
+            "scoring_ms": 3.0642240000133825
+          },
+          "persistence_ms": 52.41443900001741
+        },
+        {
+          "ms": 110.93700000037643,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 36.491,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.21035999998275656,
+            "feature_ms": 0.19818399999849134,
+            "scoring_ms": 0.06807599999092417
+          },
+          "persistence_ms": 34.95338899995204
+        },
+        {
+          "ms": 124.9790000001667,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 35.192,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.28860000003305686,
+            "feature_ms": 0.4419559999746525,
+            "scoring_ms": 0.15034599999808052
+          },
+          "persistence_ms": 33.33941500000037
+        },
+        {
+          "ms": 106.93149999951856,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 57.599,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.292446999992535,
+            "feature_ms": 0.3968910000367032,
+            "scoring_ms": 1.4019220000136556
+          },
+          "persistence_ms": 53.006391999986135
+        },
+        {
+          "ms": 105.8722999996462,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 77.029,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2904469999975845,
+            "feature_ms": 0.3801299999963703,
+            "scoring_ms": 0.13183599998001228
+          },
+          "persistence_ms": 46.64047500000379
+        },
+        {
+          "ms": 122.93299999964802,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 95.401,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2154370000084782,
+            "feature_ms": 0.29373799998211325,
+            "scoring_ms": 0.08745899998530149
+          },
+          "persistence_ms": 92.54798700004585
+        },
+        {
+          "ms": 117.0685000006415,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 89.424,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.29187500001626177,
+            "feature_ms": 0.580402000025515,
+            "scoring_ms": 0.19255000000839573
+          },
+          "persistence_ms": 87.01582399999097
+        },
+        {
+          "ms": 57.03899999934947,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 35.898,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.24303499998268308,
+            "feature_ms": 0.29289799999787647,
+            "scoring_ms": 0.09362800000189964
+          },
+          "persistence_ms": 34.58646299998236
+        },
+        {
+          "ms": 164.99650000059773,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 110.196,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.23865599996497622,
+            "feature_ms": 0.3440440000304079,
+            "scoring_ms": 0.09023600000546139
+          },
+          "persistence_ms": 108.31094399998165
+        },
+        {
+          "ms": 128.04350000078557,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 102.325,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.15365100000508392,
+            "feature_ms": 0.11724299997695198,
+            "scoring_ms": 0.0461360000372224
+          },
+          "persistence_ms": 99.2014450000056
+        },
+        {
+          "ms": 290.84289999991597,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 202.063,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.7169649999809735,
+            "feature_ms": 0.7583310000427446,
+            "scoring_ms": 0.21614999997154882
+          },
+          "persistence_ms": 180.90341399999943
+        },
+        {
+          "ms": 131.76380000004428,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 103.773,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.4729309999902398,
+            "feature_ms": 0.3828630000271005,
+            "scoring_ms": 0.12116899995362473
+          },
+          "persistence_ms": 99.861073999989
+        },
+        {
+          "ms": 137.342300000455,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 103.761,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.24461900000005699,
+            "feature_ms": 0.3623979999929361,
+            "scoring_ms": 0.13695699999516364
+          },
+          "persistence_ms": 102.09019600000602
+        },
+        {
+          "ms": 250.99560000035126,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 119.708,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.16512299998794333,
+            "feature_ms": 0.19852600001968312,
+            "scoring_ms": 0.06842399994866355
+          },
+          "persistence_ms": 115.05382199999303
+        },
+        {
+          "ms": 244.44919999950798,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 106.614,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.37169300003370154,
+            "feature_ms": 0.924338999993779,
+            "scoring_ms": 0.2048559999821009
+          },
+          "persistence_ms": 103.03605299998253
+        },
+        {
+          "ms": 53.71179999929154,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 31.281,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.18910300002517033,
+            "feature_ms": 0.23806699999795455,
+            "scoring_ms": 0.07600800000773233
+          },
+          "persistence_ms": 29.931292000014764
+        },
+        {
+          "ms": 208.54080000026443,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 178.572,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.40989400002899856,
+            "feature_ms": 0.6354219999593624,
+            "scoring_ms": 0.19226599999910832
+          },
+          "persistence_ms": 174.78517399996463
+        },
+        {
+          "ms": 233.8079999999536,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 105.129,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2625480000233438,
+            "feature_ms": 0.18820200000391196,
+            "scoring_ms": 0.06311499998901127
+          },
+          "persistence_ms": 103.08561100003999
+        },
+        {
+          "ms": 134.81929999943532,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 106.324,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.5501180000351269,
+            "feature_ms": 0.7944889999862426,
+            "scoring_ms": 0.16336499999169973
+          },
+          "persistence_ms": 102.83260800002836
+        },
+        {
+          "ms": 136.14570000027015,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 36.35,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2831350000178645,
+            "feature_ms": 0.37953999998308063,
+            "scoring_ms": 0.11601900001778631
+          },
+          "persistence_ms": 34.251538000035
+        },
+        {
+          "ms": 132.29950000004465,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 108.27,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.20311700001229838,
+            "feature_ms": 0.19235199999911856,
+            "scoring_ms": 0.06457900002487804
+          },
+          "persistence_ms": 106.72801799995568
+        },
+        {
+          "ms": 190.7415999994555,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 109.953,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.1313859999640954,
+            "feature_ms": 0.11445800004139528,
+            "scoring_ms": 0.04116700000622586
+          },
+          "persistence_ms": 106.07936600001722
+        },
+        {
+          "ms": 192.04469999931462,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 113.462,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.9352249999778905,
+            "feature_ms": 0.47239299999546347,
+            "scoring_ms": 0.21266200002401092
+          },
+          "persistence_ms": 109.78481699999065
+        },
+        {
+          "ms": 203.18930000030377,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 109.9,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2683870000055322,
+            "feature_ms": 0.38250500000458487,
+            "scoring_ms": 0.12506399997391782
+          },
+          "persistence_ms": 107.80594800002063
+        },
+        {
+          "ms": 154.17900000011286,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 101.133,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.26620300002377917,
+            "feature_ms": 0.3918109999858643,
+            "scoring_ms": 0.11557699997410964
+          },
+          "persistence_ms": 99.55384799997091
+        },
+        {
+          "ms": 148.15319999979693,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 106.9,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.24576699996714524,
+            "feature_ms": 0.23999000001140303,
+            "scoring_ms": 0.08600500001421096
+          },
+          "persistence_ms": 105.14645499995368
+        },
+        {
+          "ms": 169.48989999946207,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 112.686,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.5505560000074183,
+            "feature_ms": 0.8813219999979083,
+            "scoring_ms": 0.22410399998307184
+          },
+          "persistence_ms": 107.52581799999916
+        },
+        {
+          "ms": 89.29170000010345,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 34.363,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.18063099997789323,
+            "feature_ms": 0.2799670000399601,
+            "scoring_ms": 0.07655299998532428
+          },
+          "persistence_ms": 32.68256000001202
+        },
+        {
+          "ms": 158.41759999966598,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 121.533,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.6735150000167778,
+            "feature_ms": 0.6642499999998108,
+            "scoring_ms": 0.2180330000101094
+          },
+          "persistence_ms": 119.08117600000878
+        },
+        {
+          "ms": 101.38989999995829,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 36.471,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.39835299998003393,
+            "feature_ms": 0.19045800002004398,
+            "scoring_ms": 0.0640050000129122
+          },
+          "persistence_ms": 34.39846800000623
+        },
+        {
+          "ms": 179.90329999975074,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 94.319,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.4087199999958102,
+            "feature_ms": 0.717189999988932,
+            "scoring_ms": 0.18039600001884537
+          },
+          "persistence_ms": 91.72448300000724
+        },
+        {
+          "ms": 175.04549999921437,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 103.327,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.29433800000333576,
+            "feature_ms": 0.4373380000401994,
+            "scoring_ms": 0.12674900000320122
+          },
+          "persistence_ms": 99.80012899995927
+        },
+        {
+          "ms": 172.46760000034556,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 107.193,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.24397600003567277,
+            "feature_ms": 0.3036339999766824,
+            "scoring_ms": 0.09468199999673743
+          },
+          "persistence_ms": 105.59072799998148
+        },
+        {
+          "ms": 202.57719999972323,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 111.69,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.17630799999324154,
+            "feature_ms": 0.1876200000197059,
+            "scoring_ms": 0.06430499996668004
+          },
+          "persistence_ms": 109.08926999996993
+        },
+        {
+          "ms": 618.6643999999433,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 107.998,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.45853400001760747,
+            "feature_ms": 0.8298550000063187,
+            "scoring_ms": 0.21605799997814756
+          },
+          "persistence_ms": 105.77031999997644
+        },
+        {
+          "ms": 371.6928000003463,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 35.131,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.25937100002693114,
+            "feature_ms": 0.3918109999858643,
+            "scoring_ms": 0.11928399999305839
+          },
+          "persistence_ms": 33.64120400004822
+        },
+        {
+          "ms": 274.5705999996062,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 103.303,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2692709999791987,
+            "feature_ms": 0.468570999998974,
+            "scoring_ms": 0.12170100001185347
+          },
+          "persistence_ms": 99.77971000000707
+        },
+        {
+          "ms": 326.2489999997342,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 25.701,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.16146999996635714,
+            "feature_ms": 0.11919500002477434,
+            "scoring_ms": 0.043797999978778535
+          },
+          "persistence_ms": 24.628457999995135
+        },
+        {
+          "ms": 291.10510000009526,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 30.631,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.27028899995684696,
+            "feature_ms": 0.49872400001049755,
+            "scoring_ms": 0.12644600002431616
+          },
+          "persistence_ms": 29.130887999997412
+        },
+        {
+          "ms": 75.93449999967561,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 26.991,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.21163299999216179,
+            "feature_ms": 0.24122000002080313,
+            "scoring_ms": 0.07826299997759634
+          },
+          "persistence_ms": 25.888782999970772
+        },
+        {
+          "ms": 75.10800000000017,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 29.682,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.27737700003171994,
+            "feature_ms": 0.48437599997441794,
+            "scoring_ms": 0.14258200002359445
+          },
+          "persistence_ms": 27.785195999967982
+        },
+        {
+          "ms": 121.69360000007146,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 74.525,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.16177999998490122,
+            "feature_ms": 0.16147700000601617,
+            "scoring_ms": 0.05548400002908238
+          },
+          "persistence_ms": 72.49742499999456
+        },
+        {
+          "ms": 108.5903999992297,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 69.542,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.4618119999690862,
+            "feature_ms": 0.3993920000198159,
+            "scoring_ms": 0.1149600000189821
+          },
+          "persistence_ms": 65.85392700003467
+        },
+        {
+          "ms": 85.58559999983117,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 34.039,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.21348600000692386,
+            "feature_ms": 0.2720109999927445,
+            "scoring_ms": 0.08730700000114666
+          },
+          "persistence_ms": 32.72527999996555
+        },
+        {
+          "ms": 144.38710000013089,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 42.265,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.28132300002425836,
+            "feature_ms": 0.3106409999986681,
+            "scoring_ms": 0.0938999999675616
+          },
+          "persistence_ms": 40.57382099995266
+        },
+        {
+          "ms": 122.66910000016651,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 91.718,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.39727000000766566,
+            "feature_ms": 0.18985600001997227,
+            "scoring_ms": 0.06566199999724631
+          },
+          "persistence_ms": 89.96382399999447
+        },
+        {
+          "ms": 122.91029999960301,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 91.503,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.4987050000408999,
+            "feature_ms": 0.6350699999870812,
+            "scoring_ms": 0.1431349999734266
+          },
+          "persistence_ms": 88.82293299996036
+        }
+      ],
+      "ranking_sample_count": 48,
+      "persistence_sample_count": 48,
+      "segment_p95_ms": {
+        "retrieval_ms": 0.674,
+        "feature_ms": 0.83,
+        "scoring_ms": 0.224
+      },
+      "persistence_p95_ms": 119.081,
+      "api_p95_ms": 121.533,
+      "outside_handler_p95_ms": 300.548,
+      "utilization": {
+        "CPUUtilization": [
+          {
+            "Timestamp": "2026-11-20 22:33:00-05:00",
+            "Average": 23.511618455251057,
+            "Maximum": 39.345394134521484,
+            "Unit": "Percent"
+          }
+        ],
+        "MemoryUtilization": [
+          {
+            "Timestamp": "2026-11-20 22:33:00-05:00",
+            "Average": 21.126302083333336,
+            "Maximum": 21.1669921875,
+            "Unit": "Percent"
+          }
+        ]
+      }
+    },
+    "peak": {
+      "concurrency": 12,
+      "client_p95_ms": 571.853,
+      "client_p99_ms": 598.163,
+      "started": "2026-11-21T03:33:05.631632+00:00",
+      "finished": "2026-11-21T03:33:07.505900+00:00",
+      "errors": 0,
+      "requests": [
+        {
+          "ms": 71.81549999950221,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 27.429,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2691700000241326,
+            "feature_ms": 0.38084699997398275,
+            "scoring_ms": 0.11991700000635319
+          },
+          "persistence_ms": 25.784806999979537
+        },
+        {
+          "ms": 107.35610000028828,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 37.932,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.24857800002564545,
+            "feature_ms": 0.36695399995778644,
+            "scoring_ms": 0.11985500003675043
+          },
+          "persistence_ms": 36.02405800000952
+        },
+        {
+          "ms": 215.74650000002293,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 164.566,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.1419710000050145,
+            "feature_ms": 0.11466199998722004,
+            "scoring_ms": 0.03894900004297597
+          },
+          "persistence_ms": 161.8831049999585
+        },
+        {
+          "ms": 213.14299999994546,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 178.075,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.28424599997833866,
+            "feature_ms": 0.5708819999767911,
+            "scoring_ms": 0.12704800002438787
+          },
+          "persistence_ms": 175.4591359999722
+        },
+        {
+          "ms": 467.23170000041137,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 317.906,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2057270000364042,
+            "feature_ms": 0.39371399998344714,
+            "scoring_ms": 0.10232199997517455
+          },
+          "persistence_ms": 314.6482880000008
+        },
+        {
+          "ms": 356.4461999994819,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 191.935,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.36428399999977046,
+            "feature_ms": 0.7666539999604538,
+            "scoring_ms": 0.13136700005134117
+          },
+          "persistence_ms": 189.0407600000117
+        },
+        {
+          "ms": 363.1654000000708,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 217.384,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.16218000001799737,
+            "feature_ms": 0.1594889999978477,
+            "scoring_ms": 0.05336399999578134
+          },
+          "persistence_ms": 212.40410100000418
+        },
+        {
+          "ms": 451.85160000073665,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 271.567,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.7051090000231852,
+            "feature_ms": 0.6517269999903874,
+            "scoring_ms": 0.18896500000664673
+          },
+          "persistence_ms": 191.430792999995
+        },
+        {
+          "ms": 126.27929999962362,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 98.357,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2603799999860712,
+            "feature_ms": 0.2632590000075652,
+            "scoring_ms": 0.08201999997936582
+          },
+          "persistence_ms": 96.88501599998744
+        },
+        {
+          "ms": 469.4344999998066,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 298.036,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.24408899997752087,
+            "feature_ms": 0.3319080000210306,
+            "scoring_ms": 0.07007699997529926
+          },
+          "persistence_ms": 293.63922900000716
+        },
+        {
+          "ms": 476.243400000385,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 296.628,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.12692699999661272,
+            "feature_ms": 0.21014200001445715,
+            "scoring_ms": 0.06290400000352747
+          },
+          "persistence_ms": 290.948874000037
+        },
+        {
+          "ms": 454.4663999995464,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 295.79,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.4590710000229592,
+            "feature_ms": 0.5413899999666683,
+            "scoring_ms": 0.13752600000316306
+          },
+          "persistence_ms": 286.6606950000232
+        },
+        {
+          "ms": 352.24060000018653,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 214.837,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.29233399999384346,
+            "feature_ms": 0.6773110000040106,
+            "scoring_ms": 0.15196599997580051
+          },
+          "persistence_ms": 208.67764399997668
+        },
+        {
+          "ms": 242.89870000029623,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 208.787,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.3879640000263862,
+            "feature_ms": 0.639744000011433,
+            "scoring_ms": 0.18273799997814422
+          },
+          "persistence_ms": 206.49766899998667
+        },
+        {
+          "ms": 473.76469999926485,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 297.304,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.14571299999488474,
+            "feature_ms": 0.2031289999990804,
+            "scoring_ms": 0.06550599999854967
+          },
+          "persistence_ms": 291.9995530000392
+        },
+        {
+          "ms": 327.2750000005544,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 295.805,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.388525000005302,
+            "feature_ms": 0.9200069999906191,
+            "scoring_ms": 0.19449300003770986
+          },
+          "persistence_ms": 221.70915099997046
+        },
+        {
+          "ms": 328.8849999999002,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 292.113,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.268953999977839,
+            "feature_ms": 0.41411000000834974,
+            "scoring_ms": 0.12014999998655185
+          },
+          "persistence_ms": 290.35596400001396
+        },
+        {
+          "ms": 394.88930000061373,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 310.546,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.39389999994909886,
+            "feature_ms": 0.6792390000214255,
+            "scoring_ms": 0.190672000030645
+          },
+          "persistence_ms": 306.96245699999736
+        },
+        {
+          "ms": 378.8684999999532,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 206.619,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.13948800000207484,
+            "feature_ms": 0.16073599999799626,
+            "scoring_ms": 0.059150000026875205
+          },
+          "persistence_ms": 205.58522300001414
+        },
+        {
+          "ms": 441.02380000003905,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 218.779,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.5646809999575453,
+            "feature_ms": 0.8655640000370113,
+            "scoring_ms": 0.23874499999010368
+          },
+          "persistence_ms": 211.70256400000653
+        },
+        {
+          "ms": 598.1630999995105,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 512.178,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.24414299997488342,
+            "feature_ms": 0.25031100000205697,
+            "scoring_ms": 0.08018800002673743
+          },
+          "persistence_ms": 510.7712569999876
+        },
+        {
+          "ms": 342.14500000052794,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 217.172,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.41809499998635147,
+            "feature_ms": 0.4117080000014539,
+            "scoring_ms": 0.13764199997012838
+          },
+          "persistence_ms": 210.54978500001198
+        },
+        {
+          "ms": 385.6718999995792,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 316.556,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.1365910000004078,
+            "feature_ms": 0.11755399998492067,
+            "scoring_ms": 0.042462000010345946
+          },
+          "persistence_ms": 315.2934999999957
+        },
+        {
+          "ms": 442.3098999996,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 312.801,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.4509529999836559,
+            "feature_ms": 0.7463990000360354,
+            "scoring_ms": 0.20876499996802522
+          },
+          "persistence_ms": 309.6973820000244
+        },
+        {
+          "ms": 540.6596999991962,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 494.479,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.23917900000469672,
+            "feature_ms": 0.3753029999984392,
+            "scoring_ms": 0.12086200001704128
+          },
+          "persistence_ms": 492.8781190000109
+        },
+        {
+          "ms": 526.682400000027,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 489.067,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2688210000201252,
+            "feature_ms": 0.6137029999990773,
+            "scoring_ms": 0.1259310000136793
+          },
+          "persistence_ms": 486.6452489999915
+        },
+        {
+          "ms": 571.8534999996336,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 302.232,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.1546639999787658,
+            "feature_ms": 0.19418000005089198,
+            "scoring_ms": 0.0646769999548269
+          },
+          "persistence_ms": 286.68837999998686
+        },
+        {
+          "ms": 556.6851000003226,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 389.714,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.3322160000038821,
+            "feature_ms": 0.45848799999248513,
+            "scoring_ms": 0.12884699998494398
+          },
+          "persistence_ms": 382.9282229999649
+        },
+        {
+          "ms": 432.68259999967995,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 312.005,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2964230000088719,
+            "feature_ms": 0.39966000002777946,
+            "scoring_ms": 0.11792799995191672
+          },
+          "persistence_ms": 308.5266080000224
+        },
+        {
+          "ms": 423.26540000067325,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 388.771,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.3687920000174927,
+            "feature_ms": 0.6775439999842092,
+            "scoring_ms": 0.19469500000468543
+          },
+          "persistence_ms": 384.0837390000047
+        },
+        {
+          "ms": 269.2331000007471,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 197.616,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.17192199999271907,
+            "feature_ms": 0.22906800001010197,
+            "scoring_ms": 0.06972599999244267
+          },
+          "persistence_ms": 196.31542700000182
+        },
+        {
+          "ms": 385.38080000034824,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 295.628,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.4332620000013776,
+            "feature_ms": 0.6469799999990755,
+            "scoring_ms": 0.19392900003367686
+          },
+          "persistence_ms": 293.315156999995
+        },
+        {
+          "ms": 518.2150000000547,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 307.56,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2972270000327626,
+            "feature_ms": 0.41685399997959394,
+            "scoring_ms": 0.12687100002040097
+          },
+          "persistence_ms": 304.6160479999571
+        },
+        {
+          "ms": 298.5046000003422,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 244.827,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.21391400002812588,
+            "feature_ms": 0.30087099997899713,
+            "scoring_ms": 0.09606599996914156
+          },
+          "persistence_ms": 243.47283999998126
+        },
+        {
+          "ms": 496.7446000000564,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 405.541,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.18412499997566556,
+            "feature_ms": 0.26380700001027435,
+            "scoring_ms": 0.09943700001713296
+          },
+          "persistence_ms": 400.227048999966
+        },
+        {
+          "ms": 431.385599999885,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 398.78,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.46503200002234735,
+            "feature_ms": 0.7552039999723092,
+            "scoring_ms": 0.2121320000014748
+          },
+          "persistence_ms": 393.4724220000021
+        },
+        {
+          "ms": 463.49890000055893,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 396.816,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.3285270000219498,
+            "feature_ms": 0.5084729999680349,
+            "scoring_ms": 0.1297980000458665
+          },
+          "persistence_ms": 393.5866159999932
+        },
+        {
+          "ms": 365.5276000008598,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 308.853,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2687790000095447,
+            "feature_ms": 0.3647519999958604,
+            "scoring_ms": 0.10273100002677893
+          },
+          "persistence_ms": 303.39422599996624
+        },
+        {
+          "ms": 396.85069999995903,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 305.701,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.14069599995991666,
+            "feature_ms": 0.13602000001355918,
+            "scoring_ms": 0.04741200001490142
+          },
+          "persistence_ms": 297.30906699995785
+        },
+        {
+          "ms": 433.27679999947577,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 395.924,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.37866499997107894,
+            "feature_ms": 0.5472839999924872,
+            "scoring_ms": 0.6355880000228353
+          },
+          "persistence_ms": 392.24275499998384
+        },
+        {
+          "ms": 441.20050000037736,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 392.454,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.30280900000434485,
+            "feature_ms": 0.24210899999843605,
+            "scoring_ms": 0.07628200000908691
+          },
+          "persistence_ms": 383.56757399998287
+        },
+        {
+          "ms": 345.093399999314,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 301.678,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.38336700004037993,
+            "feature_ms": 0.6293550000009418,
+            "scoring_ms": 0.1860029999534163
+          },
+          "persistence_ms": 288.86195899997347
+        },
+        {
+          "ms": 377.3516000001109,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 310.308,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.23109800002885095,
+            "feature_ms": 0.26469499999848267,
+            "scoring_ms": 0.08562099998243866
+          },
+          "persistence_ms": 300.85276900001645
+        },
+        {
+          "ms": 585.5648000006113,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 387.551,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.37557399997467655,
+            "feature_ms": 0.46454900001435817,
+            "scoring_ms": 0.13857599998345904
+          },
+          "persistence_ms": 301.6285829999674
+        },
+        {
+          "ms": 504.7523999992336,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 396.39,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.27136300002439384,
+            "feature_ms": 81.30606700001408,
+            "scoring_ms": 0.14124299997320122
+          },
+          "persistence_ms": 302.8426280000076
+        },
+        {
+          "ms": 412.01860000001034,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 309.343,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.1845989999651465,
+            "feature_ms": 0.20584100002452033,
+            "scoring_ms": 0.06589399998802037
+          },
+          "persistence_ms": 306.3407700000198
+        },
+        {
+          "ms": 292.14200000023993,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 208.629,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.1276909999887721,
+            "feature_ms": 0.1606400000468966,
+            "scoring_ms": 0.05769899996721506
+          },
+          "persistence_ms": 207.07039100000202
+        },
+        {
+          "ms": 391.50579999932233,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 293.918,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.43081100000108563,
+            "feature_ms": 61.97418700003254,
+            "scoring_ms": 0.29222599999911836
+          },
+          "persistence_ms": 226.5290240000013
+        }
+      ],
+      "ranking_sample_count": 48,
+      "persistence_sample_count": 48,
+      "segment_p95_ms": {
+        "retrieval_ms": 0.465,
+        "feature_ms": 0.92,
+        "scoring_ms": 0.239
+      },
+      "persistence_p95_ms": 486.645,
+      "api_p95_ms": 489.067,
+      "outside_handler_p95_ms": 210.655,
+      "utilization": {
+        "CPUUtilization": [
+          {
+            "Timestamp": "2026-11-20 22:33:00-05:00",
+            "Average": 23.511618455251057,
+            "Maximum": 39.345394134521484,
+            "Unit": "Percent"
+          }
+        ],
+        "MemoryUtilization": [
+          {
+            "Timestamp": "2026-11-20 22:33:00-05:00",
+            "Average": 21.126302083333336,
+            "Maximum": 21.1669921875,
+            "Unit": "Percent"
+          }
+        ]
+      }
+    },
+    "shadow": {
+      "concurrency": 4,
+      "client_p95_ms": 332.881,
+      "client_p99_ms": 379.918,
+      "started": "2026-11-21T03:33:43.011599+00:00",
+      "finished": "2026-11-21T03:33:45.512443+00:00",
+      "errors": 0,
+      "requests": [
+        {
+          "ms": 39.44400000000314,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 26.771,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2576260000068942,
+            "feature_ms": 0.6086559999971541,
+            "scoring_ms": 0.14075199999297183
+          },
+          "persistence_ms": 24.785629999996672
+        },
+        {
+          "ms": 173.43200000050274,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 102.398,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.5657609999616398,
+            "feature_ms": 0.38076800001363154,
+            "scoring_ms": 0.12272200001461897
+          },
+          "persistence_ms": 100.4343820000031
+        },
+        {
+          "ms": 115.42370000006485,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 34.811,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.20076300000937408,
+            "feature_ms": 0.19389199997021933,
+            "scoring_ms": 0.06838900003458548
+          },
+          "persistence_ms": 33.612938999965536
+        },
+        {
+          "ms": 271.52209999985644,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 198.273,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.32950700000355937,
+            "feature_ms": 0.6636580000076719,
+            "scoring_ms": 0.1909239999804413
+          },
+          "persistence_ms": 194.90568100002292
+        },
+        {
+          "ms": 54.99280000003637,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 32.053,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.207984999974542,
+            "feature_ms": 0.24798800001235577,
+            "scoring_ms": 0.08080399999244037
+          },
+          "persistence_ms": 30.720762999976614
+        },
+        {
+          "ms": 271.94240000062564,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 206.602,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.6851360000155182,
+            "feature_ms": 0.6742119999785245,
+            "scoring_ms": 0.19262600000047314
+          },
+          "persistence_ms": 198.71335800002043
+        },
+        {
+          "ms": 106.18350000004284,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 83.212,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.218806000020777,
+            "feature_ms": 0.2676219999671048,
+            "scoring_ms": 0.10988100001441126
+          },
+          "persistence_ms": 81.84247700000924
+        },
+        {
+          "ms": 379.9178999997821,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 216.901,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.403861999984656,
+            "feature_ms": 0.6519629999957033,
+            "scoring_ms": 5.634374999999636
+          },
+          "persistence_ms": 205.82924600000752
+        },
+        {
+          "ms": 332.8809000004185,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 289.707,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.242447000005086,
+            "feature_ms": 0.2878519999853779,
+            "scoring_ms": 0.09781900001826216
+          },
+          "persistence_ms": 283.1022109999708
+        },
+        {
+          "ms": 67.15319999966596,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 32.697,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.1836030000390565,
+            "feature_ms": 0.19103599998970822,
+            "scoring_ms": 0.06440399999974034
+          },
+          "persistence_ms": 31.65401500001508
+        },
+        {
+          "ms": 241.94669999997132,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 216.543,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.18076600002814303,
+            "feature_ms": 0.18862799998942137,
+            "scoring_ms": 0.06412999999838576
+          },
+          "persistence_ms": 215.18402100002731
+        },
+        {
+          "ms": 128.20240000019112,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 46.877,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.30154199998833064,
+            "feature_ms": 0.6455760000108057,
+            "scoring_ms": 0.1479819999872234
+          },
+          "persistence_ms": 44.04126399998631
+        },
+        {
+          "ms": 125.53250000019034,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 96.047,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.4183089999969525,
+            "feature_ms": 0.6452270000067983,
+            "scoring_ms": 0.19654599998375488
+          },
+          "persistence_ms": 93.72450699999035
+        },
+        {
+          "ms": 169.81510000005073,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 119.81,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.37880600001471976,
+            "feature_ms": 0.5684410000412754,
+            "scoring_ms": 0.12367299996185466
+          },
+          "persistence_ms": 117.57103200000074
+        },
+        {
+          "ms": 306.6595000000234,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 283.138,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.19094599997515616,
+            "feature_ms": 0.16041300000324554,
+            "scoring_ms": 0.04570499999090316
+          },
+          "persistence_ms": 281.775792000019
+        },
+        {
+          "ms": 115.47040000004927,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 88.715,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.3732630000286008,
+            "feature_ms": 0.8452270000134376,
+            "scoring_ms": 0.12816299999940384
+          },
+          "persistence_ms": 86.48373200003334
+        },
+        {
+          "ms": 248.7013999998453,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 210.575,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.30263299998978255,
+            "feature_ms": 0.40314599999646816,
+            "scoring_ms": 0.11950999999044143
+          },
+          "persistence_ms": 208.41798700001846
+        },
+        {
+          "ms": 206.97139999992942,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 116.204,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.4347139999936189,
+            "feature_ms": 0.6641479999984767,
+            "scoring_ms": 0.201504000017394
+          },
+          "persistence_ms": 107.81130300000541
+        },
+        {
+          "ms": 247.1994999996241,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 202.208,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.19406500001650784,
+            "feature_ms": 0.25762799998574337,
+            "scoring_ms": 0.08631200000763783
+          },
+          "persistence_ms": 197.79127399999652
+        },
+        {
+          "ms": 151.26129999953264,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 123.715,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.5191820000050029,
+            "feature_ms": 0.6665540000199144,
+            "scoring_ms": 0.19470099999807644
+          },
+          "persistence_ms": 121.14452599996639
+        },
+        {
+          "ms": 289.34769999978016,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 123.276,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.28906199997891235,
+            "feature_ms": 0.398942000003899,
+            "scoring_ms": 0.11954600000763094
+          },
+          "persistence_ms": 121.61670000000413
+        },
+        {
+          "ms": 196.10829999965063,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 175.75,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.1698240000109763,
+            "feature_ms": 0.19484500000999105,
+            "scoring_ms": 0.06331800000225485
+          },
+          "persistence_ms": 112.48156099998141
+        },
+        {
+          "ms": 248.47680000038963,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 205.912,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.09910200003560021,
+            "feature_ms": 0.11814799995590874,
+            "scoring_ms": 0.046087000043826265
+          },
+          "persistence_ms": 204.72923500000206
+        },
+        {
+          "ms": 152.2767999995267,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 113.628,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.4732099999955608,
+            "feature_ms": 0.7613440000113769,
+            "scoring_ms": 0.23825099998475707
+          },
+          "persistence_ms": 110.07485900000802
+        },
+        {
+          "ms": 210.05400000012742,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 123.726,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.4794430000174543,
+            "feature_ms": 0.6591499999899497,
+            "scoring_ms": 0.1945859999636923
+          },
+          "persistence_ms": 119.04321800000162
+        },
+        {
+          "ms": 247.80699999973876,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 198.968,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.343517000032989,
+            "feature_ms": 2.148874999988948,
+            "scoring_ms": 0.18374000001131208
+          },
+          "persistence_ms": 189.99730799998815
+        },
+        {
+          "ms": 208.09549999921728,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 120.376,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.18857800000660063,
+            "feature_ms": 0.1951390000272113,
+            "scoring_ms": 0.06695399997624918
+          },
+          "persistence_ms": 116.06075599996757
+        },
+        {
+          "ms": 147.54139999968174,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 113.59,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.995231999979751,
+            "feature_ms": 0.675694999983989,
+            "scoring_ms": 0.19914500001050328
+          },
+          "persistence_ms": 104.51623900002005
+        },
+        {
+          "ms": 354.0250999994896,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 244.552,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2688080000439186,
+            "feature_ms": 0.3426459999786857,
+            "scoring_ms": 0.08229600001641302
+          },
+          "persistence_ms": 243.0115120000096
+        },
+        {
+          "ms": 305.0976000004084,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 269.365,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.4849970000009307,
+            "feature_ms": 0.8476430000428081,
+            "scoring_ms": 0.2508110000007946
+          },
+          "persistence_ms": 263.5296389999553
+        },
+        {
+          "ms": 288.8225999995484,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 164.103,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.20360100000971215,
+            "feature_ms": 0.2721220000125868,
+            "scoring_ms": 0.10260599998446196
+          },
+          "persistence_ms": 162.31686700001546
+        },
+        {
+          "ms": 329.26880000013625,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 235.025,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.49893699997483054,
+            "feature_ms": 0.6847420000326565,
+            "scoring_ms": 0.18998000001602122
+          },
+          "persistence_ms": 226.68822200000704
+        },
+        {
+          "ms": 197.59539999995468,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 172.594,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.28607100000499486,
+            "feature_ms": 0.3969570000208478,
+            "scoring_ms": 0.12470799998709481
+          },
+          "persistence_ms": 170.73690799998076
+        },
+        {
+          "ms": 158.61080000013317,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 126.925,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.1603669999781232,
+            "feature_ms": 0.19425499999670137,
+            "scoring_ms": 0.10002999999869644
+          },
+          "persistence_ms": 125.61178699996844
+        },
+        {
+          "ms": 194.32570000026317,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 168.433,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.15469099997744706,
+            "feature_ms": 0.11715200002981874,
+            "scoring_ms": 0.04756099997393903
+          },
+          "persistence_ms": 166.83001199999126
+        },
+        {
+          "ms": 173.3111999992616,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 136.045,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.32767499999408756,
+            "feature_ms": 0.46222600002465697,
+            "scoring_ms": 0.13832499996624392
+          },
+          "persistence_ms": 134.24810899999784
+        },
+        {
+          "ms": 145.60370000071998,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 114.694,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.3739269999982753,
+            "feature_ms": 0.39972500002249944,
+            "scoring_ms": 0.12389299996584668
+          },
+          "persistence_ms": 112.62654000000794
+        },
+        {
+          "ms": 246.25490000016725,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 195.41,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.8844449999969584,
+            "feature_ms": 0.3778440000132832,
+            "scoring_ms": 0.11797700000215627
+          },
+          "persistence_ms": 192.97181599995383
+        },
+        {
+          "ms": 243.56150000039634,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 202.655,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.20779200002607467,
+            "feature_ms": 0.18572300001551412,
+            "scoring_ms": 0.06325699996523326
+          },
+          "persistence_ms": 200.4759630000308
+        },
+        {
+          "ms": 153.45259999958216,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 104.608,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.3976790000024266,
+            "feature_ms": 0.6513089999771182,
+            "scoring_ms": 0.18946699998423355
+          },
+          "persistence_ms": 102.25083400001722
+        },
+        {
+          "ms": 148.278499999833,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 124.071,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2723640000112937,
+            "feature_ms": 0.3995029999828148,
+            "scoring_ms": 0.15957600004412598
+          },
+          "persistence_ms": 122.15640800002348
+        },
+        {
+          "ms": 227.29090000029828,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 195.638,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2894280000305116,
+            "feature_ms": 0.5217599999696176,
+            "scoring_ms": 0.15426700002763027
+          },
+          "persistence_ms": 191.5631949999579
+        },
+        {
+          "ms": 158.96040000006906,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 114.039,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.23684999996476108,
+            "feature_ms": 0.2649090000090837,
+            "scoring_ms": 0.08258700000851604
+          },
+          "persistence_ms": 112.18036999997594
+        },
+        {
+          "ms": 161.3327000004574,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 116.494,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.8456540000452151,
+            "feature_ms": 0.466314999982842,
+            "scoring_ms": 0.1573019999909775
+          },
+          "persistence_ms": 112.55160000001752
+        },
+        {
+          "ms": 275.7834999993065,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 200.769,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.19810500003814013,
+            "feature_ms": 0.24528799997369788,
+            "scoring_ms": 0.08298199998080236
+          },
+          "persistence_ms": 199.33373700001766
+        },
+        {
+          "ms": 159.36920000058308,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 123.008,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.23725599999124825,
+            "feature_ms": 0.3115380000053847,
+            "scoring_ms": 0.09361400003626841
+          },
+          "persistence_ms": 121.08726999997543
+        },
+        {
+          "ms": 196.3143000002674,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 114.433,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.13499600004251988,
+            "feature_ms": 0.12066499999718872,
+            "scoring_ms": 0.042770999982622016
+          },
+          "persistence_ms": 113.27640799999017
+        },
+        {
+          "ms": 204.69599999978527,
+          "status": 200,
+          "generation": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 106.887,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.29700300001422875,
+            "feature_ms": 0.4838710000285573,
+            "scoring_ms": 0.1387019999583572
+          },
+          "persistence_ms": 104.19265399997357
+        }
+      ],
+      "ranking_sample_count": 48,
+      "persistence_sample_count": 48,
+      "segment_p95_ms": {
+        "retrieval_ms": 0.846,
+        "feature_ms": 0.845,
+        "scoring_ms": 0.238
+      },
+      "persistence_p95_ms": 263.53,
+      "api_p95_ms": 269.365,
+      "outside_handler_p95_ms": 124.72,
+      "utilization": {
+        "CPUUtilization": [
+          {
+            "Timestamp": "2026-11-20 22:33:00-05:00",
+            "Average": 23.511618455251057,
+            "Maximum": 39.345394134521484,
+            "Unit": "Percent"
+          }
+        ],
+        "MemoryUtilization": [
+          {
+            "Timestamp": "2026-11-20 22:33:00-05:00",
+            "Average": 21.126302083333336,
+            "Maximum": 21.1669921875,
+            "Unit": "Percent"
+          }
+        ]
+      }
+    },
+    "canary": {
+      "concurrency": 4,
+      "client_p95_ms": 264.89,
+      "client_p99_ms": 285.012,
+      "started": "2026-11-21T03:34:13.279327+00:00",
+      "finished": "2026-11-21T03:34:15.204755+00:00",
+      "errors": 0,
+      "requests": [
+        {
+          "ms": 58.35560000014084,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 29.491,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2742600000260609,
+            "feature_ms": 0.3818079999859947,
+            "scoring_ms": 0.13793400000849942
+          },
+          "persistence_ms": 27.847612000016397
+        },
+        {
+          "ms": 158.74640000038198,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 43.114,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.30253899996068867,
+            "feature_ms": 0.37350100001276587,
+            "scoring_ms": 0.13495000001739754
+          },
+          "persistence_ms": 41.35197700003346
+        },
+        {
+          "ms": 111.84229999980744,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 33.751,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.18299200002047655,
+            "feature_ms": 0.14538900001070942,
+            "scoring_ms": 0.06447799995612513
+          },
+          "persistence_ms": 32.61729900003729
+        },
+        {
+          "ms": 112.44530000021769,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 33.923,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.38116000001764405,
+            "feature_ms": 0.6563729999697898,
+            "scoring_ms": 0.20030399997494897
+          },
+          "persistence_ms": 31.357332000027327
+        },
+        {
+          "ms": 58.068899999852874,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 32.894,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2603730000032556,
+            "feature_ms": 0.3729899999598274,
+            "scoring_ms": 0.11398000003737252
+          },
+          "persistence_ms": 30.867007000040303
+        },
+        {
+          "ms": 120.94100000012986,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 94.106,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.24913799995829322,
+            "feature_ms": 0.5458420000081787,
+            "scoring_ms": 0.3222380000238445
+          },
+          "persistence_ms": 91.730210000037
+        },
+        {
+          "ms": 112.87910000010015,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 78.827,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.3090140000381325,
+            "feature_ms": 0.3346889999988889,
+            "scoring_ms": 0.1011449999737124
+          },
+          "persistence_ms": 77.16540299998087
+        },
+        {
+          "ms": 112.56799999955547,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 73.986,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2682979999804047,
+            "feature_ms": 0.43960500005368885,
+            "scoring_ms": 0.12675699997544143
+          },
+          "persistence_ms": 29.89048099999536
+        },
+        {
+          "ms": 108.30080000050657,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 43.272,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2454300000067633,
+            "feature_ms": 0.2548960000012812,
+            "scoring_ms": 0.08222899998600042
+          },
+          "persistence_ms": 41.34973599997238
+        },
+        {
+          "ms": 172.8133999995407,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 113.59,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2557309999815516,
+            "feature_ms": 0.5701059999978497,
+            "scoring_ms": 0.10759700001017336
+          },
+          "persistence_ms": 111.62363500000083
+        },
+        {
+          "ms": 103.07019999982003,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 75.212,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.18340500002977933,
+            "feature_ms": 0.14486699996041352,
+            "scoring_ms": 0.053997999998500745
+          },
+          "persistence_ms": 73.81813500001044
+        },
+        {
+          "ms": 172.2358000006352,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 115.47,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.40851799997199123,
+            "feature_ms": 1.1854940000262104,
+            "scoring_ms": 0.22104699996816635
+          },
+          "persistence_ms": 111.56263599997374
+        },
+        {
+          "ms": 149.9602000003506,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 40.185,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.3973549999614079,
+            "feature_ms": 0.6765109999946617,
+            "scoring_ms": 0.19894600001180152
+          },
+          "persistence_ms": 37.53110499997092
+        },
+        {
+          "ms": 264.88959999915096,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 200.767,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.4222129999789104,
+            "feature_ms": 0.6400139999982457,
+            "scoring_ms": 0.18640899997990346
+          },
+          "persistence_ms": 196.76908599996068
+        },
+        {
+          "ms": 130.18820000070264,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 104.03,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2047489999768004,
+            "feature_ms": 0.21056299999600014,
+            "scoring_ms": 0.06852200004914266
+          },
+          "persistence_ms": 102.68556100004389
+        },
+        {
+          "ms": 206.01090000036493,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 118.89,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.20993399999724716,
+            "feature_ms": 0.45057899995981643,
+            "scoring_ms": 0.1271930000257271
+          },
+          "persistence_ms": 116.40904099999716
+        },
+        {
+          "ms": 133.5228999996616,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 105.642,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.289925000004132,
+            "feature_ms": 0.3842080000140413,
+            "scoring_ms": 0.1222089999828313
+          },
+          "persistence_ms": 103.00231700000495
+        },
+        {
+          "ms": 259.8143999994136,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 192.019,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.3062669999849277,
+            "feature_ms": 0.4181680000101551,
+            "scoring_ms": 0.14238699998259108
+          },
+          "persistence_ms": 189.47629299998425
+        },
+        {
+          "ms": 186.0400000005029,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 116.153,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.19952700000658297,
+            "feature_ms": 0.30858099995612065,
+            "scoring_ms": 0.09744100003672429
+          },
+          "persistence_ms": 112.99917099995582
+        },
+        {
+          "ms": 219.15290000015375,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 129.618,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.32869999995455146,
+            "feature_ms": 0.404771000034998,
+            "scoring_ms": 0.12188199997353877
+          },
+          "persistence_ms": 127.66045000000759
+        },
+        {
+          "ms": 214.25099999942177,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 193.584,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2789879999909317,
+            "feature_ms": 0.251523000031284,
+            "scoring_ms": 0.08576900000889509
+          },
+          "persistence_ms": 192.23900400004368
+        },
+        {
+          "ms": 157.74140000030457,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 111.843,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.30858599996008707,
+            "feature_ms": 0.41513500002565706,
+            "scoring_ms": 0.1274859999966793
+          },
+          "persistence_ms": 108.81781400001955
+        },
+        {
+          "ms": 143.01679999971384,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 111.162,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.19277899997405257,
+            "feature_ms": 0.14430200002379934,
+            "scoring_ms": 0.19604400000616806
+          },
+          "persistence_ms": 109.36937999997554
+        },
+        {
+          "ms": 182.08590000085678,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 112.309,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.42086400003427116,
+            "feature_ms": 0.5828039999755674,
+            "scoring_ms": 0.1641279999944345
+          },
+          "persistence_ms": 110.1745420000384
+        },
+        {
+          "ms": 196.84030000007624,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 100.83,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.34990699998616037,
+            "feature_ms": 0.4421529999945051,
+            "scoring_ms": 0.12988700001415054
+          },
+          "persistence_ms": 98.83980299997575
+        },
+        {
+          "ms": 188.85490000047866,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 36.764,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.3153209999595674,
+            "feature_ms": 0.4319280000117942,
+            "scoring_ms": 0.12810399999807487
+          },
+          "persistence_ms": 35.052683000003526
+        },
+        {
+          "ms": 200.04149999931542,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 175.07,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2750380000406949,
+            "feature_ms": 0.15844199998582553,
+            "scoring_ms": 0.06496399998923152
+          },
+          "persistence_ms": 112.19552099998964
+        },
+        {
+          "ms": 127.5935000003301,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 38.233,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.28867800000398347,
+            "feature_ms": 0.408225000001039,
+            "scoring_ms": 0.12337599997636062
+          },
+          "persistence_ms": 35.710681000011846
+        },
+        {
+          "ms": 126.55500000073516,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 100.042,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.26970700002948433,
+            "feature_ms": 0.36450399994691907,
+            "scoring_ms": 0.1221690000079434
+          },
+          "persistence_ms": 98.2615710000232
+        },
+        {
+          "ms": 113.5180000001128,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 88.368,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.38717199998927754,
+            "feature_ms": 0.6659659999854739,
+            "scoring_ms": 0.1914460000307372
+          },
+          "persistence_ms": 86.03352000000086
+        },
+        {
+          "ms": 214.04050000001007,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 187.344,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2220129999841447,
+            "feature_ms": 0.25569299998551287,
+            "scoring_ms": 0.10055500001726614
+          },
+          "persistence_ms": 185.62135399997715
+        },
+        {
+          "ms": 150.92430000004242,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 35.93,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.5583500000057029,
+            "feature_ms": 0.8600130000218087,
+            "scoring_ms": 0.24358000001711844
+          },
+          "persistence_ms": 33.21581000000151
+        },
+        {
+          "ms": 197.89760000003298,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 120.091,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.2845110000180284,
+            "feature_ms": 0.5605169999967075,
+            "scoring_ms": 0.1308850000327766
+          },
+          "persistence_ms": 118.22928899999852
+        },
+        {
+          "ms": 119.12599999959639,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 33.139,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.238083999988703,
+            "feature_ms": 0.20514499999535474,
+            "scoring_ms": 0.06573899997874832
+          },
+          "persistence_ms": 31.009241000049315
+        },
+        {
+          "ms": 147.9202999998961,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 107.927,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.18837500005020047,
+            "feature_ms": 0.1927969999542256,
+            "scoring_ms": 0.06719300000668227
+          },
+          "persistence_ms": 106.03314399997998
+        },
+        {
+          "ms": 91.4903000002596,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 26.741,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.327263999963634,
+            "feature_ms": 0.5094330000474656,
+            "scoring_ms": 0.1379249999899912
+          },
+          "persistence_ms": 24.557097000013073
+        },
+        {
+          "ms": 210.53260000007867,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 126.459,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.5000450000238743,
+            "feature_ms": 0.48881099996833655,
+            "scoring_ms": 0.1711550000322859
+          },
+          "persistence_ms": 123.80928800001811
+        },
+        {
+          "ms": 111.69690000042465,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 39.134,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.27133200001117075,
+            "feature_ms": 0.40479000000459564,
+            "scoring_ms": 0.12746900000593087
+          },
+          "persistence_ms": 37.69986200001085
+        },
+        {
+          "ms": 143.54509999975562,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 117.991,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.16116699998747208,
+            "feature_ms": 0.1439700000105404,
+            "scoring_ms": 0.05159500000218031
+          },
+          "persistence_ms": 116.49998099994718
+        },
+        {
+          "ms": 67.90490000003047,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 40.976,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.24698999999372973,
+            "feature_ms": 0.38394999995716717,
+            "scoring_ms": 0.12127100001180224
+          },
+          "persistence_ms": 38.95991500002083
+        },
+        {
+          "ms": 178.5807999995086,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 116.026,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.32429200001615754,
+            "feature_ms": 0.5087259999640992,
+            "scoring_ms": 0.12469400002146358
+          },
+          "persistence_ms": 113.14187300001777
+        },
+        {
+          "ms": 58.07269999968412,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 31.678,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.27815999999347696,
+            "feature_ms": 0.3866280000011102,
+            "scoring_ms": 0.12549900003477887
+          },
+          "persistence_ms": 29.797928999983014
+        },
+        {
+          "ms": 285.0124999995387,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 211.399,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.22105499999724998,
+            "feature_ms": 0.18338900002845548,
+            "scoring_ms": 0.055432999999993626
+          },
+          "persistence_ms": 206.38348500000347
+        },
+        {
+          "ms": 128.60939999973198,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 41.216,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.3296989999626021,
+            "feature_ms": 0.4009090000067772,
+            "scoring_ms": 0.12243800000533156
+          },
+          "persistence_ms": 39.20625799997879
+        },
+        {
+          "ms": 271.07169999999314,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 199.577,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.22857300001533076,
+            "feature_ms": 0.2945640000007188,
+            "scoring_ms": 0.09387500000457294
+          },
+          "persistence_ms": 194.39044199998534
+        },
+        {
+          "ms": 157.2146000007706,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 105.179,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.17334500000742992,
+            "feature_ms": 0.224368000033337,
+            "scoring_ms": 0.09654600000885694
+          },
+          "persistence_ms": 102.59872099999257
+        },
+        {
+          "ms": 237.55139999957464,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 199.055,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.16803599999093422,
+            "feature_ms": 0.19090300003199445,
+            "scoring_ms": 0.07040399998459179
+          },
+          "persistence_ms": 123.54823900000156
+        },
+        {
+          "ms": 98.59760000017559,
+          "status": 200,
+          "generation": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+          "strategy": "rule-v1",
+          "fallback_used": false,
+          "api_ms": 27.732,
+          "logging_status": "persisted",
+          "foreground_segments_ms": {
+            "retrieval_ms": 0.368060000027981,
+            "feature_ms": 0.5274609999901259,
+            "scoring_ms": 0.1603989999807709
+          },
+          "persistence_ms": 25.682105999976557
+        }
+      ],
+      "ranking_sample_count": 48,
+      "persistence_sample_count": 48,
+      "segment_p95_ms": {
+        "retrieval_ms": 0.422,
+        "feature_ms": 0.677,
+        "scoring_ms": 0.221
+      },
+      "persistence_p95_ms": 194.39,
+      "api_p95_ms": 199.577,
+      "outside_handler_p95_ms": 114.994,
+      "utilization": {
+        "CPUUtilization": [
+          {
+            "Timestamp": "2026-11-20 22:34:00-05:00",
+            "Average": 30.04611841837565,
+            "Maximum": 47.969581604003906,
+            "Unit": "Percent"
+          }
+        ],
+        "MemoryUtilization": [
+          {
+            "Timestamp": "2026-11-20 22:34:00-05:00",
+            "Average": 21.19140625,
+            "Maximum": 21.19140625,
+            "Unit": "Percent"
+          }
+        ]
+      }
+    }
+  }
+}
