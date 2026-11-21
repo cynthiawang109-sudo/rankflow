@@ -45,7 +45,8 @@ def alb_client(deployment):
     return httpx.Client(base_url=url, verify=tls, trust_env=False, timeout=15), roles
 
 
-def run(reliability_only=False, resume=False, confirm_task_drain=False):
+def run(reliability_only=False, resume=False, confirm_task_drain=False, *, latency_only=False,
+        retry_latency=False):
     deployment_file = WORK / "deployment.json"
     deployment = json.loads(deployment_file.read_bytes())
     cf = AWS.client("cloudformation")
@@ -108,6 +109,11 @@ def run(reliability_only=False, resume=False, confirm_task_drain=False):
             fleet = status()
             assert fleet["release_ready"] and fleet["config_id"] == stable.config_id
             assert fleet["revision"] == restored["checkpoint_revision"]
+        elif retry_latency:
+            fleet = status()
+            assert fleet["release_ready"] and fleet["config_id"] == stable.config_id
+            stable_revision = fleet["revision"]
+            converge(stable_revision, stable.config_id, perf_counter(), "initial stable after rollback")
         elif resume:
             fleet = status()
             assert fleet["release_ready"] and fleet["config_id"] == stable.config_id
@@ -209,9 +215,9 @@ def run(reliability_only=False, resume=False, confirm_task_drain=False):
                 converge(stable_revision, stable.config_id, perf_counter(), "rollback follow-up sampling")
             else:
                 shadow = replace(stable, state="shadowing", shadow_mode="live", shadow_generation_id=fixture)
-                if reliability_only:
+                if reliability_only or retry_latency:
                     prepare(shadow)
-                operation = "stage4-named-shadow-after-preload" if resume else "stage4-named-shadow"
+                operation = "stage4-named-shadow-after-preload" if resume or retry_latency else "stage4-named-shadow"
                 publish(stable_revision, operation, target=shadow)
                 rollback_revision = stable_revision + 1
                 if not reliability_only:
@@ -222,6 +228,11 @@ def run(reliability_only=False, resume=False, confirm_task_drain=False):
                     rollback_revision += 1
                     measure("canary", 4, generation=fixture)
                 publish(rollback_revision, "stage4-named-rollback", rollback=stable.config_id)
+
+        if latency_only or retry_latency:
+            evidence["finished"] = datetime.now(timezone.utc).isoformat()
+            save()
+            return
 
         service = dict(cluster=deployment["Cluster"], serviceName=deployment["Service"])
         tasks = ecs.list_tasks(**service)["taskArns"]
@@ -301,9 +312,12 @@ def run(reliability_only=False, resume=False, confirm_task_drain=False):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     modes = parser.add_mutually_exclusive_group()
+    modes.add_argument("--latency-only", action="store_true")
+    modes.add_argument("--retry-latency", action="store_true")
     modes.add_argument("--reliability-only", action="store_true")
     modes.add_argument("--resume-reliability", action="store_true")
     modes.add_argument("--confirm-task-drain", action="store_true")
     args = parser.parse_args()
     run(args.reliability_only or args.resume_reliability or args.confirm_task_drain,
-        args.resume_reliability, args.confirm_task_drain)
+        args.resume_reliability, args.confirm_task_drain, latency_only=args.latency_only,
+        retry_latency=args.retry_latency)
