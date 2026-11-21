@@ -6,7 +6,7 @@ Acceptance ruling of 2026-11-21.
 ## Functional & Operational Complete
 
 The functional and operational acceptance basis is the Stage 0–4 evidence
-and the closure sprint results below. Owner signature is pending.
+and the closure sprint results below. Signed by the owner on 2026-11-21.
 
 | Basis | Evidence |
 | --- | --- |
@@ -31,9 +31,9 @@ The run finished at `2026-11-21T14:20:33.0447815Z` and exited 0.
 | ---: | ---: | ---: |
 | 58 | 0 | 0 |
 
-**Owner signature (Functional & Operational Complete)** ____________________
+**Owner signature (Functional & Operational Complete)** Cynthia
 
-**Date** ____________________
+**Date** 2026-11-21
 
 ## Performance SLO Compliant — NOT signed.
 
