@@ -1,0 +1,264 @@
+{
+  "frozen_at_utc": "2026-11-21T18:37:51.146979+00:00",
+  "amendment": "2.0",
+  "approval_date": "2026-11-21",
+  "approver": "Cynthia, project owner",
+  "commit": "297e1995c352f9fa144811a5eecaa827c41cdaa1",
+  "spec_sha256": "3a12ef37056e5094fb948bf8773e360f87dc35c128a30ce7a394e5482eb728db",
+  "measurement_commit": "b45393ed923c8694ee884ccba74ee7df89351f4e",
+  "region": "ca-central-1",
+  "stack_id": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/ed8c0830-e5d8-11f1-a68b-0effed0b8887",
+  "image": "711302834638.dkr.ecr.ca-central-1.amazonaws.com/rankflowstage4-images2d38c313-9zipryjrj4hx:stage4-v1",
+  "registry_digest": "sha256:654c8f6f83d3222169b2b82aceb52388e0d4f25f07a627642b623ed334d8a16e",
+  "task_image_digest": "sha256:654c8f6f83d3222169b2b82aceb52388e0d4f25f07a627642b623ed334d8a16e",
+  "bundle_bucket": "rankflowstage4-bundles3fb864e8-xqkmqeoztgr9",
+  "cloudwatch_log_group": "RankFlowStage4-Logs6819BB44-n3DBnOEvAZEI",
+  "ecs": {
+    "cluster": "RankFlowStage4-ClusterEB0386A7-HIPMgQ8RHBAi",
+    "service": "RankFlowStage4-ServiceD69D759B-0yuc0aQcguBd",
+    "task_definition": "arn:aws:ecs:ca-central-1:711302834638:task-definition/RankFlowStage4Task332A2A57:5",
+    "cpu_units": 512,
+    "memory_mib": 2048,
+    "task_count": 2,
+    "tasks": [
+      {
+        "taskArn": "arn:aws:ecs:ca-central-1:711302834638:task/RankFlowStage4-ClusterEB0386A7-HIPMgQ8RHBAi/6944926f3fbd4e1d974e49686299c5e6",
+        "launchType": "FARGATE",
+        "platformVersion": "1.4.0",
+        "availabilityZone": "ca-central-1b"
+      },
+      {
+        "taskArn": "arn:aws:ecs:ca-central-1:711302834638:task/RankFlowStage4-ClusterEB0386A7-HIPMgQ8RHBAi/b908e31ad8884f7ca31a7d73f90a2c34",
+        "launchType": "FARGATE",
+        "platformVersion": "1.4.0",
+        "availabilityZone": "ca-central-1a"
+      }
+    ]
+  },
+  "rds": {
+    "DBInstanceIdentifier": "rankflowstage4-databaseb269d8bb-nzwl1fbqqatm",
+    "EngineVersion": "16.13",
+    "DBInstanceClass": "db.t4g.micro",
+    "DBParameterGroups": [
+      {
+        "DBParameterGroupName": "default.postgres16",
+        "ParameterApplyStatus": "in-sync"
+      }
+    ],
+    "AllocatedStorage": 20,
+    "StorageType": "gp3",
+    "Iops": 3000,
+    "StorageThroughput": 125,
+    "StorageEncrypted": true,
+    "PubliclyAccessible": false,
+    "MultiAZ": false,
+    "BackupRetentionPeriod": 1
+  },
+  "rds_parameters": [
+    {
+      "ParameterName": "fsync",
+      "ParameterValue": "1",
+      "Description": "Forces synchronization of updates to disk.",
+      "Source": "system",
+      "ApplyType": "dynamic",
+      "DataType": "boolean",
+      "AllowedValues": "0,1",
+      "IsModifiable": false,
+      "ApplyMethod": "pending-reboot"
+    },
+    {
+      "ParameterName": "full_page_writes",
+      "ParameterValue": "1",
+      "Description": "Writes full pages to WAL when first modified after a checkpoint.",
+      "Source": "system",
+      "ApplyType": "dynamic",
+      "DataType": "boolean",
+      "AllowedValues": "0,1",
+      "IsModifiable": false,
+      "ApplyMethod": "pending-reboot"
+    },
+    {
+      "ParameterName": "max_connections",
+      "ParameterValue": "LEAST({DBInstanceClassMemory/9531392},5000)",
+      "Description": "Sets the maximum number of concurrent connections.",
+      "Source": "system",
+      "ApplyType": "static",
+      "DataType": "integer",
+      "AllowedValues": "6-262143",
+      "IsModifiable": true,
+      "ApplyMethod": "pending-reboot"
+    },
+    {
+      "ParameterName": "shared_buffers",
+      "ParameterValue": "{DBInstanceClassMemory/32768}",
+      "Description": "(8kB) Sets the number of shared memory buffers used by the server.",
+      "Source": "system",
+      "ApplyType": "static",
+      "DataType": "integer",
+      "AllowedValues": "16-1073741823",
+      "IsModifiable": true,
+      "ApplyMethod": "pending-reboot"
+    },
+    {
+      "ParameterName": "synchronous_commit",
+      "ParameterValue": "on",
+      "Description": "Sets the current transactions synchronization level.",
+      "Source": "system",
+      "ApplyType": "dynamic",
+      "DataType": "string",
+      "AllowedValues": "local,on,off",
+      "IsModifiable": true,
+      "ApplyMethod": "pending-reboot"
+    }
+  ],
+  "database_transport": "sslmode=require",
+  "decision_pool_per_task": {
+    "min_size": 4,
+    "max_size": 12,
+    "checkout_timeout_s": 2,
+    "connect_timeout_s": 2,
+    "max_waiting": 40,
+    "statement_timeout_ms": 2000,
+    "lock_timeout_ms": 1500
+  },
+  "alb": {
+    "dns": "RankFl-Alb16-FjoHdZtg4frh-206879057.ca-central-1.elb.amazonaws.com",
+    "scheme": "internet-facing",
+    "listener": {
+      "ListenerArn": "arn:aws:elasticloadbalancing:ca-central-1:711302834638:listener/app/RankFl-Alb16-FjoHdZtg4frh/1f580fdadc9fe419/fa8da8b91e6f081d",
+      "LoadBalancerArn": "arn:aws:elasticloadbalancing:ca-central-1:711302834638:loadbalancer/app/RankFl-Alb16-FjoHdZtg4frh/1f580fdadc9fe419",
+      "Port": 443,
+      "Protocol": "HTTPS",
+      "Certificates": [
+        {
+          "CertificateArn": "arn:aws:acm:ca-central-1:711302834638:certificate/34213805-d349-4637-9144-6ad8b79f7efe"
+        }
+      ],
+      "SslPolicy": "ELBSecurityPolicy-TLS13-1-2-Res-2021-06",
+      "DefaultActions": [
+        {
+          "Type": "forward",
+          "TargetGroupArn": "arn:aws:elasticloadbalancing:ca-central-1:711302834638:targetgroup/RankFl-AlbHt-V27NW5JYIBBR/ba04c1895d40321c",
+          "ForwardConfig": {
+            "TargetGroups": [
+              {
+                "TargetGroupArn": "arn:aws:elasticloadbalancing:ca-central-1:711302834638:targetgroup/RankFl-AlbHt-V27NW5JYIBBR/ba04c1895d40321c",
+                "Weight": 1
+              }
+            ],
+            "TargetGroupStickinessConfig": {
+              "Enabled": false
+            }
+          }
+        }
+      ],
+      "MutualAuthentication": {
+        "Mode": "off"
+      }
+    },
+    "target_group": "arn:aws:elasticloadbalancing:ca-central-1:711302834638:targetgroup/RankFl-AlbHt-V27NW5JYIBBR/ba04c1895d40321c",
+    "targets": [
+      {
+        "Target": {
+          "Id": "10.0.52.44",
+          "Port": 8000,
+          "AvailabilityZone": "ca-central-1a"
+        },
+        "HealthCheckPort": "8000",
+        "TargetHealth": {
+          "State": "healthy"
+        },
+        "AdministrativeOverride": {
+          "State": "no_override",
+          "Reason": "AdministrativeOverride.NoOverride",
+          "Description": "No override is currently active on target"
+        }
+      },
+      {
+        "Target": {
+          "Id": "10.0.86.207",
+          "Port": 8000,
+          "AvailabilityZone": "ca-central-1b"
+        },
+        "HealthCheckPort": "8000",
+        "TargetHealth": {
+          "State": "healthy"
+        },
+        "AdministrativeOverride": {
+          "State": "no_override",
+          "Reason": "AdministrativeOverride.NoOverride",
+          "Description": "No override is currently active on target"
+        }
+      }
+    ],
+    "ingress": "Reference Windows client's public IPv4 /32",
+    "certificate": {
+      "CertificateArn": "arn:aws:acm:ca-central-1:711302834638:certificate/34213805-d349-4637-9144-6ad8b79f7efe",
+      "Type": "IMPORTED",
+      "SubjectAlternativeNames": [
+        "RankFl-Alb16-FjoHdZtg4frh-206879057.ca-central-1.elb.amazonaws.com"
+      ],
+      "NotBefore": "2026-11-21 13:34:21-05:00",
+      "NotAfter": "2026-11-22 13:34:21-05:00"
+    }
+  },
+  "dataset": {
+    "stable": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+    "fixture": "gen-00ec1133225940fe9144b65e66cceed2fe7c021db1a3d5356740c588dc62c02b",
+    "source": "otto_offline",
+    "source_sha256": "06716132f1ab1d500f1515ba2c16187d7b0e98066ca66d33b95f022f8c3a340d",
+    "retrieval_snapshot_id": "cd5b998f1172df6d53ce28560fe1d9a79ca4086759c8830b3a0246187ba357a9",
+    "file_checksums": {
+      "covisitation.jsonl": "2505618567cf2d8d5c9c73c1b44343efa25e005f529655145e6d15dc6ca088a0",
+      "data_manifest.json": "b4ce68b9761b403f895acf3c77d7748a8634034abcf12fa701e5d44a05a86b00",
+      "evaluation_epoch.json": "78bfc10ac838f5d106acc277bb2b7c084def9fe823cb4b16d6162ac953fe89a3",
+      "history.jsonl": "277ce29ac2cd8d93d3408237506ee6d42ee9b7f6b2ef19440e999f4fba69557b",
+      "lgbm-v1.txt": "8d06f0f97a3485540addeae9d6604b3fae3c948c2de2862d08d7de79e7cebd6d",
+      "public_prefixes.json": "f542b6e0711b32512627689277a0573042bf2e6f6af573906a6c96bb6c0d7d2c",
+      "strategy_report.json": "8d1de5a1418df26b393d6265a7370c4f5b5d4fd638767ba5bea1ef877cbb2517"
+    },
+    "w2_dev_prefix_count": 12
+  },
+  "client": {
+    "reference": "Cynthia's Windows machine, same host as the performance track",
+    "os": "Windows-10-10.0.26300-SP0",
+    "cpu": "Intel Core i7-10510U",
+    "processor_identifier": "Intel64 Family 6 Model 142 Stepping 12, GenuineIntel",
+    "logical_processors": 8,
+    "python": "3.11.18",
+    "httpx": "0.28.1",
+    "connection_policy": "One httpx.Client, trust_env=False, trusted ALB certificate, readiness requests ask to close connections",
+    "request_timeout_s": 15
+  },
+  "protocol": {
+    "entry_point": "scripts.stage4_probes.run(retry_latency=True)",
+    "mode_order": [
+      "stable",
+      "peak",
+      "shadow",
+      "canary"
+    ],
+    "requests_per_mode": 48,
+    "concurrency": {
+      "stable": 4,
+      "peak": 12,
+      "shadow": 4,
+      "canary": 4
+    },
+    "duration": "Fixed request count; elapsed batch timestamps recorded",
+    "request_mix": "Cycle ordered W2-dev prefixes from index 0 for each mode; stable and peak use stable, shadow scores the preloaded fixture, canary routes 100% to the fixture",
+    "warmup": "Stage 4 readiness/convergence sampling; no timed requests discarded or extra recommendation warm-up",
+    "percentiles": "Nearest rank, ceil(p*n), rounded to three decimals for display; unrounded p95 compared",
+    "exceptions": "Count all HTTP and transport errors, timeout subset, reported fallbacks and unknown fallback status. Retain every attempt and outlier. Require 48 usable aligned samples for a verified layer/mode. Use the aligned structured event types for Handler and Persistence.",
+    "p95_threshold_ms": {
+      "client": {
+        "stable": 250,
+        "peak": 400,
+        "shadow": 250,
+        "canary": 250
+      },
+      "handler": 100,
+      "persistence": 50
+    }
+  }
+}
