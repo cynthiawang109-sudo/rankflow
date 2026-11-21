@@ -32,14 +32,14 @@ def transaction(operation):
 
                 def execute(self, statement, *args):
                     result = connection.execute(statement, *args)
-                    if statement.startswith(checkpoint):
+                    if statement.lstrip().startswith(checkpoint):
                         print("transaction_open", flush=True)
                         Event().wait()
                     return result
 
             return InterruptedTransaction()
 
-    checkpoint = {"persist": "INSERT INTO decisions", "drain": "INSERT INTO delivered_events"}[operation]
+    checkpoint = {"persist": "WITH impression AS", "drain": "INSERT INTO delivered_events"}[operation]
     store = InterruptedStore(os.environ["RANKFLOW_FAULT_DATABASE_URL"])
     if operation == "persist":
         store.persist({"request_id": "interrupted", "items": [], "serving_generation": "stable"})

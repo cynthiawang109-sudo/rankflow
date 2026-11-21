@@ -261,6 +261,8 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
             return False
 
         if store:
+            if store.decision_pool:
+                store.decision_pool.open()
             try:
                 await run_in_threadpool(store.initialize)
             except Exception:
@@ -308,6 +310,8 @@ def create_app(generation, store=None, session_key=None, deadline_ms=20, traffic
                 await traffic_worker
             if shadow_executor:
                 await run_in_threadpool(shadow_executor.shutdown)
+            if store and store.decision_pool:
+                await run_in_threadpool(store.decision_pool.close)
             for scorer in (primary_scorer, shadow_scorer, comparison_scorer):
                 await run_in_threadpool(scorer.close)
 
@@ -527,7 +531,7 @@ def from_environment():
 
     store = None
     if dsn := os.environ.get("RANKFLOW_DATABASE_URL"):
-        store = PostgresStore(dsn)
+        store = PostgresStore(dsn, pool_decisions=True)
     key = os.environ.get("RANKFLOW_SESSION_KEY")
     traffic = None
     cache = Path(os.getenv("RANKFLOW_ARTIFACT_CACHE", str(path.parent / ".cache")))

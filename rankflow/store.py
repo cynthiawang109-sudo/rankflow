@@ -7,6 +7,7 @@ import psycopg
 from psycopg.conninfo import conninfo_to_dict
 from psycopg.rows import dict_row
 from psycopg.types.json import Jsonb
+from psycopg_pool import ConnectionPool
 
 from .operations import emit
 from .security import AUDIT_SCHEMA
@@ -51,12 +52,17 @@ CREATE TABLE IF NOT EXISTS feedback_events (
 
 
 class PostgresStore:
-    def __init__(self, dsn, ack_window=ACK_WINDOW, attribution_window=ATTRIBUTION_WINDOW):
+    def __init__(self, dsn, ack_window=ACK_WINDOW, attribution_window=ATTRIBUTION_WINDOW,
+                 *, pool_decisions=False):
         self.dsn = dsn
         options = conninfo_to_dict(dsn).get("options", "")
         self.options = f"{options} -c statement_timeout=2000 -c lock_timeout=1500"
         self.ack_window = ack_window
         self.attribution_window = attribution_window
+        self.decision_pool = ConnectionPool(
+            self.dsn, kwargs={"connect_timeout": 2, "row_factory": dict_row, "options": self.options},
+            min_size=4, max_size=12, timeout=2, max_waiting=40, open=False,
+        ) if pool_decisions else None
 
     def connect(self):
         return psycopg.connect(self.dsn, connect_timeout=2, row_factory=dict_row,
@@ -91,12 +97,21 @@ class PostgresStore:
         event_id = str(uuid4())
         payload = dict(decision, impression_id=impression_id, logging_status="persisted")
         event = {"event_id": event_id, "type": "recommendation_generated", **payload}
-        with self.connect() as conn:
-            conn.execute("INSERT INTO impressions(id, generation, items) VALUES (%s, %s, %s)",
-                         (impression_id, decision["serving_generation"], Jsonb(decision["items"])))
-            conn.execute("INSERT INTO decisions VALUES (%s, %s)", (impression_id, Jsonb(payload)))
-            conn.execute("INSERT INTO outbox(event_id, impression_id, payload) VALUES (%s, %s, %s)",
-                         (event_id, impression_id, Jsonb(event)))
+        transaction = self.decision_pool.connection() if self.decision_pool else self.connect()
+        with transaction as conn:
+            conn.execute("""
+                WITH impression AS (
+                    INSERT INTO impressions(id, generation, items) VALUES (%s, %s, %s)
+                    RETURNING id
+                ), saved_decision AS (
+                    INSERT INTO decisions(impression_id, payload)
+                    SELECT id, %s FROM impression
+                    RETURNING impression_id
+                )
+                INSERT INTO outbox(event_id, impression_id, payload)
+                SELECT %s, impression_id, %s FROM saved_decision
+                """, (impression_id, decision["serving_generation"], Jsonb(decision["items"]),
+                      Jsonb(payload), event_id, Jsonb(event)))
         emit("decision_committed", request_id=decision.get("request_id"), impression_id=impression_id,
              event_id=event_id)
         return impression_id

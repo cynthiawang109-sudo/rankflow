@@ -163,6 +163,68 @@ class PostgresGateTests(unittest.TestCase):
         with cls.admin.connect() as conn:
             conn.execute(sql.SQL("DROP SCHEMA {} CASCADE").format(cls.schema))
 
+    def pooled_store(self):
+        from psycopg.conninfo import make_conninfo
+        from psycopg_pool import ConnectionPool
+
+        from rankflow.store import PostgresStore
+
+        schema = self.schema.as_string()
+        store = PostgresStore(make_conninfo(self.admin.dsn, options=f"-c search_path={schema}"),
+                              pool_decisions=True)
+        store.decision_pool = ConnectionPool(
+            store.dsn, kwargs=store.decision_pool.kwargs,
+            min_size=1, max_size=1, timeout=0.25, open=False,
+        )
+        return store
+
+    def test_exhausted_decision_pool_degrades_then_recovers(self):
+        store = self.pooled_store()
+        with TestClient(create_app(GENERATION, store)) as client:
+            with store.decision_pool.connection(timeout=5):
+                result = client.post("/v1/recommend", json=payload([event(1)])).json()
+                self.assertEqual(result["logging_status"], "degraded")
+                self.assertIsNone(result["impression_id"])
+            recovered = client.post("/v1/recommend", json=payload([event(1)])).json()
+            self.assertEqual(recovered["logging_status"], "persisted")
+            self.assertIsNotNone(recovered["impression_id"])
+
+    def test_dead_decision_connection_rolls_back_and_is_replaced(self):
+        from unittest.mock import patch
+
+        store = self.pooled_store()
+        pool = store.decision_pool
+        original_connection = pool.connection
+
+        from contextlib import contextmanager
+
+        @contextmanager
+        def disconnect_before_commit():
+            with original_connection(timeout=5) as conn:
+                yield conn
+                with self.store.connect() as other:
+                    other.execute("SELECT pg_terminate_backend(%s, 5000)", (conn.info.backend_pid,))
+
+        def counts():
+            with self.store.connect() as conn:
+                return conn.execute("""
+                    SELECT (SELECT count(*) FROM impressions) AS impressions,
+                           (SELECT count(*) FROM decisions) AS decisions,
+                           (SELECT count(*) FROM outbox) AS outbox
+                    """).fetchone()
+
+        with TestClient(create_app(GENERATION, store)) as client:
+            before = counts()
+            with patch.object(pool, "connection", disconnect_before_commit):
+                result = client.post("/v1/recommend", json=payload([event(1)])).json()
+            self.assertEqual(result["logging_status"], "degraded")
+            self.assertIsNone(result["impression_id"])
+            self.assertEqual(counts(), before)
+            pool.wait(timeout=5)
+            recovered = client.post("/v1/recommend", json=payload([event(1)])).json()
+            self.assertEqual(recovered["logging_status"], "persisted")
+            self.assertEqual(counts(), {table: count + 1 for table, count in before.items()})
+
     def test_disconnect_after_commit_t05(self):
         app = create_app(GENERATION, self.store)
         body = json.dumps(payload([event(1)])).encode()
