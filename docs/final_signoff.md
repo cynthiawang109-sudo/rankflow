@@ -47,3 +47,7 @@ this exception. [Stage 4 latency verdict](stage4_latency_verdict.md)
 `rule-v1` stable. The Stage 2 rejection of `lgbm-v1` stands.
 Acceptance of the release system is not a model promotion.
 [Signed Stage 2 release decision](stage2_release_decision.md)
+
+## Addendum — §9.3 amendment v2 performance decision
+
+The formal amendment v2 benchmark recorded **Not Compliant**. This later decision sits alongside the original Performance Exception. [Benchmark report](layered_latency_benchmark_report.md) · [Performance decision](performance_decision.md)

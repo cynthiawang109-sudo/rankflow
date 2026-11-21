@@ -1,0 +1,80 @@
+{
+  "verified_at_utc": "2026-11-21T18:45:20.378549+00:00",
+  "stack_id": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/ed8c0830-e5d8-11f1-a68b-0effed0b8887",
+  "stack_status": "DELETE_COMPLETE",
+  "stack_resource_status_counts": {
+    "DELETE_COMPLETE": 48
+  },
+  "s3_versions_removed": 16,
+  "service_checks": {
+    "s3_bucket": {
+      "missing": true,
+      "code": "404"
+    },
+    "rds_instance": {
+      "missing": true,
+      "code": "DBInstanceNotFound"
+    },
+    "ecr_repository": {
+      "missing": true,
+      "code": "RepositoryNotFoundException"
+    },
+    "load_balancer": {
+      "missing": true,
+      "code": "LoadBalancerNotFound"
+    },
+    "log_group": {
+      "missing": true
+    },
+    "ecs_cluster": {
+      "missing": true
+    },
+    "target_group": {
+      "missing": true,
+      "code": "TargetGroupNotFound"
+    }
+  },
+  "rds_snapshots_before": [
+    "rds:rankflowstage4-databaseb269d8bb-nzwl1fbqqatm-2026-11-21-18-30"
+  ],
+  "rds_snapshots_remaining": [],
+  "rds_automated_backups_remaining": [],
+  "ecs_cluster": [
+    {
+      "status": "INACTIVE",
+      "running": 0,
+      "pending": 0
+    }
+  ],
+  "ecs_cluster_failures": [],
+  "ecs_service": [
+    {
+      "status": "INACTIVE",
+      "desiredCount": 0,
+      "runningCount": 0,
+      "pendingCount": 0
+    }
+  ],
+  "ecs_service_failures": [],
+  "task_definition_status": "INACTIVE",
+  "tasks_stopped": [
+    {
+      "taskArn": "arn:aws:ecs:ca-central-1:711302834638:task/RankFlowStage4-ClusterEB0386A7-HIPMgQ8RHBAi/6944926f3fbd4e1d974e49686299c5e6",
+      "createdAt": "2026-11-21 13:36:31.546000-05:00",
+      "startedAt": "2026-11-21 13:37:10.505000-05:00",
+      "stoppedAt": "2026-11-21 13:40:40.664000-05:00",
+      "cpu": "512",
+      "memory": "2048"
+    },
+    {
+      "taskArn": "arn:aws:ecs:ca-central-1:711302834638:task/RankFlowStage4-ClusterEB0386A7-HIPMgQ8RHBAi/b908e31ad8884f7ca31a7d73f90a2c34",
+      "createdAt": "2026-11-21 13:35:51.555000-05:00",
+      "startedAt": "2026-11-21 13:36:24.012000-05:00",
+      "stoppedAt": "2026-11-21 13:40:39.805000-05:00",
+      "cpu": "512",
+      "memory": "2048"
+    }
+  ],
+  "certificate_remaining": false,
+  "verified_empty": true
+}
