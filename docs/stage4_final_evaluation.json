@@ -1,0 +1,182 @@
+{
+  "audit": {
+    "dataset": "W3",
+    "accessed_by": "codex-stage4",
+    "purpose": "Final independent report",
+    "release_candidate": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+    "epoch_id": "stage0-initial",
+    "dataset_manifest_sha256": "b4ce68b9761b403f895acf3c77d7748a8634034abcf12fa701e5d44a05a86b00",
+    "query_manifest_sha256": "0101abfbc038bf4c36a1dc7e59a7307c77cc79311d75a15209537cff445fb670",
+    "accessed_at": "2026-11-21T03:24:47.240164+00:00"
+  },
+  "evaluation": {
+    "no_label": 25008,
+    "slices": {
+      "overall": {
+        "sessions": 27925,
+        "labeled": 121459,
+        "retrieved": 25549,
+        "candidate_coverage": 0.21035081797149655,
+        "metrics": {
+          "rule-v1": {
+            "HitRate@20": 0.1854123613729736,
+            "MRR@20": 0.12877892561025167,
+            "NDCG@20": 0.14194350073962342
+          },
+          "lgbm-v1": {
+            "HitRate@20": 0.18903498299837806,
+            "MRR@20": 0.13653539648171636,
+            "NDCG@20": 0.14876718606910574
+          }
+        }
+      },
+      "prefix/cold": {
+        "sessions": 14373,
+        "labeled": 38108,
+        "retrieved": 185,
+        "candidate_coverage": 0.004854623701060145,
+        "metrics": {
+          "rule-v1": {
+            "HitRate@20": 0.0012595780413561456,
+            "MRR@20": 0.000345437252442794,
+            "NDCG@20": 0.000536195841538847
+          },
+          "lgbm-v1": {
+            "HitRate@20": 0.0011808544137713866,
+            "MRR@20": 0.0005913779469235431,
+            "NDCG@20": 0.000715835149939584
+          }
+        }
+      },
+      "prefix/warm": {
+        "sessions": 18523,
+        "labeled": 83351,
+        "retrieved": 25364,
+        "candidate_coverage": 0.30430348766061593,
+        "metrics": {
+          "rule-v1": {
+            "HitRate@20": 0.26960684334921,
+            "MRR@20": 0.1874985975318768,
+            "NDCG@20": 0.20659478956706653
+          },
+          "lgbm-v1": {
+            "HitRate@20": 0.2749217165960816,
+            "MRR@20": 0.19868887584397824,
+            "NDCG@20": 0.21645612658364768
+          }
+        }
+      },
+      "session_length/21_to_100": {
+        "sessions": 2260,
+        "labeled": 22592,
+        "retrieved": 4416,
+        "candidate_coverage": 0.1954674220963173,
+        "metrics": {
+          "rule-v1": {
+            "HitRate@20": 0.1657666430594901,
+            "MRR@20": 0.10374920839119954,
+            "NDCG@20": 0.11805188469739741
+          },
+          "lgbm-v1": {
+            "HitRate@20": 0.1700601983002833,
+            "MRR@20": 0.11169371811539142,
+            "NDCG@20": 0.1251610081484688
+          }
+        }
+      },
+      "session_length/over_100": {
+        "sessions": 95,
+        "labeled": 950,
+        "retrieved": 186,
+        "candidate_coverage": 0.1957894736842105,
+        "metrics": {
+          "rule-v1": {
+            "HitRate@20": 0.16105263157894736,
+            "MRR@20": 0.09463901423201569,
+            "NDCG@20": 0.10985463952243756
+          },
+          "lgbm-v1": {
+            "HitRate@20": 0.15789473684210525,
+            "MRR@20": 0.10012913537587649,
+            "NDCG@20": 0.11346531704595447
+          }
+        }
+      },
+      "session_length/up_to_20": {
+        "sessions": 25570,
+        "labeled": 97917,
+        "retrieved": 20947,
+        "candidate_coverage": 0.2139260802516417,
+        "metrics": {
+          "rule-v1": {
+            "HitRate@20": 0.1901814802332588,
+            "MRR@20": 0.13488516137341927,
+            "NDCG@20": 0.14776724746166803
+          },
+          "lgbm-v1": {
+            "HitRate@20": 0.19371508522524178,
+            "MRR@20": 0.14262023512773792,
+            "NDCG@20": 0.1545562476943115
+          }
+        }
+      },
+      "target_popularity/head": {
+        "sessions": 1381,
+        "labeled": 2444,
+        "retrieved": 1989,
+        "candidate_coverage": 0.8138297872340425,
+        "metrics": {
+          "rule-v1": {
+            "HitRate@20": 0.6788052373158756,
+            "MRR@20": 0.4290679793465258,
+            "NDCG@20": 0.4877440556797151
+          },
+          "lgbm-v1": {
+            "HitRate@20": 0.6612111292962357,
+            "MRR@20": 0.4386644111076197,
+            "NDCG@20": 0.4903439389055887
+          }
+        }
+      },
+      "target_popularity/tail": {
+        "sessions": 17589,
+        "labeled": 51865,
+        "retrieved": 23560,
+        "candidate_coverage": 0.45425624216716476,
+        "metrics": {
+          "rule-v1": {
+            "HitRate@20": 0.40221729490022173,
+            "MRR@20": 0.28135963335915604,
+            "NDCG@20": 0.30942387321416875
+          },
+          "lgbm-v1": {
+            "HitRate@20": 0.411529933481153,
+            "MRR@20": 0.29907176131352037,
+            "NDCG@20": 0.32528126995242335
+          }
+        }
+      },
+      "target_popularity/unseen": {
+        "sessions": 20628,
+        "labeled": 67150,
+        "retrieved": 0,
+        "candidate_coverage": 0.0,
+        "metrics": {
+          "rule-v1": {
+            "HitRate@20": 0.0,
+            "MRR@20": 0.0,
+            "NDCG@20": 0.0
+          },
+          "lgbm-v1": {
+            "HitRate@20": 0.0,
+            "MRR@20": 0.0,
+            "NDCG@20": 0.0
+          }
+        }
+      }
+    }
+  },
+  "w2_gate_decision": "466d0bb2fb3075a22266ed42a0fb9bff4887a411130621db9c7d35d503a9d684",
+  "training_run": "156bb1b48bf3aa4c1d8de6b935a25aa323bc0f5c10a294a69853077f41a94b15",
+  "label_policy": "nextclick-v1"
+}

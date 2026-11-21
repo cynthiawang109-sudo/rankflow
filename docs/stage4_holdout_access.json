@@ -1,0 +1,10 @@
+{
+  "dataset": "W3",
+  "accessed_by": "codex-stage4",
+  "purpose": "Final independent report",
+  "release_candidate": "gen-826a2cf8b370f7c6fb55c22cf299279c034298e744dc21585c0dca1b7c6f0c65",
+  "epoch_id": "stage0-initial",
+  "dataset_manifest_sha256": "b4ce68b9761b403f895acf3c77d7748a8634034abcf12fa701e5d44a05a86b00",
+  "query_manifest_sha256": "0101abfbc038bf4c36a1dc7e59a7307c77cc79311d75a15209537cff445fb670",
+  "accessed_at": "2026-11-21T03:24:47.240164+00:00"
+}
