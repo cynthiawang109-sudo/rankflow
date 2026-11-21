@@ -67,3 +67,17 @@ The original W3 opening and report remain the Stage 4 final evaluation.
 
 **SPEC section 9.3 missed in every measured mode. PostgreSQL persistence
 dominated in-handler latency.** [Reference latency verdict](stage4_latency_verdict.md)
+
+## Closure sprint addendum
+
+The local closure sprint completed the three outstanding coverage and
+reproducibility items. [T07 isolated replay](closure_t07_evidence.md)
+verified stable persistence during incompatible-bundle rejection.
+The [section 14 demo](closure_drift_evidence.md) captured normal monitoring,
+a signed Console alert and recovery. The [artifact manifest](artifact_manifest.md)
+and [independent replay](closure_replay_evidence.md) record the frozen
+artifact identities and exact W2-dev agreement.
+
+The [final sign-off record](final_signoff.md) records the PostgreSQL test
+counts, the functional and operational conclusion for owner signature,
+and the separate unsigned Performance Exception.
