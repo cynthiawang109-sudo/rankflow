@@ -1,0 +1,2399 @@
+{
+  "stack_id": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+  "inventory_before_delete": [
+    {
+      "LogicalResourceId": "ADMINBEARER34438A44",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:ADMINBEARER34438A44-xBI8m720dxOS-FISTHY",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "LastUpdatedTimestamp": "2026-11-21 16:08:33.488000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "Alb16C2F182",
+      "PhysicalResourceId": "arn:aws:elasticloadbalancing:ca-central-1:711302834638:loadbalancer/app/RankFl-Alb16-u4huqQlOhd9m/ce93ecc74b49014e",
+      "ResourceType": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+      "LastUpdatedTimestamp": "2026-11-21 16:01:41.036000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "AlbHttpsApiGroup93277757",
+      "PhysicalResourceId": "arn:aws:elasticloadbalancing:ca-central-1:711302834638:targetgroup/RankFl-AlbHt-VSBL0LRPK8IZ/bfac5ec576a41500",
+      "ResourceType": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "LastUpdatedTimestamp": "2026-11-21 16:08:46.701000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "AlbHttpsB7CA700A",
+      "PhysicalResourceId": "arn:aws:elasticloadbalancing:ca-central-1:711302834638:listener/app/RankFl-Alb16-u4huqQlOhd9m/ce93ecc74b49014e/498f9bc8c20ac1fb",
+      "ResourceType": "AWS::ElasticLoadBalancingV2::Listener",
+      "LastUpdatedTimestamp": "2026-11-21 16:08:48.875000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "AlbSecurityGroup580F65A6",
+      "PhysicalResourceId": "sg-0ee7ded564b27a9c3",
+      "ResourceType": "AWS::EC2::SecurityGroup",
+      "LastUpdatedTimestamp": "2026-11-21 16:08:31.991000+00:00",
+      "ResourceStatus": "UPDATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "AlbSecurityGrouptoRankFlowStage4ServiceSecurityGroup0BBD77A9800057E0563B",
+      "PhysicalResourceId": "sgr-03d349d35b8f1380a",
+      "ResourceType": "AWS::EC2::SecurityGroupEgress",
+      "LastUpdatedTimestamp": "2026-11-21 16:09:15.335000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "Bundles3FB864E8",
+      "PhysicalResourceId": "rankflowstage4-bundles3fb864e8-3wa1ng3h5hms",
+      "ResourceType": "AWS::S3::Bucket",
+      "LastUpdatedTimestamp": "2026-11-21 15:59:53.642000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "BundlesPolicy7291E181",
+      "PhysicalResourceId": "rankflowstage4-bundles3fb864e8-3wa1ng3h5hms",
+      "ResourceType": "AWS::S3::BucketPolicy",
+      "LastUpdatedTimestamp": "2026-11-21 15:59:55.986000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "CDKMetadata",
+      "PhysicalResourceId": "8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "ResourceType": "AWS::CDK::Metadata",
+      "LastUpdatedTimestamp": "2026-11-21 16:08:31.040000+00:00",
+      "ResourceStatus": "UPDATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "ClusterEB0386A7",
+      "PhysicalResourceId": "RankFlowStage4-ClusterEB0386A7-15INAFqTcz3h",
+      "ResourceType": "AWS::ECS::Cluster",
+      "LastUpdatedTimestamp": "2026-11-21 15:59:43.381000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "DatabaseB269D8BB",
+      "PhysicalResourceId": "rankflowstage4-databaseb269d8bb-oae8dmclrxwy",
+      "ResourceType": "AWS::RDS::DBInstance",
+      "LastUpdatedTimestamp": "2026-11-21 16:07:11.075000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "DatabaseSecretAttachmentE5D1B020",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:RankFlowStage4DatabaseSecre-hxT8fMATersG-VeKbv2",
+      "ResourceType": "AWS::SecretsManager::SecretTargetAttachment",
+      "LastUpdatedTimestamp": "2026-11-21 16:07:14.886000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "DatabaseSecurityGroup5C91FDCB",
+      "PhysicalResourceId": "sg-0a51878258b3fac8e",
+      "ResourceType": "AWS::EC2::SecurityGroup",
+      "LastUpdatedTimestamp": "2026-11-21 16:00:01.292000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "DatabaseSecurityGroupfromRankFlowStage4ServiceSecurityGroup0BBD77A9IndirectPortC389A1B4",
+      "PhysicalResourceId": "sgr-0c23438d09631915d",
+      "ResourceType": "AWS::EC2::SecurityGroupIngress",
+      "LastUpdatedTimestamp": "2026-11-21 16:09:15.560000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "DatabaseSubnetGroup7D60F180",
+      "PhysicalResourceId": "rankflowstage4-databasesubnetgroup7d60f180-rtjh3e59u4y9",
+      "ResourceType": "AWS::RDS::DBSubnetGroup",
+      "LastUpdatedTimestamp": "2026-11-21 16:00:00.354000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "Images2D38C313",
+      "PhysicalResourceId": "rankflowstage4-images2d38c313-u7cfentuubld",
+      "ResourceType": "AWS::ECR::Repository",
+      "LastUpdatedTimestamp": "2026-11-21 15:59:40.451000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "Logs6819BB44",
+      "PhysicalResourceId": "RankFlowStage4-Logs6819BB44-tA0kfoMmdhoD",
+      "ResourceType": "AWS::Logs::LogGroup",
+      "LastUpdatedTimestamp": "2026-11-21 15:59:48.540000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "OPERATORBEAREREA467249",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:OPERATORBEAREREA467249-9v0iA4lpkEr2-hphmxP",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "LastUpdatedTimestamp": "2026-11-21 16:08:33.537000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "RELEASESIGNINGKEYD9FF5B3A",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:RELEASESIGNINGKEYD9FF5B3A-v7FnCihU3KOc-IrtFUQ",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "LastUpdatedTimestamp": "2026-11-21 16:08:33.575000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "ROUTINGKEYCF684394",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:ROUTINGKEYCF684394-11zGeGn5aw1d-4hoNML",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "LastUpdatedTimestamp": "2026-11-21 16:08:33.638000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "RankFlowStage4DatabaseSecret11AE83253fdaad7efa858a3daf9490cf0a702aeb",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:RankFlowStage4DatabaseSecre-hxT8fMATersG-VeKbv2",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "LastUpdatedTimestamp": "2026-11-21 15:59:42.319000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "SESSIONKEY646954D8",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:SESSIONKEY646954D8-9pRnzLxx95B7-iIYrAY",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "LastUpdatedTimestamp": "2026-11-21 16:08:33.476000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "ServiceD69D759B",
+      "PhysicalResourceId": "arn:aws:ecs:ca-central-1:711302834638:service/RankFlowStage4-ClusterEB0386A7-15INAFqTcz3h/RankFlowStage4-ServiceD69D759B-bu5r5qTpJgOu",
+      "ResourceType": "AWS::ECS::Service",
+      "LastUpdatedTimestamp": "2026-11-21 16:11:17.525000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "ServiceSecurityGroupC96ED6A7",
+      "PhysicalResourceId": "sg-01db0b568fd89d18f",
+      "ResourceType": "AWS::EC2::SecurityGroup",
+      "LastUpdatedTimestamp": "2026-11-21 16:09:13.390000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "ServiceSecurityGroupfromRankFlowStage4AlbSecurityGroup05B956DB8000E56E98B6",
+      "PhysicalResourceId": "sgr-0850a4d6c7647ab65",
+      "ResourceType": "AWS::EC2::SecurityGroupIngress",
+      "LastUpdatedTimestamp": "2026-11-21 16:09:15.412000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "Task79114B6B",
+      "PhysicalResourceId": "arn:aws:ecs:ca-central-1:711302834638:task-definition/RankFlowStage4Task332A2A57:4",
+      "ResourceType": "AWS::ECS::TaskDefinition",
+      "LastUpdatedTimestamp": "2026-11-21 16:08:50.115000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "TaskExecutionRoleDefaultPolicy72339918",
+      "PhysicalResourceId": "RankF-TaskE-NukTZzLd68xt",
+      "ResourceType": "AWS::IAM::Policy",
+      "LastUpdatedTimestamp": "2026-11-21 16:09:03.963000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "TaskExecutionRoleEF964934",
+      "PhysicalResourceId": "RankFlowStage4-TaskExecutionRoleEF964934-30RI5hltTXId",
+      "ResourceType": "AWS::IAM::Role",
+      "LastUpdatedTimestamp": "2026-11-21 16:08:47.105000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "TaskTaskRoleDefaultPolicyC02AED32",
+      "PhysicalResourceId": "RankF-TaskT-1G8MTb6eM2ua",
+      "ResourceType": "AWS::IAM::Policy",
+      "LastUpdatedTimestamp": "2026-11-21 16:09:04.261000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "TaskTaskRoleE98524A1",
+      "PhysicalResourceId": "RankFlowStage4-TaskTaskRoleE98524A1-TmSvVDrof40s",
+      "ResourceType": "AWS::IAM::Role",
+      "LastUpdatedTimestamp": "2026-11-21 16:08:47.097000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VIEWERBEARER75F6CBCB",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:VIEWERBEARER75F6CBCB-CNZ1TViWZctC-wxpOfo",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "LastUpdatedTimestamp": "2026-11-21 16:08:33.574000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "Vpc8378EB38",
+      "PhysicalResourceId": "vpc-0c96642c4759cb144",
+      "ResourceType": "AWS::EC2::VPC",
+      "LastUpdatedTimestamp": "2026-11-21 15:59:52.075000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcIGWD7BA715C",
+      "PhysicalResourceId": "igw-09ccfe570f53e4317",
+      "ResourceType": "AWS::EC2::InternetGateway",
+      "LastUpdatedTimestamp": "2026-11-21 15:59:55.362000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcVPCGWBF912B6E",
+      "PhysicalResourceId": "IGW|vpc-0c96642c4759cb144",
+      "ResourceType": "AWS::EC2::VPCGatewayAttachment",
+      "LastUpdatedTimestamp": "2026-11-21 15:59:54.878000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcdataSubnet1RouteTableAF5F53E0",
+      "PhysicalResourceId": "rtb-0bfaa6a56f9610218",
+      "ResourceType": "AWS::EC2::RouteTable",
+      "LastUpdatedTimestamp": "2026-11-21 16:00:04.003000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcdataSubnet1RouteTableAssociation9E9FDBBB",
+      "PhysicalResourceId": "rtbassoc-0434d0e2cddd0313d",
+      "ResourceType": "AWS::EC2::SubnetRouteTableAssociation",
+      "LastUpdatedTimestamp": "2026-11-21 15:59:58.556000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcdataSubnet1SubnetE2B009FB",
+      "PhysicalResourceId": "subnet-07b8cfd771a878942",
+      "ResourceType": "AWS::EC2::Subnet",
+      "LastUpdatedTimestamp": "2026-11-21 15:59:56.706000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcdataSubnet2RouteTable94FA483A",
+      "PhysicalResourceId": "rtb-03b94046c8adef1ef",
+      "ResourceType": "AWS::EC2::RouteTable",
+      "LastUpdatedTimestamp": "2026-11-21 16:00:03.990000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcdataSubnet2RouteTableAssociation6C8F2058",
+      "PhysicalResourceId": "rtbassoc-0c7abbde996887518",
+      "ResourceType": "AWS::EC2::SubnetRouteTableAssociation",
+      "LastUpdatedTimestamp": "2026-11-21 15:59:58.686000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcdataSubnet2SubnetAD08DFFF",
+      "PhysicalResourceId": "subnet-0a698ea620af6fdf6",
+      "ResourceType": "AWS::EC2::Subnet",
+      "LastUpdatedTimestamp": "2026-11-21 15:59:56.757000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcedgeSubnet1DefaultRouteFF24B875",
+      "PhysicalResourceId": "rtb-060d5e0ea7ec6b913|0.0.0.0/0",
+      "ResourceType": "AWS::EC2::Route",
+      "LastUpdatedTimestamp": "2026-11-21 16:00:05.747000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcedgeSubnet1RouteTable967A3DC6",
+      "PhysicalResourceId": "rtb-060d5e0ea7ec6b913",
+      "ResourceType": "AWS::EC2::RouteTable",
+      "LastUpdatedTimestamp": "2026-11-21 16:00:03.853000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcedgeSubnet1RouteTableAssociationB37B6BBE",
+      "PhysicalResourceId": "rtbassoc-042c25570c19ffda4",
+      "ResourceType": "AWS::EC2::SubnetRouteTableAssociation",
+      "LastUpdatedTimestamp": "2026-11-21 15:59:58.584000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcedgeSubnet1Subnet578D518D",
+      "PhysicalResourceId": "subnet-0916d66b1195ab4e8",
+      "ResourceType": "AWS::EC2::Subnet",
+      "LastUpdatedTimestamp": "2026-11-21 15:59:56.735000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcedgeSubnet2DefaultRouteDF8DB82B",
+      "PhysicalResourceId": "rtb-0b48281d3fe710ec9|0.0.0.0/0",
+      "ResourceType": "AWS::EC2::Route",
+      "LastUpdatedTimestamp": "2026-11-21 16:00:05.788000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcedgeSubnet2RouteTable04EC36AC",
+      "PhysicalResourceId": "rtb-0b48281d3fe710ec9",
+      "ResourceType": "AWS::EC2::RouteTable",
+      "LastUpdatedTimestamp": "2026-11-21 16:00:03.944000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcedgeSubnet2RouteTableAssociation47DE4A32",
+      "PhysicalResourceId": "rtbassoc-000aabca8b97f1097",
+      "ResourceType": "AWS::EC2::SubnetRouteTableAssociation",
+      "LastUpdatedTimestamp": "2026-11-21 15:59:59.111000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcedgeSubnet2Subnet67EE456C",
+      "PhysicalResourceId": "subnet-0377baa4193962491",
+      "ResourceType": "AWS::EC2::Subnet",
+      "LastUpdatedTimestamp": "2026-11-21 15:59:56.948000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    }
+  ],
+  "stack_created_at": "2026-11-21 15:59:33.364000+00:00",
+  "tags": [
+    {
+      "Key": "stage",
+      "Value": "stage4"
+    },
+    {
+      "Key": "project",
+      "Value": "rankflow"
+    }
+  ],
+  "s3_versions_removed": 16,
+  "tasks_before_delete": [
+    {
+      "taskArn": "arn:aws:ecs:ca-central-1:711302834638:task/RankFlowStage4-ClusterEB0386A7-15INAFqTcz3h/92f014ac8f8d4e988eae61622f9b5df8",
+      "createdAt": "2026-11-21 11:09:34.447000-05:00",
+      "startedAt": "2026-11-21 11:10:09.472000-05:00",
+      "stoppedAt": "2026-11-21 11:16:22.904000-05:00",
+      "cpu": "512",
+      "memory": "2048"
+    },
+    {
+      "taskArn": "arn:aws:ecs:ca-central-1:711302834638:task/RankFlowStage4-ClusterEB0386A7-15INAFqTcz3h/b38f2c6dc78048f2988ce4ecd3b8bb18",
+      "createdAt": "2026-11-21 11:10:05.703000-05:00",
+      "startedAt": "2026-11-21 11:10:37.933000-05:00",
+      "stoppedAt": "2026-11-21 11:16:35.841000-05:00",
+      "cpu": "512",
+      "memory": "2048"
+    }
+  ],
+  "delete_requested_at": "2026-11-21 16:16:37.107919+00:00",
+  "certificate_remaining": false,
+  "inventory_after_delete": [
+    {
+      "LogicalResourceId": "ADMINBEARER34438A44",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:ADMINBEARER34438A44-xBI8m720dxOS-FISTHY",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "LastUpdatedTimestamp": "2026-11-21 16:17:09.498000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "Alb16C2F182",
+      "PhysicalResourceId": "arn:aws:elasticloadbalancing:ca-central-1:711302834638:loadbalancer/app/RankFl-Alb16-u4huqQlOhd9m/ce93ecc74b49014e",
+      "ResourceType": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+      "LastUpdatedTimestamp": "2026-11-21 16:19:04.917000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "AlbHttpsApiGroup93277757",
+      "PhysicalResourceId": "arn:aws:elasticloadbalancing:ca-central-1:711302834638:targetgroup/RankFl-AlbHt-VSBL0LRPK8IZ/bfac5ec576a41500",
+      "ResourceType": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "LastUpdatedTimestamp": "2026-11-21 16:18:04.788000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "AlbHttpsB7CA700A",
+      "PhysicalResourceId": "arn:aws:elasticloadbalancing:ca-central-1:711302834638:listener/app/RankFl-Alb16-u4huqQlOhd9m/ce93ecc74b49014e/498f9bc8c20ac1fb",
+      "ResourceType": "AWS::ElasticLoadBalancingV2::Listener",
+      "LastUpdatedTimestamp": "2026-11-21 16:18:03.664000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "AlbSecurityGroup580F65A6",
+      "PhysicalResourceId": "sg-0ee7ded564b27a9c3",
+      "ResourceType": "AWS::EC2::SecurityGroup",
+      "LastUpdatedTimestamp": "2026-11-21 16:19:06.488000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "AlbSecurityGrouptoRankFlowStage4ServiceSecurityGroup0BBD77A9800057E0563B",
+      "PhysicalResourceId": "sgr-03d349d35b8f1380a",
+      "ResourceType": "AWS::EC2::SecurityGroupEgress",
+      "LastUpdatedTimestamp": "2026-11-21 16:16:41.110000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "Bundles3FB864E8",
+      "PhysicalResourceId": "rankflowstage4-bundles3fb864e8-3wa1ng3h5hms",
+      "ResourceType": "AWS::S3::Bucket",
+      "LastUpdatedTimestamp": "2026-11-21 16:17:06.041000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "BundlesPolicy7291E181",
+      "PhysicalResourceId": "rankflowstage4-bundles3fb864e8-3wa1ng3h5hms",
+      "ResourceType": "AWS::S3::BucketPolicy",
+      "LastUpdatedTimestamp": "2026-11-21 16:16:41.164000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "CDKMetadata",
+      "PhysicalResourceId": "8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "ResourceType": "AWS::CDK::Metadata",
+      "LastUpdatedTimestamp": "2026-11-21 16:16:40.891000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "ClusterEB0386A7",
+      "PhysicalResourceId": "RankFlowStage4-ClusterEB0386A7-15INAFqTcz3h",
+      "ResourceType": "AWS::ECS::Cluster",
+      "LastUpdatedTimestamp": "2026-11-21 16:17:13.581000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "DatabaseB269D8BB",
+      "PhysicalResourceId": "rankflowstage4-databaseb269d8bb-oae8dmclrxwy",
+      "ResourceType": "AWS::RDS::DBInstance",
+      "LastUpdatedTimestamp": "2026-11-21 16:18:38.819000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "DatabaseSecretAttachmentE5D1B020",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:RankFlowStage4DatabaseSecre-hxT8fMATersG-VeKbv2",
+      "ResourceType": "AWS::SecretsManager::SecretTargetAttachment",
+      "LastUpdatedTimestamp": "2026-11-21 16:17:06.502000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "DatabaseSecurityGroup5C91FDCB",
+      "PhysicalResourceId": "sg-0a51878258b3fac8e",
+      "ResourceType": "AWS::EC2::SecurityGroup",
+      "LastUpdatedTimestamp": "2026-11-21 16:18:40.262000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "DatabaseSecurityGroupfromRankFlowStage4ServiceSecurityGroup0BBD77A9IndirectPortC389A1B4",
+      "PhysicalResourceId": "sgr-0c23438d09631915d",
+      "ResourceType": "AWS::EC2::SecurityGroupIngress",
+      "LastUpdatedTimestamp": "2026-11-21 16:16:41.195000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "DatabaseSubnetGroup7D60F180",
+      "PhysicalResourceId": "rankflowstage4-databasesubnetgroup7d60f180-rtjh3e59u4y9",
+      "ResourceType": "AWS::RDS::DBSubnetGroup",
+      "LastUpdatedTimestamp": "2026-11-21 16:18:40.039000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "Images2D38C313",
+      "PhysicalResourceId": "rankflowstage4-images2d38c313-u7cfentuubld",
+      "ResourceType": "AWS::ECR::Repository",
+      "LastUpdatedTimestamp": "2026-11-21 16:17:04.638000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "Logs6819BB44",
+      "PhysicalResourceId": "RankFlowStage4-Logs6819BB44-tA0kfoMmdhoD",
+      "ResourceType": "AWS::Logs::LogGroup",
+      "LastUpdatedTimestamp": "2026-11-21 16:17:04.439000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "OPERATORBEAREREA467249",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:OPERATORBEAREREA467249-9v0iA4lpkEr2-hphmxP",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "LastUpdatedTimestamp": "2026-11-21 16:17:09.645000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "RELEASESIGNINGKEYD9FF5B3A",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:RELEASESIGNINGKEYD9FF5B3A-v7FnCihU3KOc-IrtFUQ",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "LastUpdatedTimestamp": "2026-11-21 16:17:09.656000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "ROUTINGKEYCF684394",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:ROUTINGKEYCF684394-11zGeGn5aw1d-4hoNML",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "LastUpdatedTimestamp": "2026-11-21 16:17:09.770000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "RankFlowStage4DatabaseSecret11AE83253fdaad7efa858a3daf9490cf0a702aeb",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:RankFlowStage4DatabaseSecre-hxT8fMATersG-VeKbv2",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "LastUpdatedTimestamp": "2026-11-21 16:18:50.380000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "SESSIONKEY646954D8",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:SESSIONKEY646954D8-9pRnzLxx95B7-iIYrAY",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "LastUpdatedTimestamp": "2026-11-21 16:17:09.624000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "ServiceD69D759B",
+      "PhysicalResourceId": "arn:aws:ecs:ca-central-1:711302834638:service/RankFlowStage4-ClusterEB0386A7-15INAFqTcz3h/RankFlowStage4-ServiceD69D759B-bu5r5qTpJgOu",
+      "ResourceType": "AWS::ECS::Service",
+      "LastUpdatedTimestamp": "2026-11-21 16:17:01.968000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "ServiceSecurityGroupC96ED6A7",
+      "PhysicalResourceId": "sg-01db0b568fd89d18f",
+      "ResourceType": "AWS::EC2::SecurityGroup",
+      "LastUpdatedTimestamp": "2026-11-21 16:17:03.482000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "ServiceSecurityGroupfromRankFlowStage4AlbSecurityGroup05B956DB8000E56E98B6",
+      "PhysicalResourceId": "sgr-0850a4d6c7647ab65",
+      "ResourceType": "AWS::EC2::SecurityGroupIngress",
+      "LastUpdatedTimestamp": "2026-11-21 16:16:41.135000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "Task79114B6B",
+      "PhysicalResourceId": "arn:aws:ecs:ca-central-1:711302834638:task-definition/RankFlowStage4Task332A2A57:4",
+      "ResourceType": "AWS::ECS::TaskDefinition",
+      "LastUpdatedTimestamp": "2026-11-21 16:17:03.312000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "TaskExecutionRoleDefaultPolicy72339918",
+      "PhysicalResourceId": "RankF-TaskE-NukTZzLd68xt",
+      "ResourceType": "AWS::IAM::Policy",
+      "LastUpdatedTimestamp": "2026-11-21 16:16:40.925000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "TaskExecutionRoleEF964934",
+      "PhysicalResourceId": "RankFlowStage4-TaskExecutionRoleEF964934-30RI5hltTXId",
+      "ResourceType": "AWS::IAM::Role",
+      "LastUpdatedTimestamp": "2026-11-21 16:17:16.328000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "TaskTaskRoleDefaultPolicyC02AED32",
+      "PhysicalResourceId": "RankF-TaskT-1G8MTb6eM2ua",
+      "ResourceType": "AWS::IAM::Policy",
+      "LastUpdatedTimestamp": "2026-11-21 16:17:04.576000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "TaskTaskRoleE98524A1",
+      "PhysicalResourceId": "RankFlowStage4-TaskTaskRoleE98524A1-TmSvVDrof40s",
+      "ResourceType": "AWS::IAM::Role",
+      "LastUpdatedTimestamp": "2026-11-21 16:17:17.463000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VIEWERBEARER75F6CBCB",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:VIEWERBEARER75F6CBCB-CNZ1TViWZctC-wxpOfo",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "LastUpdatedTimestamp": "2026-11-21 16:17:14.651000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "Vpc8378EB38",
+      "PhysicalResourceId": "vpc-0c96642c4759cb144",
+      "ResourceType": "AWS::EC2::VPC",
+      "LastUpdatedTimestamp": "2026-11-21 16:19:24.694000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcIGWD7BA715C",
+      "PhysicalResourceId": "igw-09ccfe570f53e4317",
+      "ResourceType": "AWS::EC2::InternetGateway",
+      "LastUpdatedTimestamp": "2026-11-21 16:19:08.957000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcVPCGWBF912B6E",
+      "PhysicalResourceId": "IGW|vpc-0c96642c4759cb144",
+      "ResourceType": "AWS::EC2::VPCGatewayAttachment",
+      "LastUpdatedTimestamp": "2026-11-21 16:19:07.673000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcdataSubnet1RouteTableAF5F53E0",
+      "PhysicalResourceId": "rtb-0bfaa6a56f9610218",
+      "ResourceType": "AWS::EC2::RouteTable",
+      "LastUpdatedTimestamp": "2026-11-21 16:16:57.574000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcdataSubnet1RouteTableAssociation9E9FDBBB",
+      "PhysicalResourceId": "rtbassoc-0434d0e2cddd0313d",
+      "ResourceType": "AWS::EC2::SubnetRouteTableAssociation",
+      "LastUpdatedTimestamp": "2026-11-21 16:16:56.164000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcdataSubnet1SubnetE2B009FB",
+      "PhysicalResourceId": "subnet-07b8cfd771a878942",
+      "ResourceType": "AWS::EC2::Subnet",
+      "LastUpdatedTimestamp": "2026-11-21 16:18:41.723000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcdataSubnet2RouteTable94FA483A",
+      "PhysicalResourceId": "rtb-03b94046c8adef1ef",
+      "ResourceType": "AWS::EC2::RouteTable",
+      "LastUpdatedTimestamp": "2026-11-21 16:16:57.634000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcdataSubnet2RouteTableAssociation6C8F2058",
+      "PhysicalResourceId": "rtbassoc-0c7abbde996887518",
+      "ResourceType": "AWS::EC2::SubnetRouteTableAssociation",
+      "LastUpdatedTimestamp": "2026-11-21 16:16:56.213000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcdataSubnet2SubnetAD08DFFF",
+      "PhysicalResourceId": "subnet-0a698ea620af6fdf6",
+      "ResourceType": "AWS::EC2::Subnet",
+      "LastUpdatedTimestamp": "2026-11-21 16:18:41.623000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcedgeSubnet1DefaultRouteFF24B875",
+      "PhysicalResourceId": "rtb-060d5e0ea7ec6b913|0.0.0.0/0",
+      "ResourceType": "AWS::EC2::Route",
+      "LastUpdatedTimestamp": "2026-11-21 16:19:06.232000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcedgeSubnet1RouteTable967A3DC6",
+      "PhysicalResourceId": "rtb-060d5e0ea7ec6b913",
+      "ResourceType": "AWS::EC2::RouteTable",
+      "LastUpdatedTimestamp": "2026-11-21 16:19:22.370000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcedgeSubnet1RouteTableAssociationB37B6BBE",
+      "PhysicalResourceId": "rtbassoc-042c25570c19ffda4",
+      "ResourceType": "AWS::EC2::SubnetRouteTableAssociation",
+      "LastUpdatedTimestamp": "2026-11-21 16:19:21.217000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcedgeSubnet1Subnet578D518D",
+      "PhysicalResourceId": "subnet-0916d66b1195ab4e8",
+      "ResourceType": "AWS::EC2::Subnet",
+      "LastUpdatedTimestamp": "2026-11-21 16:19:22.805000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcedgeSubnet2DefaultRouteDF8DB82B",
+      "PhysicalResourceId": "rtb-0b48281d3fe710ec9|0.0.0.0/0",
+      "ResourceType": "AWS::EC2::Route",
+      "LastUpdatedTimestamp": "2026-11-21 16:19:06.124000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcedgeSubnet2RouteTable04EC36AC",
+      "PhysicalResourceId": "rtb-0b48281d3fe710ec9",
+      "ResourceType": "AWS::EC2::RouteTable",
+      "LastUpdatedTimestamp": "2026-11-21 16:19:22.507000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcedgeSubnet2RouteTableAssociation47DE4A32",
+      "PhysicalResourceId": "rtbassoc-000aabca8b97f1097",
+      "ResourceType": "AWS::EC2::SubnetRouteTableAssociation",
+      "LastUpdatedTimestamp": "2026-11-21 16:19:21.314000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "VpcedgeSubnet2Subnet67EE456C",
+      "PhysicalResourceId": "subnet-0377baa4193962491",
+      "ResourceType": "AWS::EC2::Subnet",
+      "LastUpdatedTimestamp": "2026-11-21 16:19:22.859000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    }
+  ],
+  "deleted_at": "2026-11-21 16:19:32.194497+00:00",
+  "cloudformation_events": [
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "514b7bb0-e5c7-11f1-96f4-06fff964cffb",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "RankFlowStage4",
+      "PhysicalResourceId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "Timestamp": "2026-11-21 16:19:25.009000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "Vpc8378EB38-DELETE_COMPLETE-2026-11-21T16:19:24.694Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "Vpc8378EB38",
+      "PhysicalResourceId": "vpc-0c96642c4759cb144",
+      "ResourceType": "AWS::EC2::VPC",
+      "Timestamp": "2026-11-21 16:19:24.694000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcedgeSubnet2Subnet67EE456C-DELETE_COMPLETE-2026-11-21T16:19:22.859Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "VpcedgeSubnet2Subnet67EE456C",
+      "PhysicalResourceId": "subnet-0377baa4193962491",
+      "ResourceType": "AWS::EC2::Subnet",
+      "Timestamp": "2026-11-21 16:19:22.859000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcedgeSubnet1Subnet578D518D-DELETE_COMPLETE-2026-11-21T16:19:22.805Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "VpcedgeSubnet1Subnet578D518D",
+      "PhysicalResourceId": "subnet-0916d66b1195ab4e8",
+      "ResourceType": "AWS::EC2::Subnet",
+      "Timestamp": "2026-11-21 16:19:22.805000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcedgeSubnet2RouteTable04EC36AC-DELETE_COMPLETE-2026-11-21T16:19:22.507Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "VpcedgeSubnet2RouteTable04EC36AC",
+      "PhysicalResourceId": "rtb-0b48281d3fe710ec9",
+      "ResourceType": "AWS::EC2::RouteTable",
+      "Timestamp": "2026-11-21 16:19:22.507000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcedgeSubnet1RouteTable967A3DC6-DELETE_COMPLETE-2026-11-21T16:19:22.370Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "VpcedgeSubnet1RouteTable967A3DC6",
+      "PhysicalResourceId": "rtb-060d5e0ea7ec6b913",
+      "ResourceType": "AWS::EC2::RouteTable",
+      "Timestamp": "2026-11-21 16:19:22.370000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcedgeSubnet2RouteTableAssociation47DE4A32-DELETE_COMPLETE-2026-11-21T16:19:21.314Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "VpcedgeSubnet2RouteTableAssociation47DE4A32",
+      "PhysicalResourceId": "rtbassoc-000aabca8b97f1097",
+      "ResourceType": "AWS::EC2::SubnetRouteTableAssociation",
+      "Timestamp": "2026-11-21 16:19:21.314000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcedgeSubnet1RouteTableAssociationB37B6BBE-DELETE_COMPLETE-2026-11-21T16:19:21.217Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "VpcedgeSubnet1RouteTableAssociationB37B6BBE",
+      "PhysicalResourceId": "rtbassoc-042c25570c19ffda4",
+      "ResourceType": "AWS::EC2::SubnetRouteTableAssociation",
+      "Timestamp": "2026-11-21 16:19:21.217000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcIGWD7BA715C-DELETE_COMPLETE-2026-11-21T16:19:08.957Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "VpcIGWD7BA715C",
+      "PhysicalResourceId": "igw-09ccfe570f53e4317",
+      "ResourceType": "AWS::EC2::InternetGateway",
+      "Timestamp": "2026-11-21 16:19:08.957000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcVPCGWBF912B6E-DELETE_COMPLETE-2026-11-21T16:19:07.673Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "VpcVPCGWBF912B6E",
+      "PhysicalResourceId": "IGW|vpc-0c96642c4759cb144",
+      "ResourceType": "AWS::EC2::VPCGatewayAttachment",
+      "Timestamp": "2026-11-21 16:19:07.673000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "AlbSecurityGroup580F65A6-DELETE_COMPLETE-2026-11-21T16:19:06.488Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "AlbSecurityGroup580F65A6",
+      "PhysicalResourceId": "sg-0ee7ded564b27a9c3",
+      "ResourceType": "AWS::EC2::SecurityGroup",
+      "Timestamp": "2026-11-21 16:19:06.488000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcedgeSubnet1DefaultRouteFF24B875-DELETE_COMPLETE-2026-11-21T16:19:06.232Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "VpcedgeSubnet1DefaultRouteFF24B875",
+      "PhysicalResourceId": "rtb-060d5e0ea7ec6b913|0.0.0.0/0",
+      "ResourceType": "AWS::EC2::Route",
+      "Timestamp": "2026-11-21 16:19:06.232000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcedgeSubnet2DefaultRouteDF8DB82B-DELETE_COMPLETE-2026-11-21T16:19:06.124Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "VpcedgeSubnet2DefaultRouteDF8DB82B",
+      "PhysicalResourceId": "rtb-0b48281d3fe710ec9|0.0.0.0/0",
+      "ResourceType": "AWS::EC2::Route",
+      "Timestamp": "2026-11-21 16:19:06.124000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "Alb16C2F182-DELETE_COMPLETE-2026-11-21T16:19:04.917Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "Alb16C2F182",
+      "PhysicalResourceId": "arn:aws:elasticloadbalancing:ca-central-1:711302834638:loadbalancer/app/RankFl-Alb16-u4huqQlOhd9m/ce93ecc74b49014e",
+      "ResourceType": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+      "Timestamp": "2026-11-21 16:19:04.917000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "RankFlowStage4DatabaseSecret11AE83253fdaad7efa858a3daf9490cf0a702aeb-DELETE_COMPLETE-2026-11-21T16:18:50.380Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "RankFlowStage4DatabaseSecret11AE83253fdaad7efa858a3daf9490cf0a702aeb",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:RankFlowStage4DatabaseSecre-hxT8fMATersG-VeKbv2",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "Timestamp": "2026-11-21 16:18:50.380000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcdataSubnet1SubnetE2B009FB-DELETE_COMPLETE-2026-11-21T16:18:41.723Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "VpcdataSubnet1SubnetE2B009FB",
+      "PhysicalResourceId": "subnet-07b8cfd771a878942",
+      "ResourceType": "AWS::EC2::Subnet",
+      "Timestamp": "2026-11-21 16:18:41.723000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcdataSubnet2SubnetAD08DFFF-DELETE_COMPLETE-2026-11-21T16:18:41.623Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "VpcdataSubnet2SubnetAD08DFFF",
+      "PhysicalResourceId": "subnet-0a698ea620af6fdf6",
+      "ResourceType": "AWS::EC2::Subnet",
+      "Timestamp": "2026-11-21 16:18:41.623000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "DatabaseSecurityGroup5C91FDCB-DELETE_COMPLETE-2026-11-21T16:18:40.262Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "DatabaseSecurityGroup5C91FDCB",
+      "PhysicalResourceId": "sg-0a51878258b3fac8e",
+      "ResourceType": "AWS::EC2::SecurityGroup",
+      "Timestamp": "2026-11-21 16:18:40.262000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "DatabaseSubnetGroup7D60F180-DELETE_COMPLETE-2026-11-21T16:18:40.039Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "DatabaseSubnetGroup7D60F180",
+      "PhysicalResourceId": "rankflowstage4-databasesubnetgroup7d60f180-rtjh3e59u4y9",
+      "ResourceType": "AWS::RDS::DBSubnetGroup",
+      "Timestamp": "2026-11-21 16:18:40.039000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "DatabaseB269D8BB-DELETE_COMPLETE-2026-11-21T16:18:38.819Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "DatabaseB269D8BB",
+      "PhysicalResourceId": "rankflowstage4-databaseb269d8bb-oae8dmclrxwy",
+      "ResourceType": "AWS::RDS::DBInstance",
+      "Timestamp": "2026-11-21 16:18:38.819000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "AlbHttpsApiGroup93277757-DELETE_COMPLETE-2026-11-21T16:18:04.788Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "AlbHttpsApiGroup93277757",
+      "PhysicalResourceId": "arn:aws:elasticloadbalancing:ca-central-1:711302834638:targetgroup/RankFl-AlbHt-VSBL0LRPK8IZ/bfac5ec576a41500",
+      "ResourceType": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "Timestamp": "2026-11-21 16:18:04.788000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "AlbHttpsB7CA700A-DELETE_COMPLETE-2026-11-21T16:18:03.664Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "AlbHttpsB7CA700A",
+      "PhysicalResourceId": "arn:aws:elasticloadbalancing:ca-central-1:711302834638:listener/app/RankFl-Alb16-u4huqQlOhd9m/ce93ecc74b49014e/498f9bc8c20ac1fb",
+      "ResourceType": "AWS::ElasticLoadBalancingV2::Listener",
+      "Timestamp": "2026-11-21 16:18:03.664000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "TaskTaskRoleE98524A1-DELETE_COMPLETE-2026-11-21T16:17:17.463Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "TaskTaskRoleE98524A1",
+      "PhysicalResourceId": "RankFlowStage4-TaskTaskRoleE98524A1-TmSvVDrof40s",
+      "ResourceType": "AWS::IAM::Role",
+      "Timestamp": "2026-11-21 16:17:17.463000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "TaskExecutionRoleEF964934-DELETE_COMPLETE-2026-11-21T16:17:16.328Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "TaskExecutionRoleEF964934",
+      "PhysicalResourceId": "RankFlowStage4-TaskExecutionRoleEF964934-30RI5hltTXId",
+      "ResourceType": "AWS::IAM::Role",
+      "Timestamp": "2026-11-21 16:17:16.328000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VIEWERBEARER75F6CBCB-DELETE_COMPLETE-2026-11-21T16:17:14.651Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "VIEWERBEARER75F6CBCB",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:VIEWERBEARER75F6CBCB-CNZ1TViWZctC-wxpOfo",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "Timestamp": "2026-11-21 16:17:14.651000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "ClusterEB0386A7-DELETE_COMPLETE-2026-11-21T16:17:13.581Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "ClusterEB0386A7",
+      "PhysicalResourceId": "RankFlowStage4-ClusterEB0386A7-15INAFqTcz3h",
+      "ResourceType": "AWS::ECS::Cluster",
+      "Timestamp": "2026-11-21 16:17:13.581000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "ROUTINGKEYCF684394-DELETE_COMPLETE-2026-11-21T16:17:09.770Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "ROUTINGKEYCF684394",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:ROUTINGKEYCF684394-11zGeGn5aw1d-4hoNML",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "Timestamp": "2026-11-21 16:17:09.770000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "RELEASESIGNINGKEYD9FF5B3A-DELETE_COMPLETE-2026-11-21T16:17:09.656Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "RELEASESIGNINGKEYD9FF5B3A",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:RELEASESIGNINGKEYD9FF5B3A-v7FnCihU3KOc-IrtFUQ",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "Timestamp": "2026-11-21 16:17:09.656000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "OPERATORBEAREREA467249-DELETE_COMPLETE-2026-11-21T16:17:09.645Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "OPERATORBEAREREA467249",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:OPERATORBEAREREA467249-9v0iA4lpkEr2-hphmxP",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "Timestamp": "2026-11-21 16:17:09.645000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "SESSIONKEY646954D8-DELETE_COMPLETE-2026-11-21T16:17:09.624Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "SESSIONKEY646954D8",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:SESSIONKEY646954D8-9pRnzLxx95B7-iIYrAY",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "Timestamp": "2026-11-21 16:17:09.624000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "ADMINBEARER34438A44-DELETE_COMPLETE-2026-11-21T16:17:09.498Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "ADMINBEARER34438A44",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:ADMINBEARER34438A44-xBI8m720dxOS-FISTHY",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "Timestamp": "2026-11-21 16:17:09.498000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "DatabaseSecretAttachmentE5D1B020-DELETE_COMPLETE-2026-11-21T16:17:06.502Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "DatabaseSecretAttachmentE5D1B020",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:RankFlowStage4DatabaseSecre-hxT8fMATersG-VeKbv2",
+      "ResourceType": "AWS::SecretsManager::SecretTargetAttachment",
+      "Timestamp": "2026-11-21 16:17:06.502000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "Bundles3FB864E8-DELETE_COMPLETE-2026-11-21T16:17:06.041Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "Bundles3FB864E8",
+      "PhysicalResourceId": "rankflowstage4-bundles3fb864e8-3wa1ng3h5hms",
+      "ResourceType": "AWS::S3::Bucket",
+      "Timestamp": "2026-11-21 16:17:06.041000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "Images2D38C313-DELETE_COMPLETE-2026-11-21T16:17:04.638Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "Images2D38C313",
+      "PhysicalResourceId": "rankflowstage4-images2d38c313-u7cfentuubld",
+      "ResourceType": "AWS::ECR::Repository",
+      "Timestamp": "2026-11-21 16:17:04.638000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "TaskTaskRoleDefaultPolicyC02AED32-DELETE_COMPLETE-2026-11-21T16:17:04.576Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "TaskTaskRoleDefaultPolicyC02AED32",
+      "PhysicalResourceId": "RankF-TaskT-1G8MTb6eM2ua",
+      "ResourceType": "AWS::IAM::Policy",
+      "Timestamp": "2026-11-21 16:17:04.576000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "Logs6819BB44-DELETE_COMPLETE-2026-11-21T16:17:04.439Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "Logs6819BB44",
+      "PhysicalResourceId": "RankFlowStage4-Logs6819BB44-tA0kfoMmdhoD",
+      "ResourceType": "AWS::Logs::LogGroup",
+      "Timestamp": "2026-11-21 16:17:04.439000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "ServiceSecurityGroupC96ED6A7-DELETE_COMPLETE-2026-11-21T16:17:03.482Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "ServiceSecurityGroupC96ED6A7",
+      "PhysicalResourceId": "sg-01db0b568fd89d18f",
+      "ResourceType": "AWS::EC2::SecurityGroup",
+      "Timestamp": "2026-11-21 16:17:03.482000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "Task79114B6B-DELETE_COMPLETE-2026-11-21T16:17:03.312Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "Task79114B6B",
+      "PhysicalResourceId": "arn:aws:ecs:ca-central-1:711302834638:task-definition/RankFlowStage4Task332A2A57:4",
+      "ResourceType": "AWS::ECS::TaskDefinition",
+      "Timestamp": "2026-11-21 16:17:03.312000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "ServiceD69D759B-DELETE_COMPLETE-2026-11-21T16:17:01.968Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "ServiceD69D759B",
+      "PhysicalResourceId": "arn:aws:ecs:ca-central-1:711302834638:service/RankFlowStage4-ClusterEB0386A7-15INAFqTcz3h/RankFlowStage4-ServiceD69D759B-bu5r5qTpJgOu",
+      "ResourceType": "AWS::ECS::Service",
+      "Timestamp": "2026-11-21 16:17:01.968000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcdataSubnet2RouteTable94FA483A-DELETE_COMPLETE-2026-11-21T16:16:57.634Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "VpcdataSubnet2RouteTable94FA483A",
+      "PhysicalResourceId": "rtb-03b94046c8adef1ef",
+      "ResourceType": "AWS::EC2::RouteTable",
+      "Timestamp": "2026-11-21 16:16:57.634000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcdataSubnet1RouteTableAF5F53E0-DELETE_COMPLETE-2026-11-21T16:16:57.574Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "VpcdataSubnet1RouteTableAF5F53E0",
+      "PhysicalResourceId": "rtb-0bfaa6a56f9610218",
+      "ResourceType": "AWS::EC2::RouteTable",
+      "Timestamp": "2026-11-21 16:16:57.574000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcdataSubnet2RouteTableAssociation6C8F2058-DELETE_COMPLETE-2026-11-21T16:16:56.213Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "VpcdataSubnet2RouteTableAssociation6C8F2058",
+      "PhysicalResourceId": "rtbassoc-0c7abbde996887518",
+      "ResourceType": "AWS::EC2::SubnetRouteTableAssociation",
+      "Timestamp": "2026-11-21 16:16:56.213000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcdataSubnet1RouteTableAssociation9E9FDBBB-DELETE_COMPLETE-2026-11-21T16:16:56.164Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "VpcdataSubnet1RouteTableAssociation9E9FDBBB",
+      "PhysicalResourceId": "rtbassoc-0434d0e2cddd0313d",
+      "ResourceType": "AWS::EC2::SubnetRouteTableAssociation",
+      "Timestamp": "2026-11-21 16:16:56.164000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "DatabaseSecurityGroupfromRankFlowStage4ServiceSecurityGroup0BBD77A9IndirectPortC389A1B4-DELETE_COMPLETE-2026-11-21T16:16:41.195Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "DatabaseSecurityGroupfromRankFlowStage4ServiceSecurityGroup0BBD77A9IndirectPortC389A1B4",
+      "PhysicalResourceId": "sgr-0c23438d09631915d",
+      "ResourceType": "AWS::EC2::SecurityGroupIngress",
+      "Timestamp": "2026-11-21 16:16:41.195000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "BundlesPolicy7291E181-DELETE_COMPLETE-2026-11-21T16:16:41.164Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "BundlesPolicy7291E181",
+      "PhysicalResourceId": "rankflowstage4-bundles3fb864e8-3wa1ng3h5hms",
+      "ResourceType": "AWS::S3::BucketPolicy",
+      "Timestamp": "2026-11-21 16:16:41.164000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "ServiceSecurityGroupfromRankFlowStage4AlbSecurityGroup05B956DB8000E56E98B6-DELETE_COMPLETE-2026-11-21T16:16:41.135Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "ServiceSecurityGroupfromRankFlowStage4AlbSecurityGroup05B956DB8000E56E98B6",
+      "PhysicalResourceId": "sgr-0850a4d6c7647ab65",
+      "ResourceType": "AWS::EC2::SecurityGroupIngress",
+      "Timestamp": "2026-11-21 16:16:41.135000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "AlbSecurityGrouptoRankFlowStage4ServiceSecurityGroup0BBD77A9800057E0563B-DELETE_COMPLETE-2026-11-21T16:16:41.110Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "AlbSecurityGrouptoRankFlowStage4ServiceSecurityGroup0BBD77A9800057E0563B",
+      "PhysicalResourceId": "sgr-03d349d35b8f1380a",
+      "ResourceType": "AWS::EC2::SecurityGroupEgress",
+      "Timestamp": "2026-11-21 16:16:41.110000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "TaskExecutionRoleDefaultPolicy72339918-DELETE_COMPLETE-2026-11-21T16:16:40.925Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "TaskExecutionRoleDefaultPolicy72339918",
+      "PhysicalResourceId": "RankF-TaskE-NukTZzLd68xt",
+      "ResourceType": "AWS::IAM::Policy",
+      "Timestamp": "2026-11-21 16:16:40.925000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "CDKMetadata-DELETE_COMPLETE-2026-11-21T16:16:40.891Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "a1d53ec5-3b3b-46d6-8b7e-ac40f87c265e",
+      "LogicalResourceId": "CDKMetadata",
+      "PhysicalResourceId": "8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "ResourceType": "AWS::CDK::Metadata",
+      "Timestamp": "2026-11-21 16:16:40.891000+00:00",
+      "ResourceStatus": "DELETE_COMPLETE"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "ServiceD69D759B-CREATE_COMPLETE-2026-11-21T16:11:17.525Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "c639f0c0-e5c5-11f1-85b0-02fff35ec247",
+      "LogicalResourceId": "ServiceD69D759B",
+      "PhysicalResourceId": "arn:aws:ecs:ca-central-1:711302834638:service/RankFlowStage4-ClusterEB0386A7-15INAFqTcz3h/RankFlowStage4-ServiceD69D759B-bu5r5qTpJgOu",
+      "ResourceType": "AWS::ECS::Service",
+      "Timestamp": "2026-11-21 16:11:17.525000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "10eeaf54-4186-4bc4-93fe-28a16c059f6d"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "DatabaseSecurityGroupfromRankFlowStage4ServiceSecurityGroup0BBD77A9IndirectPortC389A1B4-CREATE_COMPLETE-2026-11-21T16:09:15.560Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "c639f0c0-e5c5-11f1-85b0-02fff35ec247",
+      "LogicalResourceId": "DatabaseSecurityGroupfromRankFlowStage4ServiceSecurityGroup0BBD77A9IndirectPortC389A1B4",
+      "PhysicalResourceId": "sgr-0c23438d09631915d",
+      "ResourceType": "AWS::EC2::SecurityGroupIngress",
+      "Timestamp": "2026-11-21 16:09:15.560000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "10eeaf54-4186-4bc4-93fe-28a16c059f6d"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "ServiceSecurityGroupfromRankFlowStage4AlbSecurityGroup05B956DB8000E56E98B6-CREATE_COMPLETE-2026-11-21T16:09:15.412Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "c639f0c0-e5c5-11f1-85b0-02fff35ec247",
+      "LogicalResourceId": "ServiceSecurityGroupfromRankFlowStage4AlbSecurityGroup05B956DB8000E56E98B6",
+      "PhysicalResourceId": "sgr-0850a4d6c7647ab65",
+      "ResourceType": "AWS::EC2::SecurityGroupIngress",
+      "Timestamp": "2026-11-21 16:09:15.412000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "10eeaf54-4186-4bc4-93fe-28a16c059f6d"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "AlbSecurityGrouptoRankFlowStage4ServiceSecurityGroup0BBD77A9800057E0563B-CREATE_COMPLETE-2026-11-21T16:09:15.335Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "c639f0c0-e5c5-11f1-85b0-02fff35ec247",
+      "LogicalResourceId": "AlbSecurityGrouptoRankFlowStage4ServiceSecurityGroup0BBD77A9800057E0563B",
+      "PhysicalResourceId": "sgr-03d349d35b8f1380a",
+      "ResourceType": "AWS::EC2::SecurityGroupEgress",
+      "Timestamp": "2026-11-21 16:09:15.335000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "10eeaf54-4186-4bc4-93fe-28a16c059f6d"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "ServiceSecurityGroupC96ED6A7-CREATE_COMPLETE-2026-11-21T16:09:13.390Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "c639f0c0-e5c5-11f1-85b0-02fff35ec247",
+      "LogicalResourceId": "ServiceSecurityGroupC96ED6A7",
+      "PhysicalResourceId": "sg-01db0b568fd89d18f",
+      "ResourceType": "AWS::EC2::SecurityGroup",
+      "Timestamp": "2026-11-21 16:09:13.390000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "10eeaf54-4186-4bc4-93fe-28a16c059f6d"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "TaskTaskRoleDefaultPolicyC02AED32-CREATE_COMPLETE-2026-11-21T16:09:04.261Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "c639f0c0-e5c5-11f1-85b0-02fff35ec247",
+      "LogicalResourceId": "TaskTaskRoleDefaultPolicyC02AED32",
+      "PhysicalResourceId": "RankF-TaskT-1G8MTb6eM2ua",
+      "ResourceType": "AWS::IAM::Policy",
+      "Timestamp": "2026-11-21 16:09:04.261000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "10eeaf54-4186-4bc4-93fe-28a16c059f6d"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "TaskExecutionRoleDefaultPolicy72339918-CREATE_COMPLETE-2026-11-21T16:09:03.963Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "c639f0c0-e5c5-11f1-85b0-02fff35ec247",
+      "LogicalResourceId": "TaskExecutionRoleDefaultPolicy72339918",
+      "PhysicalResourceId": "RankF-TaskE-NukTZzLd68xt",
+      "ResourceType": "AWS::IAM::Policy",
+      "Timestamp": "2026-11-21 16:09:03.963000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "10eeaf54-4186-4bc4-93fe-28a16c059f6d"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "Task79114B6B-CREATE_COMPLETE-2026-11-21T16:08:50.115Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "c639f0c0-e5c5-11f1-85b0-02fff35ec247",
+      "LogicalResourceId": "Task79114B6B",
+      "PhysicalResourceId": "arn:aws:ecs:ca-central-1:711302834638:task-definition/RankFlowStage4Task332A2A57:4",
+      "ResourceType": "AWS::ECS::TaskDefinition",
+      "Timestamp": "2026-11-21 16:08:50.115000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "10eeaf54-4186-4bc4-93fe-28a16c059f6d"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "AlbHttpsB7CA700A-CREATE_COMPLETE-2026-11-21T16:08:48.875Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "c639f0c0-e5c5-11f1-85b0-02fff35ec247",
+      "LogicalResourceId": "AlbHttpsB7CA700A",
+      "PhysicalResourceId": "arn:aws:elasticloadbalancing:ca-central-1:711302834638:listener/app/RankFl-Alb16-u4huqQlOhd9m/ce93ecc74b49014e/498f9bc8c20ac1fb",
+      "ResourceType": "AWS::ElasticLoadBalancingV2::Listener",
+      "Timestamp": "2026-11-21 16:08:48.875000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "10eeaf54-4186-4bc4-93fe-28a16c059f6d"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "TaskExecutionRoleEF964934-CREATE_COMPLETE-2026-11-21T16:08:47.105Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "c639f0c0-e5c5-11f1-85b0-02fff35ec247",
+      "LogicalResourceId": "TaskExecutionRoleEF964934",
+      "PhysicalResourceId": "RankFlowStage4-TaskExecutionRoleEF964934-30RI5hltTXId",
+      "ResourceType": "AWS::IAM::Role",
+      "Timestamp": "2026-11-21 16:08:47.105000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "10eeaf54-4186-4bc4-93fe-28a16c059f6d"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "TaskTaskRoleE98524A1-CREATE_COMPLETE-2026-11-21T16:08:47.097Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "c639f0c0-e5c5-11f1-85b0-02fff35ec247",
+      "LogicalResourceId": "TaskTaskRoleE98524A1",
+      "PhysicalResourceId": "RankFlowStage4-TaskTaskRoleE98524A1-TmSvVDrof40s",
+      "ResourceType": "AWS::IAM::Role",
+      "Timestamp": "2026-11-21 16:08:47.097000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "10eeaf54-4186-4bc4-93fe-28a16c059f6d"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "AlbHttpsApiGroup93277757-CREATE_COMPLETE-2026-11-21T16:08:46.701Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "c639f0c0-e5c5-11f1-85b0-02fff35ec247",
+      "LogicalResourceId": "AlbHttpsApiGroup93277757",
+      "PhysicalResourceId": "arn:aws:elasticloadbalancing:ca-central-1:711302834638:targetgroup/RankFl-AlbHt-VSBL0LRPK8IZ/bfac5ec576a41500",
+      "ResourceType": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "Timestamp": "2026-11-21 16:08:46.701000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "10eeaf54-4186-4bc4-93fe-28a16c059f6d"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "ROUTINGKEYCF684394-CREATE_COMPLETE-2026-11-21T16:08:33.638Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "c639f0c0-e5c5-11f1-85b0-02fff35ec247",
+      "LogicalResourceId": "ROUTINGKEYCF684394",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:ROUTINGKEYCF684394-11zGeGn5aw1d-4hoNML",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "Timestamp": "2026-11-21 16:08:33.638000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "10eeaf54-4186-4bc4-93fe-28a16c059f6d"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "RELEASESIGNINGKEYD9FF5B3A-CREATE_COMPLETE-2026-11-21T16:08:33.575Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "c639f0c0-e5c5-11f1-85b0-02fff35ec247",
+      "LogicalResourceId": "RELEASESIGNINGKEYD9FF5B3A",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:RELEASESIGNINGKEYD9FF5B3A-v7FnCihU3KOc-IrtFUQ",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "Timestamp": "2026-11-21 16:08:33.575000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "10eeaf54-4186-4bc4-93fe-28a16c059f6d"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VIEWERBEARER75F6CBCB-CREATE_COMPLETE-2026-11-21T16:08:33.574Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "c639f0c0-e5c5-11f1-85b0-02fff35ec247",
+      "LogicalResourceId": "VIEWERBEARER75F6CBCB",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:VIEWERBEARER75F6CBCB-CNZ1TViWZctC-wxpOfo",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "Timestamp": "2026-11-21 16:08:33.574000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "10eeaf54-4186-4bc4-93fe-28a16c059f6d"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "OPERATORBEAREREA467249-CREATE_COMPLETE-2026-11-21T16:08:33.537Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "c639f0c0-e5c5-11f1-85b0-02fff35ec247",
+      "LogicalResourceId": "OPERATORBEAREREA467249",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:OPERATORBEAREREA467249-9v0iA4lpkEr2-hphmxP",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "Timestamp": "2026-11-21 16:08:33.537000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "10eeaf54-4186-4bc4-93fe-28a16c059f6d"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "ADMINBEARER34438A44-CREATE_COMPLETE-2026-11-21T16:08:33.488Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "c639f0c0-e5c5-11f1-85b0-02fff35ec247",
+      "LogicalResourceId": "ADMINBEARER34438A44",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:ADMINBEARER34438A44-xBI8m720dxOS-FISTHY",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "Timestamp": "2026-11-21 16:08:33.488000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "10eeaf54-4186-4bc4-93fe-28a16c059f6d"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "SESSIONKEY646954D8-CREATE_COMPLETE-2026-11-21T16:08:33.476Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "c639f0c0-e5c5-11f1-85b0-02fff35ec247",
+      "LogicalResourceId": "SESSIONKEY646954D8",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:SESSIONKEY646954D8-9pRnzLxx95B7-iIYrAY",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "Timestamp": "2026-11-21 16:08:33.476000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "10eeaf54-4186-4bc4-93fe-28a16c059f6d"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "9efec210-e5c5-11f1-8a0a-06ffd031f5eb",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "RankFlowStage4",
+      "PhysicalResourceId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "Timestamp": "2026-11-21 16:07:16.383000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "DatabaseSecretAttachmentE5D1B020-CREATE_COMPLETE-2026-11-21T16:07:14.886Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "DatabaseSecretAttachmentE5D1B020",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:RankFlowStage4DatabaseSecre-hxT8fMATersG-VeKbv2",
+      "ResourceType": "AWS::SecretsManager::SecretTargetAttachment",
+      "Timestamp": "2026-11-21 16:07:14.886000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "DatabaseB269D8BB-CREATE_COMPLETE-2026-11-21T16:07:11.075Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "DatabaseB269D8BB",
+      "PhysicalResourceId": "rankflowstage4-databaseb269d8bb-oae8dmclrxwy",
+      "ResourceType": "AWS::RDS::DBInstance",
+      "Timestamp": "2026-11-21 16:07:11.075000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "Alb16C2F182-CREATE_COMPLETE-2026-11-21T16:01:41.036Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "Alb16C2F182",
+      "PhysicalResourceId": "arn:aws:elasticloadbalancing:ca-central-1:711302834638:loadbalancer/app/RankFl-Alb16-u4huqQlOhd9m/ce93ecc74b49014e",
+      "ResourceType": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+      "Timestamp": "2026-11-21 16:01:41.036000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcedgeSubnet2DefaultRouteDF8DB82B-CREATE_COMPLETE-2026-11-21T16:00:05.788Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "VpcedgeSubnet2DefaultRouteDF8DB82B",
+      "PhysicalResourceId": "rtb-0b48281d3fe710ec9|0.0.0.0/0",
+      "ResourceType": "AWS::EC2::Route",
+      "Timestamp": "2026-11-21 16:00:05.788000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcedgeSubnet1DefaultRouteFF24B875-CREATE_COMPLETE-2026-11-21T16:00:05.747Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "VpcedgeSubnet1DefaultRouteFF24B875",
+      "PhysicalResourceId": "rtb-060d5e0ea7ec6b913|0.0.0.0/0",
+      "ResourceType": "AWS::EC2::Route",
+      "Timestamp": "2026-11-21 16:00:05.747000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcdataSubnet1RouteTableAF5F53E0-CREATE_COMPLETE-2026-11-21T16:00:04.003Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "VpcdataSubnet1RouteTableAF5F53E0",
+      "PhysicalResourceId": "rtb-0bfaa6a56f9610218",
+      "ResourceType": "AWS::EC2::RouteTable",
+      "Timestamp": "2026-11-21 16:00:04.003000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcdataSubnet2RouteTable94FA483A-CREATE_COMPLETE-2026-11-21T16:00:03.990Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "VpcdataSubnet2RouteTable94FA483A",
+      "PhysicalResourceId": "rtb-03b94046c8adef1ef",
+      "ResourceType": "AWS::EC2::RouteTable",
+      "Timestamp": "2026-11-21 16:00:03.990000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcedgeSubnet2RouteTable04EC36AC-CREATE_COMPLETE-2026-11-21T16:00:03.944Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "VpcedgeSubnet2RouteTable04EC36AC",
+      "PhysicalResourceId": "rtb-0b48281d3fe710ec9",
+      "ResourceType": "AWS::EC2::RouteTable",
+      "Timestamp": "2026-11-21 16:00:03.944000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcedgeSubnet1RouteTable967A3DC6-CREATE_COMPLETE-2026-11-21T16:00:03.853Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "VpcedgeSubnet1RouteTable967A3DC6",
+      "PhysicalResourceId": "rtb-060d5e0ea7ec6b913",
+      "ResourceType": "AWS::EC2::RouteTable",
+      "Timestamp": "2026-11-21 16:00:03.853000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "DatabaseSecurityGroup5C91FDCB-CREATE_COMPLETE-2026-11-21T16:00:01.292Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "DatabaseSecurityGroup5C91FDCB",
+      "PhysicalResourceId": "sg-0a51878258b3fac8e",
+      "ResourceType": "AWS::EC2::SecurityGroup",
+      "Timestamp": "2026-11-21 16:00:01.292000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "AlbSecurityGroup580F65A6-CREATE_COMPLETE-2026-11-21T16:00:01.201Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "AlbSecurityGroup580F65A6",
+      "PhysicalResourceId": "sg-0ee7ded564b27a9c3",
+      "ResourceType": "AWS::EC2::SecurityGroup",
+      "Timestamp": "2026-11-21 16:00:01.201000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "DatabaseSubnetGroup7D60F180-CREATE_COMPLETE-2026-11-21T16:00:00.354Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "DatabaseSubnetGroup7D60F180",
+      "PhysicalResourceId": "rankflowstage4-databasesubnetgroup7d60f180-rtjh3e59u4y9",
+      "ResourceType": "AWS::RDS::DBSubnetGroup",
+      "Timestamp": "2026-11-21 16:00:00.354000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcedgeSubnet2RouteTableAssociation47DE4A32-CREATE_COMPLETE-2026-11-21T15:59:59.111Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "VpcedgeSubnet2RouteTableAssociation47DE4A32",
+      "PhysicalResourceId": "rtbassoc-000aabca8b97f1097",
+      "ResourceType": "AWS::EC2::SubnetRouteTableAssociation",
+      "Timestamp": "2026-11-21 15:59:59.111000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcdataSubnet2RouteTableAssociation6C8F2058-CREATE_COMPLETE-2026-11-21T15:59:58.686Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "VpcdataSubnet2RouteTableAssociation6C8F2058",
+      "PhysicalResourceId": "rtbassoc-0c7abbde996887518",
+      "ResourceType": "AWS::EC2::SubnetRouteTableAssociation",
+      "Timestamp": "2026-11-21 15:59:58.686000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcedgeSubnet1RouteTableAssociationB37B6BBE-CREATE_COMPLETE-2026-11-21T15:59:58.584Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "VpcedgeSubnet1RouteTableAssociationB37B6BBE",
+      "PhysicalResourceId": "rtbassoc-042c25570c19ffda4",
+      "ResourceType": "AWS::EC2::SubnetRouteTableAssociation",
+      "Timestamp": "2026-11-21 15:59:58.584000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcdataSubnet1RouteTableAssociation9E9FDBBB-CREATE_COMPLETE-2026-11-21T15:59:58.556Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "VpcdataSubnet1RouteTableAssociation9E9FDBBB",
+      "PhysicalResourceId": "rtbassoc-0434d0e2cddd0313d",
+      "ResourceType": "AWS::EC2::SubnetRouteTableAssociation",
+      "Timestamp": "2026-11-21 15:59:58.556000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcedgeSubnet2Subnet67EE456C-CREATE_COMPLETE-2026-11-21T15:59:56.948Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "VpcedgeSubnet2Subnet67EE456C",
+      "PhysicalResourceId": "subnet-0377baa4193962491",
+      "ResourceType": "AWS::EC2::Subnet",
+      "Timestamp": "2026-11-21 15:59:56.948000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcdataSubnet2SubnetAD08DFFF-CREATE_COMPLETE-2026-11-21T15:59:56.757Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "VpcdataSubnet2SubnetAD08DFFF",
+      "PhysicalResourceId": "subnet-0a698ea620af6fdf6",
+      "ResourceType": "AWS::EC2::Subnet",
+      "Timestamp": "2026-11-21 15:59:56.757000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcedgeSubnet1Subnet578D518D-CREATE_COMPLETE-2026-11-21T15:59:56.735Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "VpcedgeSubnet1Subnet578D518D",
+      "PhysicalResourceId": "subnet-0916d66b1195ab4e8",
+      "ResourceType": "AWS::EC2::Subnet",
+      "Timestamp": "2026-11-21 15:59:56.735000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcdataSubnet1SubnetE2B009FB-CREATE_COMPLETE-2026-11-21T15:59:56.706Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "VpcdataSubnet1SubnetE2B009FB",
+      "PhysicalResourceId": "subnet-07b8cfd771a878942",
+      "ResourceType": "AWS::EC2::Subnet",
+      "Timestamp": "2026-11-21 15:59:56.706000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "BundlesPolicy7291E181-CREATE_COMPLETE-2026-11-21T15:59:55.986Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "BundlesPolicy7291E181",
+      "PhysicalResourceId": "rankflowstage4-bundles3fb864e8-3wa1ng3h5hms",
+      "ResourceType": "AWS::S3::BucketPolicy",
+      "Timestamp": "2026-11-21 15:59:55.986000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcIGWD7BA715C-CREATE_COMPLETE-2026-11-21T15:59:55.362Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "VpcIGWD7BA715C",
+      "PhysicalResourceId": "igw-09ccfe570f53e4317",
+      "ResourceType": "AWS::EC2::InternetGateway",
+      "Timestamp": "2026-11-21 15:59:55.362000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "VpcVPCGWBF912B6E-CREATE_COMPLETE-2026-11-21T15:59:54.878Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "VpcVPCGWBF912B6E",
+      "PhysicalResourceId": "IGW|vpc-0c96642c4759cb144",
+      "ResourceType": "AWS::EC2::VPCGatewayAttachment",
+      "Timestamp": "2026-11-21 15:59:54.878000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "Bundles3FB864E8-CREATE_COMPLETE-2026-11-21T15:59:53.642Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "Bundles3FB864E8",
+      "PhysicalResourceId": "rankflowstage4-bundles3fb864e8-3wa1ng3h5hms",
+      "ResourceType": "AWS::S3::Bucket",
+      "Timestamp": "2026-11-21 15:59:53.642000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "Vpc8378EB38-CREATE_COMPLETE-2026-11-21T15:59:52.075Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "Vpc8378EB38",
+      "PhysicalResourceId": "vpc-0c96642c4759cb144",
+      "ResourceType": "AWS::EC2::VPC",
+      "Timestamp": "2026-11-21 15:59:52.075000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "Logs6819BB44-CREATE_COMPLETE-2026-11-21T15:59:48.540Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "Logs6819BB44",
+      "PhysicalResourceId": "RankFlowStage4-Logs6819BB44-tA0kfoMmdhoD",
+      "ResourceType": "AWS::Logs::LogGroup",
+      "Timestamp": "2026-11-21 15:59:48.540000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "ClusterEB0386A7-CREATE_COMPLETE-2026-11-21T15:59:43.381Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "ClusterEB0386A7",
+      "PhysicalResourceId": "RankFlowStage4-ClusterEB0386A7-15INAFqTcz3h",
+      "ResourceType": "AWS::ECS::Cluster",
+      "Timestamp": "2026-11-21 15:59:43.381000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "RankFlowStage4DatabaseSecret11AE83253fdaad7efa858a3daf9490cf0a702aeb-CREATE_COMPLETE-2026-11-21T15:59:42.319Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "RankFlowStage4DatabaseSecret11AE83253fdaad7efa858a3daf9490cf0a702aeb",
+      "PhysicalResourceId": "arn:aws:secretsmanager:ca-central-1:711302834638:secret:RankFlowStage4DatabaseSecre-hxT8fMATersG-VeKbv2",
+      "ResourceType": "AWS::SecretsManager::Secret",
+      "Timestamp": "2026-11-21 15:59:42.319000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "Images2D38C313-CREATE_COMPLETE-2026-11-21T15:59:40.451Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "Images2D38C313",
+      "PhysicalResourceId": "rankflowstage4-images2d38c313-u7cfentuubld",
+      "ResourceType": "AWS::ECR::Repository",
+      "Timestamp": "2026-11-21 15:59:40.451000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    },
+    {
+      "StackId": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "EventId": "CDKMetadata-CREATE_COMPLETE-2026-11-21T15:59:39.860Z",
+      "StackName": "RankFlowStage4",
+      "OperationId": "8af92310-e5c4-11f1-8c86-0ea82ba4f25b",
+      "LogicalResourceId": "CDKMetadata",
+      "PhysicalResourceId": "8af7c380-e5c4-11f1-8c86-0ea82ba4f25b",
+      "ResourceType": "AWS::CDK::Metadata",
+      "Timestamp": "2026-11-21 15:59:39.860000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "ClientRequestToken": "71925bdf-c2dd-40ff-9e7a-bbaa3a320d3f"
+    }
+  ],
+  "tagged_resources": [
+    {
+      "ResourceARN": "arn:aws:ecs:ca-central-1:711302834638:cluster/RankFlowStage4-ClusterEB0386A7-15INAFqTcz3h",
+      "Tags": [
+        {
+          "Key": "aws:cloudformation:stack-name",
+          "Value": "RankFlowStage4"
+        },
+        {
+          "Key": "aws:cloudformation:stack-id",
+          "Value": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/8af7c380-e5c4-11f1-8c86-0ea82ba4f25b"
+        },
+        {
+          "Key": "stage",
+          "Value": "stage4"
+        },
+        {
+          "Key": "aws:cloudformation:logical-id",
+          "Value": "ClusterEB0386A7"
+        },
+        {
+          "Key": "project",
+          "Value": "rankflow"
+        }
+      ]
+    },
+    {
+      "ResourceARN": "arn:aws:ecs:ca-central-1:711302834638:task/RankFlowStage4-ClusterEB0386A7-15INAFqTcz3h/92f014ac8f8d4e988eae61622f9b5df8",
+      "Tags": [
+        {
+          "Key": "stage",
+          "Value": "stage4"
+        },
+        {
+          "Key": "aws:ecs:serviceName",
+          "Value": "RankFlowStage4-ServiceD69D759B-bu5r5qTpJgOu"
+        },
+        {
+          "Key": "project",
+          "Value": "rankflow"
+        },
+        {
+          "Key": "aws:ecs:clusterName",
+          "Value": "RankFlowStage4-ClusterEB0386A7-15INAFqTcz3h"
+        }
+      ]
+    },
+    {
+      "ResourceARN": "arn:aws:ecs:ca-central-1:711302834638:task-definition/RankFlowStage4Task332A2A57:4",
+      "Tags": [
+        {
+          "Key": "stage",
+          "Value": "stage4"
+        },
+        {
+          "Key": "project",
+          "Value": "rankflow"
+        }
+      ]
+    },
+    {
+      "ResourceARN": "arn:aws:ecs:ca-central-1:711302834638:task/RankFlowStage4-ClusterEB0386A7-15INAFqTcz3h/b38f2c6dc78048f2988ce4ecd3b8bb18",
+      "Tags": [
+        {
+          "Key": "stage",
+          "Value": "stage4"
+        },
+        {
+          "Key": "aws:ecs:serviceName",
+          "Value": "RankFlowStage4-ServiceD69D759B-bu5r5qTpJgOu"
+        },
+        {
+          "Key": "project",
+          "Value": "rankflow"
+        },
+        {
+          "Key": "aws:ecs:clusterName",
+          "Value": "RankFlowStage4-ClusterEB0386A7-15INAFqTcz3h"
+        }
+      ]
+    },
+    {
+      "ResourceARN": "arn:aws:ecs:ca-central-1:711302834638:task-definition/RankFlowStage4Task332A2A57:3",
+      "Tags": [
+        {
+          "Key": "stage",
+          "Value": "stage4"
+        },
+        {
+          "Key": "project",
+          "Value": "rankflow"
+        }
+      ]
+    },
+    {
+      "ResourceARN": "arn:aws:ecs:ca-central-1:711302834638:task-definition/RankFlowStage4Task332A2A57:1",
+      "Tags": [
+        {
+          "Key": "stage",
+          "Value": "stage4"
+        },
+        {
+          "Key": "project",
+          "Value": "rankflow"
+        }
+      ]
+    },
+    {
+      "ResourceARN": "arn:aws:ecs:ca-central-1:711302834638:service/RankFlowStage4-ClusterEB0386A7-4VbZyhzigVtG/RankFlowStage4-ServiceD69D759B-DvmsWLup6fLg",
+      "Tags": [
+        {
+          "Key": "stage",
+          "Value": "stage4"
+        },
+        {
+          "Key": "project",
+          "Value": "rankflow"
+        }
+      ]
+    },
+    {
+      "ResourceARN": "arn:aws:ecs:ca-central-1:711302834638:task-definition/RankFlowStage4Task332A2A57:2",
+      "Tags": [
+        {
+          "Key": "stage",
+          "Value": "stage4"
+        },
+        {
+          "Key": "project",
+          "Value": "rankflow"
+        }
+      ]
+    },
+    {
+      "ResourceARN": "arn:aws:ecs:ca-central-1:711302834638:cluster/RankFlowStage4-ClusterEB0386A7-4VbZyhzigVtG",
+      "Tags": [
+        {
+          "Key": "aws:cloudformation:stack-name",
+          "Value": "RankFlowStage4"
+        },
+        {
+          "Key": "aws:cloudformation:stack-id",
+          "Value": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/5ea8f920-e5a6-11f1-b1f1-0effedbce869"
+        },
+        {
+          "Key": "stage",
+          "Value": "stage4"
+        },
+        {
+          "Key": "aws:cloudformation:logical-id",
+          "Value": "ClusterEB0386A7"
+        },
+        {
+          "Key": "project",
+          "Value": "rankflow"
+        }
+      ]
+    },
+    {
+      "ResourceARN": "arn:aws:ecs:ca-central-1:711302834638:cluster/RankFlowStage4-ClusterEB0386A7-rDf7qyOpPH6Q",
+      "Tags": [
+        {
+          "Key": "aws:cloudformation:stack-name",
+          "Value": "RankFlowStage4"
+        },
+        {
+          "Key": "aws:cloudformation:stack-id",
+          "Value": "arn:aws:cloudformation:ca-central-1:711302834638:stack/RankFlowStage4/6ef07b20-e559-11f1-a5a4-0effc23210cd"
+        },
+        {
+          "Key": "stage",
+          "Value": "stage4"
+        },
+        {
+          "Key": "aws:cloudformation:logical-id",
+          "Value": "ClusterEB0386A7"
+        },
+        {
+          "Key": "project",
+          "Value": "rankflow"
+        }
+      ]
+    },
+    {
+      "ResourceARN": "arn:aws:rds:ca-central-1:711302834638:snapshot:rds:rankflowstage4-databaseb269d8bb-oae8dmclrxwy-2026-11-21-16-04",
+      "Tags": [
+        {
+          "Key": "stage",
+          "Value": "stage4"
+        },
+        {
+          "Key": "project",
+          "Value": "rankflow"
+        }
+      ]
+    },
+    {
+      "ResourceARN": "arn:aws:ecs:ca-central-1:711302834638:service/RankFlowStage4-ClusterEB0386A7-15INAFqTcz3h/RankFlowStage4-ServiceD69D759B-bu5r5qTpJgOu",
+      "Tags": [
+        {
+          "Key": "stage",
+          "Value": "stage4"
+        },
+        {
+          "Key": "project",
+          "Value": "rankflow"
+        }
+      ]
+    }
+  ],
+  "remaining_stage_db_backups": [],
+  "service_checks": {
+    "s3_bucket": {
+      "missing": true,
+      "code": "404"
+    },
+    "rds_instance": {
+      "missing": true,
+      "code": "DBInstanceNotFound"
+    },
+    "ecr_repository": {
+      "missing": true,
+      "code": "RepositoryNotFoundException"
+    },
+    "load_balancer": {
+      "missing": true,
+      "code": "LoadBalancerNotFound"
+    },
+    "log_group": {
+      "missing": true
+    },
+    "ecs_cluster": {
+      "missing": true
+    }
+  },
+  "cost_query": [
+    {
+      "TimePeriod": {
+        "Start": "2026-11-21",
+        "End": "2026-11-22"
+      },
+      "Total": {
+        "UnblendedCost": {
+          "Amount": "0",
+          "Unit": "USD"
+        }
+      },
+      "Groups": [],
+      "Estimated": true
+    }
+  ],
+  "additional_checks": {
+    "verified_at": "2026-11-21T16:19:34.879845+00:00",
+    "stack_status": "DELETE_COMPLETE",
+    "network_interfaces": [],
+    "live_nat_gateways": [],
+    "stage_elastic_ips": [],
+    "db_snapshots": [
+      "rds:rankflowstage4-databaseb269d8bb-oae8dmclrxwy-2026-11-21-16-04"
+    ]
+  },
+  "final_follow_up": {
+    "verified_at": "2026-11-21T16:20:29.032065+00:00",
+    "db_snapshots": [],
+    "snapshot_lookup": {
+      "rds:rankflowstage4-databaseb269d8bb-oae8dmclrxwy-2026-11-21-16-04": "DBSnapshotNotFound"
+    },
+    "task_definition_status": "INACTIVE",
+    "resource_count_delete_complete": 48
+  }
+}
