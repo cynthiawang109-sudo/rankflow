@@ -2,18 +2,18 @@
 
 RankFlow is a production-like, session-based e-commerce recommendation and ranking project. Its next-click task uses the observed prefix of a shopping session to rank product IDs. The product design pairs a Ranking Playground with an Operator Console.
 
-Stage 0 establishes the data semantics and the [draft product contract](docs/product_contract.md). Current evidence comes from a deterministic synthetic fixture. OTTO provides historical interactions with anonymized IDs. Offline retrieval coverage describes recovery of the next click in those logs. Exposure, conversion lift, production traffic, user impact, and business revenue require separate evidence.
+The [product contract](docs/product_contract.md) describes the two product surfaces. The synthetic fixture exercises data semantics and smoke paths. OTTO provides historical interactions with anonymized IDs for the offline evaluations. Offline retrieval coverage describes recovery of the next click in those logs. Exposure, conversion lift, production traffic, user impact, and business revenue require separate evidence.
 
 ## Run Stage 0
 
-Use Python 3.11 or later and uv. Run these commands from the repository root.
+Use Python 3.11 and uv. Run these commands from the repository root with `RANKFLOW_TEST_DATABASE_URL` set to a disposable PostgreSQL database.
 
 ```text
-uv sync --locked
+uv sync --locked --python 3.11
 uv run --locked python -m unittest discover -s tests -v
 uv run --locked python scripts/generate_fixture.py
-uv run --locked python scripts/stage0.py build --output artifacts/fixture --report-dir docs
-uv run --locked python scripts/stage0.py replay --run artifacts/fixture --output artifacts/replayed.jsonl
+uv run --locked python -m scripts.stage0 build --output artifacts/fixture --report-dir docs
+uv run --locked python -m scripts.stage0 replay --run artifacts/fixture --output artifacts/replayed.jsonl
 ```
 
 Use a fresh run directory and replay output path for each invocation. Build validates the epoch, checks byte-identical replay, and writes Markdown and JSON reports. Omitting `--report-dir` keeps the reports inside the run directory. See the committed [fixture report](docs/data_validation_report.md).
@@ -32,7 +32,7 @@ Install and configure the Kaggle CLI as described by the official source. Run th
 
 ```text
 uv run --locked python scripts/fetch_data --output data/otto
-uv run --locked python scripts/stage0.py build --profile otto --input data/otto/train.jsonl --download-manifest data/otto/download_manifest.json --output artifacts/otto
+uv run --locked python -m scripts.stage0 build --profile otto --input data/otto/train.jsonl --download-manifest data/otto/download_manifest.json --output artifacts/stage0-otto
 ```
 
 The OTTO profile uses the full-session training file as its source for its own chronological W0–W3 split. The file hashes identify the exact downloaded release. The committed fixture and reports carry `source=synthetic_fixture`. Actual OTTO runs carry `source=otto_offline`. Future Playground feedback carries `source=demo` and stays in the demo training namespace.
@@ -43,7 +43,7 @@ Use the signed-off OTTO artifacts in `artifacts/stage0-otto`. The Alpha workflow
 uses W0 for statistics, W1 for fitting, and W2-dev for development evaluation.
 
 ```sh
-uv sync --locked
+uv sync --locked --python 3.11
 uv run python -m rankflow.evaluate_retrieval artifacts/stage0-otto artifacts/stage1/retrieval
 uv run python -m rankflow.study artifacts/stage0-otto artifacts/stage1/retrieval_ablation --rule
 uv run python -m rankflow.train artifacts/stage0-otto artifacts/stage1/training configs/stage1_retrieval.json
@@ -79,7 +79,7 @@ can reach locally and adjust the credentials and port for that instance.
 
 ```powershell
 $env:RANKFLOW_TEST_DATABASE_URL = 'postgresql://rankflow@127.0.0.1:55431/postgres'
-uv run python -m unittest discover -v
+uv run python -m unittest discover -s tests -v
 ```
 
 Local demo attribution uses a 24-hour ingest window. Acknowledgements can confirm
@@ -141,3 +141,78 @@ salt must differ from `RANKFLOW_SESSION_KEY`. Start a new experiment when moving
 from Stage 2's shared-key routing to Stage 3's independent key configuration.
 Viewer and operator bearers are configured separately with
 `RANKFLOW_VIEWER_BEARER` and `RANKFLOW_OPERATOR_BEARER`.
+
+## Release and operations evidence
+
+`rule-v1` is the stable serving strategy. The signed W2-gate record rejected
+`lgbm-v1`. The public comparison is an offline-trained model replay and demo
+feedback is isolated from the governed training and release path.
+
+See the [product contract](docs/product_contract.md), [operations runbooks](docs/runbooks.md),
+[Stage 2 release decision](docs/stage2_release_decision.md), and
+[Stage 3 operational evidence](docs/stage3_exit_evidence.md).
+
+### Reference deployment
+
+The [CDK app](infra/stage4.cjs) defines the ca-central-1 reference deployment.
+Use the [AWS deployment procedure](docs/stage4_deployment.md) to create,
+verify, and remove the reference service.
+The deployment path creates the base stack, uploads content-addressed bundles
+and an immutable ECR image, then enables the HTTPS listener and the Fargate
+service. A short-lived certificate imported into ACM secures the ALB probes.
+The probes trust the imported certificate explicitly. The ALB checks routability
+and exposes liveness and release readiness through the API. RDS stays in
+isolated subnets. Task startup downloads S3 artifacts into a local registry and
+verifies checksums before serving. AWS Secrets Manager supplies the database
+credentials, role bearers, release signing key, and the two independent salts.
+
+### Acceptance and clean-room reproduction
+
+Use a clean checkout, Python 3.11, and the archived Stage 1 OTTO baseline
+identified in [the baseline manifest](docs/stage1_baseline_manifest.json).
+Place the archived Stage 0 artifacts under `artifacts/stage0-otto`. The
+training command verifies the pinned manifests, inputs, snapshot, and feature
+code. It uses W1 for fitting and W2-dev for development evaluation. Obtain the
+baseline from the governed artifact archive before starting. Training and
+generation building consume `data_manifest.json`, `evaluation_epoch.json`,
+`sessions.jsonl`, `history.jsonl`, and `covisitation.jsonl`. The repository
+ships checksums and a synthetic smoke fixture. The historical raw-OTTO Stage 0
+build above computes partition coverage and is outside this holdout-safe replay.
+
+```powershell
+uv sync --locked --python 3.11
+uv run --locked python -m rankflow.training_pipeline artifacts/stage0-otto artifacts/stage4-training --reproduce
+$run = Get-ChildItem artifacts/stage4-training -Directory -Filter '*-verified'
+Get-FileHash (Join-Path $run.FullName lgbm-v1.txt) -Algorithm SHA256
+uv run --locked python -m rankflow.generation artifacts/stage0-otto $run.FullName artifacts/stage1/generations
+```
+
+The training command prints the registered run directory. Compare its model
+SHA-256, training counts, and W2-dev evaluation against [Stage 2 lineage](docs/stage2_training_evidence.json).
+The run ID includes the current code revision. Use fresh output paths for
+each replay. The generation command publishes `alpha.txt` with the new
+content-addressed bundle ID and the stable `rule-v1` assignment.
+
+Run the following with a fresh Compose project name and an unused loopback
+port. The password and session key are disposable and stay local.
+
+```powershell
+$env:RANKFLOW_POSTGRES_PASSWORD = [guid]::NewGuid().ToString('N')
+$env:RANKFLOW_SESSION_KEY = [guid]::NewGuid().ToString('N')
+$env:RANKFLOW_GENERATIONS_DIR = (Resolve-Path artifacts/stage1/generations).Path
+$env:RANKFLOW_PORT = '18080'
+docker compose -p rankflow-reproduce up --build --wait
+Invoke-RestMethod http://127.0.0.1:18080/health/ready
+$request = @{request_id=[guid]::NewGuid().ToString();session_id='reproduce';events=@()} | ConvertTo-Json
+Invoke-RestMethod http://127.0.0.1:18080/v1/recommend -Method Post -ContentType 'application/json' -Body $request
+docker compose -p rankflow-reproduce down --volumes
+```
+
+Verify `serving_ready`, `served_strategy=rule-v1`, a `serving_generation`
+matching `alpha.txt`, and `logging_status=persisted` with an impression ID.
+For the full acceptance suite, set `RANKFLOW_TEST_DATABASE_URL` to an empty,
+disposable PostgreSQL 16 database and run `uv run --locked python -m unittest
+discover -s tests -v`. The suite requires the database-backed tests to run.
+
+See the [Stage 4 evidence index](docs/stage4_evidence_index.md) and the
+[recorded demo](docs/stage4_demo.mp4).

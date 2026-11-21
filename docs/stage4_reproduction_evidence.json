@@ -1,0 +1,217 @@
+{
+  "python": "3.11.18",
+  "training_and_w2_dev": {
+    "model_checksum": true,
+    "training_counts": true,
+    "all_development_slice_counts_and_metrics": true,
+    "run_id": "1033fe51c4e3a44a94843b8b38ac5dbf91e7822eae0876c30a6e1264455fcc30",
+    "code_version": "71e22419bc8c6c00293d091161ee35f550f394cb",
+    "reference_run_id": "156bb1b48bf3aa4c1d8de6b935a25aa323bc0f5c10a294a69853077f41a94b15",
+    "model_sha256": "8d06f0f97a3485540addeae9d6604b3fae3c948c2de2862d08d7de79e7cebd6d",
+    "training": {
+      "all_negative": 81879,
+      "eligible": 24770,
+      "no_label": 23977,
+      "queries": 130626,
+      "single_positive_rate": 0.2322572176016653,
+      "training_query_exclusion_rate": 0.7677427823983347
+    },
+    "evaluation": {
+      "no_label": 12205,
+      "slices": {
+        "overall": {
+          "candidate_coverage": 0.2233459909449394,
+          "labeled": 54776,
+          "metrics": {
+            "lgbm-v1": {
+              "HitRate@20": 0.19935738279538484,
+              "MRR@20": 0.14246080410483988,
+              "NDCG@20": 0.15567292001012817
+            },
+            "rule-v1": {
+              "HitRate@20": 0.19630860230757996,
+              "MRR@20": 0.13396252373193315,
+              "NDCG@20": 0.1484113796392154
+            }
+          },
+          "retrieved": 12234,
+          "sessions": 13226
+        },
+        "prefix/cold": {
+          "candidate_coverage": 0.00535475234270415,
+          "labeled": 16434,
+          "metrics": {
+            "lgbm-v1": {
+              "HitRate@20": 0.0016429353778751369,
+              "MRR@20": 0.0008920339281892447,
+              "NDCG@20": 0.001044011739655195
+            },
+            "rule-v1": {
+              "HitRate@20": 0.0013386880856760374,
+              "MRR@20": 0.00016200518208550336,
+              "NDCG@20": 0.0004096257508790894
+            }
+          },
+          "retrieved": 88,
+          "sessions": 6466
+        },
+        "prefix/warm": {
+          "candidate_coverage": 0.316780553961713,
+          "labeled": 38342,
+          "metrics": {
+            "lgbm-v1": {
+              "HitRate@20": 0.2841009858640655,
+              "MRR@20": 0.20313946377525555,
+              "NDCG@20": 0.22194936564460085
+            },
+            "rule-v1": {
+              "HitRate@20": 0.27987585415471283,
+              "MRR@20": 0.19131158538359966,
+              "NDCG@20": 0.21184731995012568
+            }
+          },
+          "retrieved": 12146,
+          "sessions": 8947
+        },
+        "session_length/21_to_100": {
+          "candidate_coverage": 0.20717488789237667,
+          "labeled": 8920,
+          "metrics": {
+            "lgbm-v1": {
+              "HitRate@20": 0.17443946188340806,
+              "MRR@20": 0.10843351835750728,
+              "NDCG@20": 0.12364226926486462
+            },
+            "rule-v1": {
+              "HitRate@20": 0.17298206278026906,
+              "MRR@20": 0.10195746013073927,
+              "NDCG@20": 0.11826930733037028
+            }
+          },
+          "retrieved": 1848,
+          "sessions": 892
+        },
+        "session_length/over_100": {
+          "candidate_coverage": 0.08,
+          "labeled": 250,
+          "metrics": {
+            "lgbm-v1": {
+              "HitRate@20": 0.064,
+              "MRR@20": 0.021067169431875313,
+              "NDCG@20": 0.030257150311666463
+            },
+            "rule-v1": {
+              "HitRate@20": 0.064,
+              "MRR@20": 0.013606511376480416,
+              "NDCG@20": 0.02469030244086194
+            }
+          },
+          "retrieved": 20,
+          "sessions": 25
+        },
+        "session_length/up_to_20": {
+          "candidate_coverage": 0.22729465421216508,
+          "labeled": 45606,
+          "metrics": {
+            "lgbm-v1": {
+              "HitRate@20": 0.2049730298644915,
+              "MRR@20": 0.14978159078936523,
+              "NDCG@20": 0.16262523652708502
+            },
+            "rule-v1": {
+              "HitRate@20": 0.20159628119107134,
+              "MRR@20": 0.14088209945467867,
+              "NDCG@20": 0.15498502245582896
+            }
+          },
+          "retrieved": 10366,
+          "sessions": 12309
+        },
+        "target_popularity/head": {
+          "candidate_coverage": 0.7718491260349586,
+          "labeled": 1087,
+          "metrics": {
+            "lgbm-v1": {
+              "HitRate@20": 0.6292548298068077,
+              "MRR@20": 0.4001710974659638,
+              "NDCG@20": 0.4533219393793182
+            },
+            "rule-v1": {
+              "HitRate@20": 0.6494940202391905,
+              "MRR@20": 0.3775208280642612,
+              "NDCG@20": 0.4408498059629389
+            }
+          },
+          "retrieved": 839,
+          "sessions": 635
+        },
+        "target_popularity/tail": {
+          "candidate_coverage": 0.46266596288927686,
+          "labeled": 24629,
+          "metrics": {
+            "lgbm-v1": {
+              "HitRate@20": 0.4156076170368265,
+              "MRR@20": 0.29917767764428993,
+              "NDCG@20": 0.3262162052202465
+            },
+            "rule-v1": {
+              "HitRate@20": 0.4079337366519144,
+              "MRR@20": 0.2812767899563333,
+              "NDCG@20": 0.31061667108026897
+            }
+          },
+          "retrieved": 11395,
+          "sessions": 8521
+        },
+        "target_popularity/unseen": {
+          "candidate_coverage": 0.0,
+          "labeled": 29060,
+          "metrics": {
+            "lgbm-v1": {
+              "HitRate@20": 0.0,
+              "MRR@20": 0.0,
+              "NDCG@20": 0.0
+            },
+            "rule-v1": {
+              "HitRate@20": 0.0,
+              "MRR@20": 0.0,
+              "NDCG@20": 0.0
+            }
+          },
+          "retrieved": 0,
+          "sessions": 9377
+        }
+      }
+    },
+    "replay": {
+      "absolute_metric_tolerance": 0.0,
+      "bit_identical": [
+        "model bytes",
+        "canonical lineage"
+      ],
+      "excluded": [
+        "wall clock timings"
+      ],
+      "numerically_identical": [
+        "training counts",
+        "development slice metrics"
+      ]
+    }
+  },
+  "local_compose": {
+    "observed_at": "2026-11-21T12:34:59.6480723Z",
+    "recommendation": {
+      "request_id": "572ff4fb-c81d-4794-a7ec-be2fb33d57df",
+      "impression_id": "6a393135-07bd-4bb1-a5f5-5468a3138276",
+      "served_strategy": "rule-v1",
+      "serving_generation": "gen-9466a9a8cfb172b3ba4e8ceb3feb24a09810c677087f5c3e3bd985527a152497",
+      "logging_status": "persisted"
+    },
+    "postgres_version": "16.16 (Debian 16.16-1.pgdg13+1)",
+    "readiness": {
+      "serving_ready": true,
+      "release_ready": true
+    },
+    "image": "410807d19872bd6e19901e43809346c48c4c2e2ca97e64ffd1f94603322e8fea"
+  }
+}

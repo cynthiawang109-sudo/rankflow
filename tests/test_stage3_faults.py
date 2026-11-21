@@ -1,7 +1,8 @@
 """Repeatable Stage 3 fault drills with PostgreSQL-backed assertions."""
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
+import json
 import os
 from pathlib import Path
 import shutil
@@ -19,22 +20,27 @@ from psycopg.conninfo import make_conninfo
 
 from rankflow.api import create_app, rank_request
 from rankflow.data.epoch import generate_queries
-from rankflow.generation import cached_generation
+from rankflow.data.pipeline import FIXTURE, build_run, read_config
+from rankflow.generation import build, cached_generation, encoded, identity
+from rankflow.retrieval import RetrievalConfig
 from rankflow.scorer import Scorer
 from rankflow.store import PostgresStore
+from rankflow.train import run as train
 from tests import test_stage2 as baseline
 from tests.test_stage1 import event, payload
 
 
 class ArtifactAndScorerDrills(TestCase):
     def test_partial_and_corrupt_artifact_never_activate(self):
-        root = Path("artifacts/stage1/fixture-generations")
-        if not (root / "alpha.txt").is_file():
-            root = Path("artifacts/stage1/generations")
-        good = root / (root / "alpha.txt").read_text().strip()
         with TemporaryDirectory() as workspace:
-            source = Path(workspace) / good.name
-            cache = Path(workspace) / "cache"
+            root = Path(workspace)
+            dataset, training = root / "data", root / "training"
+            build_run(FIXTURE, dataset, read_config(Path("configs/stage0.yaml")))
+            train(dataset, training, RetrievalConfig(recent=10, covisitation=100, popularity=20),
+                  "Stage 3 synthetic artifact integrity fixture")
+            good = build(dataset, training, root / "registry")
+            source = root / good.name
+            cache = root / "cache"
             shutil.copytree(good, source)
             model = source / "lgbm-v1.txt"
             model.unlink()
@@ -47,6 +53,17 @@ class ArtifactAndScorerDrills(TestCase):
             self.assertFalse((cache / good.name).exists())
             shutil.copyfile(good / model.name, model)
             self.assertEqual(cached_generation(source, cache).generation_id, good.name)
+            for field, value in (("feature_schema", "incompatible-schema"), ("feature_code_sha256", "0" * 64)):
+                with self.subTest(incompatible=field):
+                    manifest = json.loads((good / "manifest.json").read_bytes())
+                    manifest["compatibility"][field] = value
+                    incompatible_id = identity(manifest)
+                    incompatible = root / incompatible_id
+                    shutil.copytree(good, incompatible)
+                    (incompatible / "manifest.json").write_bytes(encoded(manifest))
+                    with self.assertRaisesRegex(ValueError, "Serving feature compatibility mismatch"):
+                        cached_generation(incompatible, cache)
+                    self.assertFalse((cache / incompatible_id).exists())
 
     def test_scorer_hang_and_crash_fall_back(self):
         for mode, reason in (("hang", "logical_deadline"), ("crash", "ml_scoring_error")):
@@ -98,6 +115,62 @@ class DatabaseFaultDrills(TestCase):
         self.assertEqual(result["assignment"], "stable")
         self.assertTrue(readiness["serving_ready"])
         self.assertFalse(readiness["release_ready"])
+
+    def test_inference_hang_during_shadow_saturation(self):
+        traffic = self.registry()
+        shadow = replace(self.rescue, state="shadowing", shadow_generation_id="stable", shadow_mode="live")
+        traffic.publish(shadow, 0, "saturated-shadow", "test")
+        candidate = replace(baseline.CANDIDATE, model_path=Path("hang"))
+        canary = replace(shadow, state="canary", canary_generation_id="candidate", canary_percent=100)
+        shadow_entered, release_shadow = Event(), Event()
+        foreground = Scorer("tests.stage3_fault_worker")
+        background, comparison = Scorer(), Scorer()
+
+        def rank(*args, **kwargs):
+            if kwargs.get("scorer") is background:
+                shadow_entered.set()
+                if not release_shadow.wait(15):
+                    raise RuntimeError("Shadow fixture did not release")
+            return rank_request(*args, **kwargs)
+
+        def recommend(client):
+            response = client.post("/v1/recommend", json=payload([event(1)]))
+            response.raise_for_status()
+            return response.json()
+
+        with patch.object(traffic, "generation", side_effect={"stable": baseline.STABLE,
+                                                              "candidate": candidate}.__getitem__):
+            traffic.prepare(canary)
+            traffic.refresh()
+            traffic.publish(canary, 1, "hanging-canary", "test")
+            traffic.refresh()
+            with patch("rankflow.api.Scorer", side_effect=(foreground, background, comparison)):
+                app = create_app(baseline.STABLE, self.store, baseline.SECRET, traffic=traffic, deadline_ms=100)
+            with TestClient(app) as client, patch("rankflow.api.rank_request", side_effect=rank):
+                foreground.prepare(candidate.model_path, candidate.assigned.artifact_hash)
+                hanging_worker = foreground.process
+                with ThreadPoolExecutor(4) as workers:
+                    first = workers.submit(recommend, client)
+                    try:
+                        self.assertTrue(shadow_entered.wait(5))
+                        others = [workers.submit(recommend, client) for _ in range(3)]
+                        completed, _ = wait(others, timeout=5, return_when=FIRST_COMPLETED)
+                        self.assertTrue(completed)
+                        self.assertGreater(app.state.counters["synthetic_shadow_shed"], 0)
+                        self.assertIsNotNone(hanging_worker.wait(timeout=2))
+                    finally:
+                        release_shadow.set()
+                    for future in [first, *others]:
+                        result = future.result(timeout=10)
+                        self.assertTrue(result["fallback_used"])
+                        self.assertEqual(result["served_strategy"], "rule-v1")
+                        self.assertEqual(result["logging_status"], "persisted")
+                healthy_path = Path("recovered")
+                foreground.prepare(healthy_path, candidate.assigned.artifact_hash)
+                self.assertEqual(foreground.score(healthy_path, candidate.assigned.artifact_hash, [[0]], 500), [0])
+                traffic.publish(self.rescue.config_id, 2, "stable-after-overload", "test", "rollback")
+                traffic.refresh()
+                self.assertFalse(recommend(client)["fallback_used"])
 
     def test_same_millisecond_query_identity_survives_delivery(self):
         events = [dict(event(aid), event_index=index) for index, aid in enumerate((1, 2, 3))]
@@ -153,20 +226,18 @@ class DatabaseFaultDrills(TestCase):
             with ThreadPoolExecutor(1) as reading:
                 output = reading.submit(child.stdout.readline)
                 try:
-                    # This bounds process startup and database setup. The crash is
-                    # triggered only after the worker confirms an open transaction.
-                    self.assertEqual(output.result(timeout=90).strip(), b"transaction_open")
+                    return output.result(timeout=90).strip()
                 finally:
                     child.kill()
                     child.wait(timeout=10)
 
     def test_kill_mid_write_then_outbox_crash_and_redelivery(self):
-        self.interrupt("persist")
+        self.assertEqual(self.interrupt("persist"), b"transaction_open")
         with self.store.connect() as conn:
             for table in ("impressions", "decisions", "outbox"):
                 self.assertEqual(conn.execute(f"SELECT count(*) AS n FROM {table}").fetchone()["n"], 0)
         self.store.persist({"request_id": "restarted", "items": [], "serving_generation": "stable"})
-        self.interrupt("drain")
+        self.assertEqual(self.interrupt("drain"), b"transaction_open")
         with self.store.connect() as conn:
             self.assertEqual(conn.execute("SELECT count(*) AS n FROM delivered_events").fetchone()["n"], 0)
             self.assertIsNone(conn.execute("SELECT delivered_at FROM outbox").fetchone()["delivered_at"])
@@ -176,6 +247,33 @@ class DatabaseFaultDrills(TestCase):
         self.assertEqual(self.store.drain(), 1)
         with self.store.connect() as conn:
             self.assertEqual(conn.execute("SELECT count(*) AS n FROM delivered_events").fetchone()["n"], 1)
+
+    def test_render_then_crash_preserves_unknown_send_and_confirmation(self):
+        rendered = json.loads(self.interrupt("send"))
+        self.assertEqual(rendered["logging_status"], "persisted")
+        impression = rendered["impression_id"]
+        acknowledgement = f"/v1/impressions/{impression}/ack"
+        headers = {"Authorization": "Bearer " + baseline.SECRET.decode()}
+        with TestClient(create_app(baseline.STABLE, self.store, baseline.SECRET,
+                                   admin_bearer=baseline.SECRET)) as client:
+            first = client.post(acknowledgement).raise_for_status().json()
+            self.assertEqual(first["client_confirmation_state"], "confirmed")
+            self.assertEqual(first["send_state"], "send_unknown")
+            with self.store.connect() as conn:
+                conn.execute("UPDATE impressions SET created_at=created_at - interval '10 minutes' WHERE id=%s",
+                             (impression,))
+            before = client.get("/operator/metrics", headers=headers).raise_for_status().json()["durable"][0]
+            for _ in range(2):
+                late = client.post(acknowledgement).raise_for_status().json()
+                self.assertEqual(late["client_confirmation_state"], "confirmed")
+                self.assertEqual(late["send_state"], "send_unknown")
+            after = client.get("/operator/metrics", headers=headers).raise_for_status().json()["durable"][0]
+        for row in (before, after):
+            self.assertEqual((row["confirmed"], row["closed_impressions"]), (1, 1))
+            self.assertEqual((row["send_completed"], row["send_failed"], row["send_unknown"]), (0, 0, 1))
+        with self.store.connect() as conn:
+            rows = conn.execute("SELECT kind FROM acknowledgements WHERE impression_id=%s", (impression,)).fetchall()
+        self.assertCountEqual([row["kind"] for row in rows], ["confirmed", "late_confirmation"])
 
     def test_http_request_keeps_pin_during_publish(self):
         traffic, publisher = self.registry(), self.registry()

@@ -2,6 +2,7 @@
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
+import json
 from unittest.mock import patch
 import os
 from pathlib import Path
@@ -10,15 +11,17 @@ import unittest
 from uuid import uuid4
 
 from fastapi.testclient import TestClient
+from psycopg import OperationalError
 
 from rankflow.api import create_app
+from rankflow.data.ingestion import file_hash
 from rankflow.demo_learning import collect, dataset, rehearse
 from rankflow.epoch_registry import register_epoch
 from rankflow.guardrails import Guardrails
 from rankflow.release_gate import POLICY, append_signed, disposition, release
 from rankflow.store import PostgresStore
 from rankflow.traffic import TrafficConfigSnapshot, TrafficRegistry
-from rankflow.training_pipeline import read_json
+from rankflow.training_pipeline import pinned_inputs, read_json
 from tests.test_stage1 import GENERATION, MODEL, RULE, event, payload
 
 STABLE = replace(GENERATION, generation_id="stable")
@@ -33,6 +36,24 @@ class FixtureRegistry(TrafficRegistry):
 
 
 class GateTests(unittest.TestCase):
+    def test_t02_training_window_overlapping_sealed_w3_is_refused(self):
+        with TemporaryDirectory() as workspace:
+            root = Path(workspace)
+            inputs = {
+                "data_manifest.json": json.dumps({"configuration": {"windows": {"otto": {"W1": [10, 31]}}}}),
+                "evaluation_epoch.json": json.dumps({"final_test_window": [30, 40]}),
+                "sessions.jsonl": "",
+            }
+            for name, contents in inputs.items():
+                (root / name).write_text(contents, encoding="utf-8")
+            baseline = root / "baseline.json"
+            baseline.write_text(json.dumps({"files_sha256": {
+                f"artifacts/stage0-otto/{name}": file_hash(root / name) for name in inputs
+            }}), encoding="utf-8")
+            with patch("rankflow.training_pipeline.BASELINE_PATH", baseline):
+                with self.assertRaisesRegex(ValueError, "Training interval overlaps sealed W3"):
+                    pinned_inputs(root)
+
     def test_weakened_candidate_is_rejected(self):
         from rankflow.training_pipeline import paired_evaluation
 
@@ -66,6 +87,25 @@ class GateTests(unittest.TestCase):
             self.assertEqual(record["decision"], "rejected")
             self.assertNotIn("evaluation", record)
             self.assertEqual(len(list((root / "decisions").glob("*.json"))), 1)
+
+    def test_mixed_demo_rows_rejected_as_unregistered_otto_input(self):
+        with TemporaryDirectory() as workspace:
+            root = Path(workspace)
+            manifest = root / "data_manifest.json"
+            epoch = root / "evaluation_epoch.json"
+            sessions = root / "sessions.jsonl"
+            manifest.write_text("{}", encoding="utf-8")
+            epoch.write_text("{}", encoding="utf-8")
+            sessions.write_text('{"source":"otto_offline","session":1}\n', encoding="utf-8")
+            baseline = root / "baseline.json"
+            baseline.write_text(json.dumps({"files_sha256": {
+                f"artifacts/stage0-otto/{path.name}": file_hash(path) for path in (manifest, epoch, sessions)
+            }}), encoding="utf-8")
+            with sessions.open("a", encoding="utf-8") as stream:
+                stream.write('{"source":"demo","session":2}\n')
+            with patch("rankflow.training_pipeline.BASELINE_PATH", baseline):
+                with self.assertRaisesRegex(ValueError, "Unregistered OTTO input: sessions.jsonl"):
+                    pinned_inputs(root)
 
 
 @unittest.skipUnless(os.environ.get("RANKFLOW_TEST_DATABASE_URL"), "Requires PostgreSQL test DSN")
@@ -108,7 +148,7 @@ class PlatformTests(unittest.TestCase):
         first.refresh()
         second.refresh()
         old = second.pin()
-        canary = replace(shadow, state="canary", canary_generation_id="candidate", canary_percent=50)
+        canary = replace(shadow, state="canary", canary_generation_id="candidate", canary_percent=10)
         first.prepare(canary)
         first.refresh()
         with self.assertRaisesRegex(ValueError, "every leased instance"):
@@ -139,7 +179,9 @@ class PlatformTests(unittest.TestCase):
         second.refresh()
         first.publish(changed, 2, "config-update", "test")
         first.refresh()
+        second.refresh()
         self.assertEqual(assignment, [first.pin().select(str(i))[1] for i in range(100)])
+        self.assertEqual(assignment, [second.pin().select(str(i))[1] for i in range(100)])
         killed = replace(self.rescue, state="killed")
         self.assertEqual(first.publish(killed, 3, "kill", "test", "kill"), 4)
         self.assertEqual(first.publish(killed, 3, "kill", "test", "kill"), 4)
@@ -148,6 +190,11 @@ class PlatformTests(unittest.TestCase):
         with self.store.connect() as conn:
             self.assertEqual(conn.execute("SELECT action FROM traffic_audit WHERE revision=4").fetchone()["action"],
                              "kill")
+        self.assertEqual(first.publish(self.rescue.config_id, 4, "named-after-kill", "test", "rollback"), 5)
+        for instance in (first, second):
+            instance.refresh()
+            self.assertEqual(instance.pin().config, self.rescue)
+            self.assertEqual({instance.pin().select(str(i))[1] for i in range(100)}, {"stable"})
 
     def test_live_shadow_feedback_and_outbox_replay(self):
         traffic = self.registry()
@@ -210,6 +257,76 @@ class PlatformTests(unittest.TestCase):
         registry.refresh()
         self.assertEqual(registry.pin().config.config_id, self.rescue.config_id)
         self.assertEqual(registry.pin().revision, 2)
+
+    def test_promotion_with_paused_instance_and_new_joiner(self):
+        publisher, paused = self.registry(), self.registry()
+        publisher.promotion_allowed = lambda generation: generation is CANDIDATE
+        shadow = replace(self.rescue, state="shadowing")
+        publisher.publish(shadow, 0, "fixture-shadow", "test")
+        canary = replace(shadow, state="canary", canary_generation_id="candidate", canary_percent=10)
+        publisher.prepare(canary)
+        publisher.refresh()
+        paused.refresh()
+        publisher.publish(canary, 1, "fixture-canary", "test")
+        publisher.refresh()
+        paused.refresh()
+        in_flight = paused.serving_pin()
+        promoted = replace(shadow, state="promoted", stable_generation_id="candidate")
+        revision = publisher.publish(promoted, 2, "fixture-promotion", "test")
+
+        def convergence():
+            with self.store.connect() as conn:
+                return conn.execute("SELECT state FROM traffic_tracking WHERE revision=%s",
+                                    (revision,)).fetchone()["state"]
+
+        self.assertEqual(convergence(), "pointer_committed")
+        joined = self.registry()
+        publisher.refresh()
+        self.assertFalse(paused.readiness()["serving_ready"])
+        for registry in (publisher, joined):
+            self.assertTrue(registry.readiness()["serving_ready"])
+            self.assertEqual(registry.serving_pin().config, promoted)
+            self.assertIs(registry.serving_pin().select("fixture")[0], CANDIDATE)
+        self.assertEqual(in_flight.config, canary)
+        self.assertEqual(in_flight.revision, 2)
+        self.assertIs(in_flight.stable, STABLE)
+        self.assertIs(in_flight.canary, CANDIDATE)
+        with self.store.connect() as conn:
+            conn.execute("UPDATE traffic_audit SET recorded_at = recorded_at - interval '1 minute' WHERE revision=%s",
+                         (revision,))
+            conn.execute("UPDATE traffic_instances SET last_seen = last_seen - interval '1 minute' WHERE instance_id=%s",
+                         (paused.instance_id,))
+        publisher.refresh()
+        joined.refresh()
+        publisher.observe_convergence()
+        self.assertEqual(convergence(), "partially_converged")
+        self.assertFalse(paused.readiness()["serving_ready"])
+        self.assertFalse(next(row for row in publisher.fleet() if row["instance_id"] == paused.instance_id)["leased"])
+        paused.refresh()
+        publisher.observe_convergence()
+        self.assertEqual(convergence(), "converged")
+        self.assertEqual(paused.serving_pin().config, promoted)
+
+    def test_control_outage_spanning_config_transition(self):
+        first, second = self.registry(), self.registry()
+        old = second.serving_pin()
+        shadow = replace(self.rescue, state="shadowing", shadow_generation_id="candidate", shadow_mode="live")
+        first.publish(shadow, 0, "unobserved-transition", "test")
+        with patch("rankflow.traffic.monotonic", return_value=second.active[1] + 1), \
+                patch.object(self.store, "connect", side_effect=OperationalError("fixture control outage")):
+            for registry in (first, second):
+                readiness = registry.readiness()
+                self.assertTrue(readiness["serving_ready"])
+                self.assertFalse(readiness["release_ready"])
+                rescued = registry.serving_pin()
+                self.assertEqual(rescued.config, self.rescue)
+                self.assertIs(rescued.select("fixture")[0], STABLE)
+        self.assertEqual(old.revision, 0)
+        self.assertIs(old.select("fixture")[0], STABLE)
+        for registry in (first, second):
+            registry.refresh()
+            self.assertTrue(registry.readiness()["release_ready"])
+            self.assertEqual(registry.serving_pin().config, shadow)
 
     def test_late_ack_preserves_confirmed_state_and_deduplicates(self):
         with TestClient(create_app(STABLE, self.store, SECRET)) as client:

@@ -47,8 +47,38 @@ def transaction(operation):
         store.drain()
 
 
+def send_completion():
+    import asyncio
+
+    from rankflow.api import create_app
+    from rankflow.store import PostgresStore
+    from tests.test_stage1 import GENERATION, event, payload
+
+    class InterruptedStore(PostgresStore):
+        def record_send(self, impression_id, state):
+            assert state == "send_completed"
+            Event().wait()
+
+    app = create_app(GENERATION, InterruptedStore(os.environ["RANKFLOW_FAULT_DATABASE_URL"]))
+    body = json.dumps(payload([event(1)])).encode()
+    scope = {"type": "http", "method": "POST", "path": "/v1/recommend", "root_path": "",
+             "query_string": b"", "headers": [(b"content-type", b"application/json")],
+             "scheme": "http", "server": ("local", 80), "http_version": "1.1", "state": {}}
+
+    async def receive():
+        return {"type": "http.request", "body": body, "more_body": False}
+
+    async def send(message):
+        if message["type"] == "http.response.body":
+            print(message["body"].decode(), flush=True)
+
+    asyncio.run(app(scope, receive, send))
+
+
 if __name__ == "__main__":
     if len(sys.argv) == 1:
         inference()
+    elif sys.argv[1] == "send":
+        send_completion()
     else:
         transaction(sys.argv[1])

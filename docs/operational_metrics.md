@@ -25,3 +25,14 @@ or breached windows trigger the audited auto-pause. Guardrail health and
 action status are separate fields.
 
 The PostgreSQL-backed unknown and sustained-fallback drills passed (2 passed, 0 failed, 0 skipped). Both observed an auto_pause audit row and stable-only routing.
+
+## Alert catalogue
+
+| Alert | Action | Repository runbook |
+| --- | --- | --- |
+| `canary_unknown` | Pause | [Canary telemetry unknown](runbooks.md#canary-telemetry-unknown) |
+| `canary_fallback` | Pause | [Canary fallback](runbooks.md#canary-fallback) |
+| `canary_pause_failed` | Page | [Pause failed](runbooks.md#pause-failed) |
+| `fleet_stale` | Rollback | [Stale fleet](runbooks.md#stale-fleet) |
+| `logging_degraded` | Page | [Logging degraded](runbooks.md#logging-degraded) |
+| `outbox_retry` | Page | [Outbox retry](runbooks.md#outbox-retry) |
