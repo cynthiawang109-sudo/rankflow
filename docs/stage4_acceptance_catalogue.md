@@ -12,7 +12,7 @@ report are separate SPEC exit criteria.
 | T03 | Stage 4 `test_promotion_with_paused_instance_and_new_joiner` exercises a fixture promotion with an existing instance paused, a new joiner and an immutable in-flight pin. The Stage 3 HTTP pin drill verifies a response survives pointer movement. |
 | T04 | Stage 2 named rollback and failed rollback convergence tests. |
 | T05?T06 | Stage 1 PostgreSQL commit/disconnect and returned-top-K attribution tests. |
-| T07 | Stage 4 artifact tests reject a bundle with an incompatible feature transform. Stage 2 [full-generation offline replay](stage2_exit_evidence.md) used the compatible feature transform. Isolated replay with a pair of incompatible feature schemas remains unverified. |
+| T07 | Closed. [The incompatible-schema replay drill](closure_t07_evidence.md) recorded rejection and verified stable PostgreSQL persistence and isolation of artifacts and results. |
 | T08 | Stage 4 `test_mixed_demo_rows_rejected_as_unregistered_otto_input` rejects a mixed input against the pinned lineage. The [Stage 2 demo rehearsal](stage2_exit_evidence.md) evidences the separate demo namespace and rejects demo-trained eligibility before any gate reads. |
 | T09 | Stage 0 tied-cutoff fixture and Stage 3 same-millisecond delivery. |
 | T10 | Stage 3 role and sealed-boundary matrix. The W3 final report and access record cover the separate report opening. |

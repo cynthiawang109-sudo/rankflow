@@ -1,5 +1,6 @@
 """Replay a candidate generation over governed historical development queries."""
 import argparse
+from datetime import datetime, timezone
 from pathlib import Path
 
 from .api import rank_request
@@ -27,6 +28,26 @@ def replay(directory, stable, challenger, limit):
             "challenger_generation": challenger.generation_id}
 
 
+def replay_bundles(directory, stable_path, challenger_path, output, limit):
+    stable = Generation.load(stable_path)
+    try:
+        challenger = Generation.load(challenger_path)
+    except (OSError, ValueError) as error:
+        rejection = {
+            "recorded_at": datetime.now(timezone.utc).isoformat(),
+            "status": "rejected", "reason": str(error),
+            "mode": "candidate_offline_replay", "population": "W2-dev",
+            "stable_generation": stable.generation_id,
+            "challenger_generation": challenger_path.name,
+        }
+        with output.with_name(output.name + ".rejected.json").open("xb") as stream:
+            stream.write(canonical(rejection) + b"\n")
+        raise
+    result = replay(directory, stable, challenger, limit)
+    with output.open("xb") as stream:
+        stream.write(canonical(result) + b"\n")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for argument in ("directory", "stable", "challenger", "output"):
@@ -35,9 +56,7 @@ def main():
     args = parser.parse_args()
     if args.limit < 1:
         parser.error("Replay limit must be positive")
-    result = replay(args.directory, Generation.load(args.stable), Generation.load(args.challenger), args.limit)
-    with args.output.open("xb") as stream:
-        stream.write(canonical(result) + b"\n")
+    replay_bundles(args.directory, args.stable, args.challenger, args.output, args.limit)
 
 
 if __name__ == "__main__":
