@@ -51,3 +51,23 @@ Acceptance of the release system is not a model promotion.
 ## Addendum — §9.3 amendment v2 performance decision
 
 The formal amendment v2 benchmark recorded **Not Compliant**. This later decision sits alongside the original Performance Exception. [Benchmark report](layered_latency_benchmark_report.md) · [Performance decision](performance_decision.md)
+
+## Closure — RankFlow v3.0 (owner decision, 2026-11-21)
+
+RankFlow v3.0 is formally closed.
+
+- **Functional & Operational Complete** — signed above; unchanged.
+- **Performance record (final):** the original section 9.3
+  client-visible 100 ms target remains **FAILED**. Under the frozen
+  section 9.3 amendment v2, the formal benchmark recorded
+  **Not Compliant** (see the addendum above and
+  `docs/performance_decision.md`). The owner accepts this as the
+  final performance record for v3.0; it is retained as measured,
+  without reinterpretation.
+- Any future performance optimization or LightGBM v2 work will be
+  chartered as a new project or a new version. It will not continue,
+  amend, or reinterpret the v3.0 record.
+- `lgbm-v1` remains Rejected; `rule-v1` remains the final serving
+  strategy of v3.0.
+
+Closed by: Cynthia (owner), 2026-11-21.
